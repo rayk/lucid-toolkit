@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Execution Result",
+  "description": "Schema for execution result output from planner execution",
+  "type": "object",
+  "required": ["execution_id", "status", "system_name", "started_at", "summary"],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this execution"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["SUCCESS", "FAILED", "PARTIAL"],
+      "description": "Final execution status"
+    },
+    "system_name": {
+      "type": "string",
+      "description": "Name of the system being implemented"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp of execution start"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp of execution completion"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total execution duration in seconds"
+    },
+    "summary": {
+      "type": "object",
+      "required": ["phases_completed", "phases_failed"],
+      "properties": {
+        "phases_completed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "phases_failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tdd_cycles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "files_created": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tests_written": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coverage_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "token_usage": {
+      "type": "object",
+      "description": "Token usage statistics"
+    },
+    "cross_check_results": {
+      "type": "object",
+      "properties": {
+        "lint": {
+          "$ref": "#/definitions/checkResult"
+        },
+        "coverage": {
+          "$ref": "#/definitions/checkResult"
+        },
+        "style": {
+          "$ref": "#/definitions/checkResult"
+        },
+        "architecture": {
+          "$ref": "#/definitions/checkResult"
+        },
+        "requirements": {
+          "$ref": "#/definitions/checkResult"
+        },
+        "acceptance": {
+          "$ref": "#/definitions/checkResult"
+        },
+        "documentation": {
+          "$ref": "#/definitions/checkResult"
+        },
+        "custom": {
+          "$ref": "#/definitions/checkResult"
+        }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["phase", "check", "description"],
+        "properties": {
+          "phase": {
+            "type": "string"
+          },
+          "check": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "attempt": {
+                  "type": "integer"
+                },
+                "model": {
+                  "type": "string",
+                  "enum": ["haiku", "sonnet", "opus"]
+                },
+                "action": {
+                  "type": "string"
+                },
+                "result": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "root_cause": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "git": {
+      "type": "object",
+      "properties": {
+        "committed": {
+          "type": "boolean"
+        },
+        "commit_hash": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "source_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reports": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "checkResult": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "fail", "skipped"]
+        },
+        "details": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

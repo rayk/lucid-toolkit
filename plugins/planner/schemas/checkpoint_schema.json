@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Checkpoint",
+  "description": "Schema for phase-level resume capability",
+  "type": "object",
+  "required": [
+    "checkpoint_version",
+    "system",
+    "last_completed_phase",
+    "next_phase",
+    "completed_phases",
+    "pending_phases",
+    "created_artifacts"
+  ],
+  "properties": {
+    "checkpoint_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version for checkpoint compatibility"
+    },
+    "system": {
+      "type": "string",
+      "description": "Name of the system being implemented"
+    },
+    "last_completed_phase": {
+      "type": "string",
+      "enum": [
+        "phase_0_setup",
+        "phase_1_scaffolding",
+        "phase_2_foundation",
+        "phase_3_core",
+        "phase_4_features",
+        "phase_5_integration",
+        "phase_6_verification",
+        "phase_7_debug",
+        "phase_8_crosscheck"
+      ],
+      "description": "The last phase that completed successfully"
+    },
+    "next_phase": {
+      "type": "string",
+      "enum": [
+        "phase_0_setup",
+        "phase_1_scaffolding",
+        "phase_2_foundation",
+        "phase_3_core",
+        "phase_4_features",
+        "phase_5_integration",
+        "phase_6_verification",
+        "phase_7_debug",
+        "phase_8_crosscheck",
+        "complete"
+      ],
+      "description": "The next phase to execute on resume"
+    },
+    "completed_phases": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "completed_at"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["completed", "skipped"]
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pending_phases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Phases remaining to be executed"
+    },
+    "created_artifacts": {
+      "type": "object",
+      "required": ["files", "tests"],
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Source files created during execution"
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Test files created during execution"
+        }
+      }
+    },
+    "context_summary": {
+      "type": "string",
+      "description": "Brief summary of what was accomplished"
+    },
+    "resume_instructions": {
+      "type": "string",
+      "description": "Human-readable instructions for resuming"
+    },
+    "execution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Link to the execution that created this checkpoint"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this checkpoint was created"
+    }
+  }
+}
