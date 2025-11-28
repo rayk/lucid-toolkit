@@ -1,0 +1,51 @@
+{
+  "name": "lucid-toolkit",
+  "displayName": "Lucid Toolkit",
+  "description": "Capability-driven development tools for Claude Code",
+  "version": "1.0.0",
+  "author": "rayk",
+  "plugins": [
+    {
+      "name": "capability-workflow",
+      "path": "plugins/capability-workflow",
+      "description": "Strategic capability management with maturity tracking",
+      "version": "1.0.0"
+    },
+    {
+      "name": "outcome-workflow",
+      "path": "plugins/outcome-workflow",
+      "description": "Outcome lifecycle management (create, focus, complete)",
+      "version": "1.0.0"
+    },
+    {
+      "name": "session-manager",
+      "path": "plugins/session-manager",
+      "description": "Session lifecycle tracking with accomplishment capture",
+      "version": "1.0.0"
+    },
+    {
+      "name": "thinking-tools",
+      "path": "plugins/thinking-tools",
+      "description": "Structured analysis using mental models",
+      "version": "1.0.0"
+    },
+    {
+      "name": "maker-toolkit",
+      "path": "plugins/maker-toolkit",
+      "description": "Build Claude Code skills, commands, and agents",
+      "version": "1.0.0"
+    },
+    {
+      "name": "workspace-validator",
+      "path": "plugins/workspace-validator",
+      "description": "Schema validation and workspace health checks",
+      "version": "1.0.0"
+    },
+    {
+      "name": "delegation-protocol",
+      "path": "plugins/delegation-protocol",
+      "description": "Context-saving patterns for efficient Claude Code usage",
+      "version": "1.0.0"
+    }
+  ]
+}

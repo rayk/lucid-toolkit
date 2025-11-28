@@ -1,0 +1,805 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Capability Summary Schema",
+  "description": "Summary index of all capabilities for quick lookups, maturity tracking, and strategic reporting without scanning individual capability_track files",
+  "schemaVersion": "1.1.0",
+  "type": "object",
+  "required": [
+    "summary",
+    "capabilities",
+    "indexByDomain",
+    "indexByType",
+    "indexByStatus",
+    "indexByActivityState",
+    "indexByMaturityRange",
+    "indexByOutcome"
+  ],
+  "properties": {
+    "summary": {
+      "type": "object",
+      "description": "Aggregated statistics and strategic metrics across all capabilities",
+      "required": [
+        "totalCapabilities",
+        "capabilitiesByType",
+        "capabilitiesByStatus",
+        "capabilitiesByActivityState",
+        "averageMaturity",
+        "maturityDistribution",
+        "lastUpdated"
+      ],
+      "properties": {
+        "totalCapabilities": {
+          "type": "integer",
+          "description": "Total number of capabilities across all types and statuses",
+          "minimum": 0
+        },
+        "capabilitiesByType": {
+          "type": "object",
+          "description": "Count of capabilities by type",
+          "required": ["atomic", "composed"],
+          "properties": {
+            "atomic": {
+              "type": "integer",
+              "description": "Number of atomic capabilities (built from outcomes)",
+              "minimum": 0
+            },
+            "composed": {
+              "type": "integer",
+              "description": "Number of composed capabilities (built from sub-capabilities)",
+              "minimum": 0
+            }
+          }
+        },
+        "capabilitiesByStatus": {
+          "type": "object",
+          "description": "Count of capabilities by lifecycle status",
+          "required": ["active", "deprecated", "merged"],
+          "properties": {
+            "active": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "deprecated": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "merged": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "capabilitiesByActivityState": {
+          "type": "object",
+          "description": "Count of capabilities by activity state (active = has in-progress outcomes, stalled = no active work, complete = at target maturity)",
+          "required": ["active", "stalled", "complete"],
+          "properties": {
+            "active": {
+              "type": "integer",
+              "description": "Capabilities with in-progress outcomes or active sub-capabilities",
+              "minimum": 0
+            },
+            "stalled": {
+              "type": "integer",
+              "description": "Capabilities below target with no active outcomes or work",
+              "minimum": 0
+            },
+            "complete": {
+              "type": "integer",
+              "description": "Capabilities that have reached target maturity",
+              "minimum": 0
+            }
+          }
+        },
+        "averageMaturity": {
+          "type": "number",
+          "description": "Average maturity across all active capabilities (0-100)",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "averageMaturityByDomain": {
+          "type": "object",
+          "description": "Average maturity grouped by domain. Keys are domain names, values are average maturity percentages.",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "maturityDistribution": {
+          "type": "object",
+          "description": "Count of capabilities in each maturity range",
+          "required": ["0-30", "30-60", "60-80", "80-100"],
+          "properties": {
+            "0-30": {
+              "type": "integer",
+              "description": "Capabilities in early/experimental phase (0-30% maturity)",
+              "minimum": 0
+            },
+            "30-60": {
+              "type": "integer",
+              "description": "Capabilities in development/progressing phase (30-60% maturity)",
+              "minimum": 0
+            },
+            "60-80": {
+              "type": "integer",
+              "description": "Capabilities approaching production readiness (60-80% maturity)",
+              "minimum": 0
+            },
+            "80-100": {
+              "type": "integer",
+              "description": "Production-ready/mature capabilities (80-100% maturity)",
+              "minimum": 0
+            }
+          }
+        },
+        "totalOutcomesRequired": {
+          "type": "integer",
+          "description": "Sum of all requiredOutcomes across all atomic capabilities",
+          "minimum": 0
+        },
+        "totalOutcomesCompleted": {
+          "type": "integer",
+          "description": "Sum of all builtByOutcomes across all atomic capabilities",
+          "minimum": 0
+        },
+        "blockedCapabilitiesCount": {
+          "type": "integer",
+          "description": "Number of capabilities blocked by unmet prerequisites",
+          "minimum": 0
+        },
+        "atRiskCapabilitiesCount": {
+          "type": "integer",
+          "description": "Number of capabilities significantly below target maturity with no active outcomes",
+          "minimum": 0
+        },
+        "maturityVelocity": {
+          "type": "object",
+          "description": "Rate of maturity increase across capabilities",
+          "properties": {
+            "averageMaturityIncreasePerMonth": {
+              "type": "number",
+              "description": "Average maturity points gained per month across all capabilities"
+            },
+            "timeframeDays": {
+              "type": "integer",
+              "description": "Number of days used to calculate velocity",
+              "minimum": 1
+            },
+            "calculatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When velocity was last calculated"
+            }
+          }
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime when this summary was last updated"
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "List of all capabilities with summary information",
+      "items": {
+        "type": "object",
+        "required": [
+          "internalId",
+          "folderName",
+          "name",
+          "type",
+          "status",
+          "activityState",
+          "currentMaturity",
+          "targetMaturity",
+          "maturityGap",
+          "maturityRange",
+          "trackingFile",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "internalId": {
+            "type": "string",
+            "description": "Auto-generated internal identifier (hidden from users). Format: 'cap-' followed by 6 alphanumeric characters.",
+            "pattern": "^cap-[a-z0-9]{6}$"
+          },
+          "folderName": {
+            "type": "string",
+            "description": "Directory name for this capability (kebab-case, domain-first). This is the user-visible identifier.",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable capability name (title-cased version of folderName)"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["atomic", "composed"],
+            "description": "Atomic = built from outcomes, Composed = built from sub-capabilities"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "deprecated", "merged"],
+            "description": "Lifecycle status of the capability"
+          },
+          "activityState": {
+            "type": "string",
+            "enum": ["active", "stalled", "complete"],
+            "description": "Active = has in-progress outcomes/work, Stalled = below target with no active work, Complete = at target maturity"
+          },
+          "domain": {
+            "type": "string",
+            "description": "Capability domain/category"
+          },
+          "currentMaturity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Current maturity percentage (auto-calculated)"
+          },
+          "targetMaturity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Target maturity percentage"
+          },
+          "maturityGap": {
+            "type": "number",
+            "description": "Difference between target and current maturity (targetMaturity - currentMaturity)"
+          },
+          "maturityRange": {
+            "type": "string",
+            "enum": ["0-30", "30-60", "60-80", "80-100"],
+            "description": "Which maturity range this capability falls into"
+          },
+          "trackingFile": {
+            "type": "string",
+            "description": "Relative path to the capability_track.json file from workspace root (e.g., 'capabilities/authentication-system/capability_track.json')"
+          },
+          "atomicProgress": {
+            "type": ["object", "null"],
+            "description": "Progress metrics for atomic capabilities (null for composed)",
+            "properties": {
+              "requiredOutcomesCount": {
+                "type": "integer",
+                "description": "Number of outcomes required to build this capability",
+                "minimum": 0
+              },
+              "completedOutcomesCount": {
+                "type": "integer",
+                "description": "Number of required outcomes that have been completed",
+                "minimum": 0
+              },
+              "inProgressOutcomesCount": {
+                "type": "integer",
+                "description": "Number of required outcomes currently in 'started' state",
+                "minimum": 0
+              },
+              "queuedOutcomesCount": {
+                "type": "integer",
+                "description": "Number of required outcomes in 'queued' state",
+                "minimum": 0
+              },
+              "progressPercentage": {
+                "type": "number",
+                "description": "Percentage of required outcomes completed (0-100)",
+                "minimum": 0,
+                "maximum": 100
+              }
+            }
+          },
+          "composedProgress": {
+            "type": ["object", "null"],
+            "description": "Progress metrics for composed capabilities (null for atomic)",
+            "properties": {
+              "subCapabilitiesCount": {
+                "type": "integer",
+                "description": "Number of sub-capabilities that compose this capability",
+                "minimum": 1
+              },
+              "averageSubCapabilityMaturity": {
+                "type": "number",
+                "description": "Average maturity across all sub-capabilities (0-100)",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "subCapabilitiesAtTarget": {
+                "type": "integer",
+                "description": "Number of sub-capabilities that have reached their target maturity",
+                "minimum": 0
+              },
+              "lowestSubCapabilityMaturity": {
+                "type": "number",
+                "description": "Maturity of the least mature sub-capability",
+                "minimum": 0,
+                "maximum": 100
+              }
+            }
+          },
+          "dependencies": {
+            "type": "object",
+            "description": "Dependency tracking for prerequisites",
+            "properties": {
+              "prerequisitesCount": {
+                "type": "integer",
+                "description": "Total number of prerequisite capabilities",
+                "minimum": 0
+              },
+              "unmetPrerequisites": {
+                "type": "integer",
+                "description": "Number of prerequisites not yet at required maturity",
+                "minimum": 0
+              },
+              "isBlocked": {
+                "type": "boolean",
+                "description": "True if this capability is blocked by unmet prerequisites"
+              },
+              "blockingCapabilities": {
+                "type": "array",
+                "description": "IDs of capabilities that are blocking this one (prerequisites not at minimum maturity)",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                }
+              }
+            }
+          },
+          "outcomeActivity": {
+            "type": "object",
+            "description": "Recent outcome activity for this capability",
+            "properties": {
+              "lastOutcomeCompleted": {
+                "type": ["string", "null"],
+                "description": "Path to the most recently completed outcome tracking file (or null if none)",
+                "pattern": "^outcomes/completed/[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}/outcome_track\\.json$"
+              },
+              "lastCompletedDate": {
+                "type": ["string", "null"],
+                "format": "date-time",
+                "description": "When the last outcome was completed (or null if none)"
+              },
+              "activeOutcomes": {
+                "type": "array",
+                "description": "Paths to outcome tracking files currently in 'started' state that contribute to this capability",
+                "items": {
+                  "type": "string",
+                  "pattern": "^outcomes/in-progress/[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}/outcome_track\\.json$"
+                }
+              },
+              "daysSinceLastProgress": {
+                "type": ["integer", "null"],
+                "description": "Days since last outcome completion (null if no outcomes completed yet)"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the capability was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the capability was last updated"
+          }
+        }
+      }
+    },
+    "indexByDomain": {
+      "type": "object",
+      "description": "Index for quickly finding capabilities by domain. Keys are domain names, values are arrays of capability IDs.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        }
+      }
+    },
+    "indexByType": {
+      "type": "object",
+      "description": "Index for quickly finding capabilities by type",
+      "required": ["atomic", "composed"],
+      "properties": {
+        "atomic": {
+          "type": "array",
+          "description": "Capability IDs for atomic capabilities",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "composed": {
+          "type": "array",
+          "description": "Capability IDs for composed capabilities",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        }
+      }
+    },
+    "indexByStatus": {
+      "type": "object",
+      "description": "Index for quickly finding capabilities by lifecycle status",
+      "required": ["active", "deprecated", "merged"],
+      "properties": {
+        "active": {
+          "type": "array",
+          "description": "Capability IDs for active capabilities",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "deprecated": {
+          "type": "array",
+          "description": "Capability IDs for deprecated capabilities",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "merged": {
+          "type": "array",
+          "description": "Capability IDs for merged capabilities",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        }
+      }
+    },
+    "indexByActivityState": {
+      "type": "object",
+      "description": "Index for quickly finding capabilities by activity state",
+      "required": ["active", "stalled", "complete"],
+      "properties": {
+        "active": {
+          "type": "array",
+          "description": "Capability IDs with active work (in-progress outcomes or sub-capabilities)",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "stalled": {
+          "type": "array",
+          "description": "Capability IDs below target maturity with no active work",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "complete": {
+          "type": "array",
+          "description": "Capability IDs at target maturity",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        }
+      }
+    },
+    "indexByMaturityRange": {
+      "type": "object",
+      "description": "Index for quickly finding capabilities by maturity range",
+      "required": ["0-30", "30-60", "60-80", "80-100"],
+      "properties": {
+        "0-30": {
+          "type": "array",
+          "description": "Capability IDs in early/experimental phase",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "30-60": {
+          "type": "array",
+          "description": "Capability IDs in development/progressing phase",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "60-80": {
+          "type": "array",
+          "description": "Capability IDs approaching production readiness",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "80-100": {
+          "type": "array",
+          "description": "Capability IDs that are production-ready/mature",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        }
+      }
+    },
+    "indexByOutcome": {
+      "type": "object",
+      "description": "Bi-directional index: which capabilities are built by which outcomes. Keys are outcome tracking file paths, values are arrays of capability IDs that reference that outcome.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "Capability ID",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        }
+      }
+    },
+    "blockedCapabilities": {
+      "type": "array",
+      "description": "Quick-access list of capability IDs that are blocked by unmet prerequisites",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      }
+    },
+    "atRiskCapabilities": {
+      "type": "array",
+      "description": "Capabilities significantly below target maturity with no active outcomes (requires attention)",
+      "items": {
+        "type": "object",
+        "required": ["folderName", "maturityGap", "daysSinceLastProgress"],
+        "properties": {
+          "folderName": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "Capability folder name (user-visible identifier)"
+          },
+          "maturityGap": {
+            "type": "number",
+            "description": "How far below target maturity (targetMaturity - currentMaturity)"
+          },
+          "daysSinceLastProgress": {
+            "type": ["integer", "null"],
+            "description": "Days since last outcome completion (null if never had progress)"
+          },
+          "activityState": {
+            "type": "string",
+            "enum": ["stalled"],
+            "description": "Activity state (always 'stalled' for at-risk capabilities)"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "summary": {
+        "totalCapabilities": 5,
+        "capabilitiesByType": {
+          "atomic": 4,
+          "composed": 1
+        },
+        "capabilitiesByStatus": {
+          "active": 4,
+          "deprecated": 1,
+          "merged": 0
+        },
+        "capabilitiesByActivityState": {
+          "active": 2,
+          "stalled": 2,
+          "complete": 1
+        },
+        "averageMaturity": 52.6,
+        "averageMaturityByDomain": {
+          "Data Security & Privacy": 47.0,
+          "Product Lifecycle": 68.0,
+          "Business Logic": 35.0
+        },
+        "maturityDistribution": {
+          "0-30": 1,
+          "30-60": 2,
+          "60-80": 1,
+          "80-100": 1
+        },
+        "totalOutcomesRequired": 12,
+        "totalOutcomesCompleted": 7,
+        "blockedCapabilitiesCount": 1,
+        "atRiskCapabilitiesCount": 2,
+        "maturityVelocity": {
+          "averageMaturityIncreasePerMonth": 8.5,
+          "timeframeDays": 60,
+          "calculatedAt": "2025-11-18T15:00:00Z"
+        },
+        "lastUpdated": "2025-11-18T15:00:00Z"
+      },
+      "capabilities": [
+        {
+          "internalId": "cap-a1b2c3",
+          "folderName": "authentication-system",
+          "name": "Authentication System",
+          "type": "atomic",
+          "status": "active",
+          "activityState": "active",
+          "domain": "Data Security & Privacy",
+          "currentMaturity": 47,
+          "targetMaturity": 80,
+          "maturityGap": 33,
+          "maturityRange": "30-60",
+          "trackingFile": "capabilities/authentication-system/capability_track.json",
+          "atomicProgress": {
+            "requiredOutcomesCount": 4,
+            "completedOutcomesCount": 2,
+            "inProgressOutcomesCount": 1,
+            "queuedOutcomesCount": 1,
+            "progressPercentage": 50.0
+          },
+          "composedProgress": null,
+          "dependencies": {
+            "prerequisitesCount": 0,
+            "unmetPrerequisites": 0,
+            "isBlocked": false,
+            "blockingCapabilities": []
+          },
+          "outcomeActivity": {
+            "lastOutcomeCompleted": "outcomes/completed/002-session-management/outcome_track.json",
+            "lastCompletedDate": "2025-02-15T00:00:00Z",
+            "activeOutcomes": ["outcomes/in-progress/003-rate-limiting/outcome_track.json"],
+            "daysSinceLastProgress": 7
+          },
+          "createdAt": "2025-01-01T00:00:00Z",
+          "updatedAt": "2025-02-15T14:30:00Z"
+        },
+        {
+          "internalId": "cap-d4e5f6",
+          "folderName": "platform-saas-multitenant",
+          "name": "Platform Saas Multitenant",
+          "type": "composed",
+          "status": "active",
+          "activityState": "active",
+          "domain": "Product Lifecycle",
+          "currentMaturity": 47.75,
+          "targetMaturity": 90,
+          "maturityGap": 42.25,
+          "maturityRange": "30-60",
+          "trackingFile": "capabilities/platform-saas-multitenant/capability_track.json",
+          "atomicProgress": null,
+          "composedProgress": {
+            "subCapabilitiesCount": 4,
+            "averageSubCapabilityMaturity": 45.5,
+            "subCapabilitiesAtTarget": 0,
+            "lowestSubCapabilityMaturity": 35.0
+          },
+          "dependencies": {
+            "prerequisitesCount": 1,
+            "unmetPrerequisites": 1,
+            "isBlocked": true,
+            "blockingCapabilities": ["authentication-system"]
+          },
+          "outcomeActivity": {
+            "lastOutcomeCompleted": null,
+            "lastCompletedDate": null,
+            "activeOutcomes": [],
+            "daysSinceLastProgress": null
+          },
+          "createdAt": "2025-01-15T00:00:00Z",
+          "updatedAt": "2025-02-15T14:30:00Z"
+        },
+        {
+          "internalId": "cap-g7h8i9",
+          "folderName": "profile-user-management",
+          "name": "Profile User Management",
+          "type": "atomic",
+          "status": "active",
+          "activityState": "complete",
+          "domain": "Business Logic",
+          "currentMaturity": 85,
+          "targetMaturity": 85,
+          "maturityGap": 0,
+          "maturityRange": "80-100",
+          "trackingFile": "capabilities/profile-user-management/capability_track.json",
+          "atomicProgress": {
+            "requiredOutcomesCount": 3,
+            "completedOutcomesCount": 3,
+            "inProgressOutcomesCount": 0,
+            "queuedOutcomesCount": 0,
+            "progressPercentage": 100.0
+          },
+          "composedProgress": null,
+          "dependencies": {
+            "prerequisitesCount": 0,
+            "unmetPrerequisites": 0,
+            "isBlocked": false,
+            "blockingCapabilities": []
+          },
+          "outcomeActivity": {
+            "lastOutcomeCompleted": "outcomes/completed/003-user-profile-service/outcome_track.json",
+            "lastCompletedDate": "2025-11-17T18:00:00Z",
+            "activeOutcomes": [],
+            "daysSinceLastProgress": 1
+          },
+          "createdAt": "2025-01-05T00:00:00Z",
+          "updatedAt": "2025-11-17T18:00:00Z"
+        },
+        {
+          "internalId": "cap-j1k2l3",
+          "folderName": "notification-system",
+          "name": "Notification System",
+          "type": "atomic",
+          "status": "active",
+          "activityState": "stalled",
+          "domain": "Business Logic",
+          "currentMaturity": 15,
+          "targetMaturity": 70,
+          "maturityGap": 55,
+          "maturityRange": "0-30",
+          "trackingFile": "capabilities/notification-system/capability_track.json",
+          "atomicProgress": {
+            "requiredOutcomesCount": 5,
+            "completedOutcomesCount": 1,
+            "inProgressOutcomesCount": 0,
+            "queuedOutcomesCount": 4,
+            "progressPercentage": 20.0
+          },
+          "composedProgress": null,
+          "dependencies": {
+            "prerequisitesCount": 0,
+            "unmetPrerequisites": 0,
+            "isBlocked": false,
+            "blockingCapabilities": []
+          },
+          "outcomeActivity": {
+            "lastOutcomeCompleted": "outcomes/completed/020-email-notifications/outcome_track.json",
+            "lastCompletedDate": "2025-01-20T00:00:00Z",
+            "activeOutcomes": [],
+            "daysSinceLastProgress": 30
+          },
+          "createdAt": "2025-01-10T00:00:00Z",
+          "updatedAt": "2025-01-20T12:00:00Z"
+        }
+      ],
+      "indexByDomain": {
+        "Data Security & Privacy": ["authentication-system"],
+        "Product Lifecycle": ["platform-saas-multitenant"],
+        "Business Logic": ["profile-user-management", "notification-system"]
+      },
+      "indexByType": {
+        "atomic": ["authentication-system", "profile-user-management", "notification-system"],
+        "composed": ["platform-saas-multitenant"]
+      },
+      "indexByStatus": {
+        "active": ["authentication-system", "platform-saas-multitenant", "profile-user-management", "notification-system"],
+        "deprecated": [],
+        "merged": []
+      },
+      "indexByActivityState": {
+        "active": ["authentication-system", "platform-saas-multitenant"],
+        "stalled": ["notification-system"],
+        "complete": ["profile-user-management"]
+      },
+      "indexByMaturityRange": {
+        "0-30": ["notification-system"],
+        "30-60": ["authentication-system", "platform-saas-multitenant"],
+        "60-80": [],
+        "80-100": ["profile-user-management"]
+      },
+      "indexByOutcome": {
+        "outcomes/queued/001-basic-authentication/outcome_track.json": ["authentication-system"],
+        "outcomes/queued/002-session-management/outcome_track.json": ["authentication-system"],
+        "outcomes/in-progress/003-rate-limiting/outcome_track.json": ["authentication-system"],
+        "outcomes/queued/004-audit-logging/outcome_track.json": ["authentication-system"],
+        "outcomes/completed/003-user-profile-service/outcome_track.json": ["profile-user-management"],
+        "outcomes/completed/020-email-notifications/outcome_track.json": ["notification-system"]
+      },
+      "blockedCapabilities": ["platform-saas-multitenant"],
+      "atRiskCapabilities": [
+        {
+          "folderName": "notification-system",
+          "maturityGap": 55,
+          "daysSinceLastProgress": 30,
+          "activityState": "stalled"
+        }
+      ]
+    }
+  ]
+}

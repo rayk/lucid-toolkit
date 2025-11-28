@@ -1,0 +1,711 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project Map Schema",
+  "description": "Central navigation map for Claude agents to understand workspace structure and locate files efficiently",
+  "schemaVersion": "1.0.0",
+  "type": "object",
+  "required": [
+    "workspace",
+    "scopes",
+    "projects",
+    "tempFileManagement"
+  ],
+  "properties": {
+    "workspace": {
+      "type": "object",
+      "description": "IntelliJ workspace metadata",
+      "required": [
+        "name",
+        "rootDirectory",
+        "workspaceFile",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the IntelliJ workspace"
+        },
+        "rootDirectory": {
+          "type": "string",
+          "description": "Absolute path to workspace root directory"
+        },
+        "workspaceFile": {
+          "type": "string",
+          "description": "Path to jb-workspace.xml file (relative to root)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Purpose and overview of this workspace"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this map was last updated"
+        }
+      }
+    },
+    "scopes": {
+      "type": "object",
+      "description": "Categorized locations for quick navigation - where to find different types of content",
+      "required": [
+        "workspaceOperations",
+        "configuration"
+      ],
+      "properties": {
+        "workspaceOperations": {
+          "type": "object",
+          "description": "Workspace-level operational files (capabilities, outcomes, status, research)",
+          "properties": {
+            "capabilities": {
+              "type": "object",
+              "properties": {
+                "directory": {
+                  "type": "string",
+                  "description": "Path to capabilities directory"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "What this directory contains"
+                },
+                "filePattern": {
+                  "type": "string",
+                  "description": "Pattern for files in this directory (e.g., '*.md')"
+                }
+              }
+            },
+            "outcomes": {
+              "type": "object",
+              "properties": {
+                "baseDirectory": {
+                  "type": "string",
+                  "description": "Path to outcomes base directory"
+                },
+                "subdirectories": {
+                  "type": "object",
+                  "properties": {
+                    "queued": {
+                      "type": "string"
+                    },
+                    "ready": {
+                      "type": "string"
+                    },
+                    "inProgress": {
+                      "type": "string"
+                    },
+                    "blocked": {
+                      "type": "string"
+                    },
+                    "completed": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "description": {
+                  "type": "string"
+                },
+                "trackingFile": {
+                  "type": "string",
+                  "description": "Pattern for tracking files (e.g., 'outcome_track.json')"
+                }
+              }
+            },
+            "status": {
+              "type": "object",
+              "properties": {
+                "directory": {
+                  "type": "string",
+                  "description": "Path to status tracking directory"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "keyFiles": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "purpose": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "research": {
+              "type": "object",
+              "properties": {
+                "directory": {
+                  "type": "string",
+                  "description": "Path to research directory"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "configuration": {
+          "type": "object",
+          "description": "Configuration files and settings",
+          "properties": {
+            "claude": {
+              "type": "object",
+              "properties": {
+                "directory": {
+                  "type": "string",
+                  "description": "Path to .claude directory"
+                },
+                "subdirectories": {
+                  "type": "object",
+                  "properties": {
+                    "commands": {
+                      "type": "string",
+                      "description": "Custom slash commands"
+                    },
+                    "prompts": {
+                      "type": "string",
+                      "description": "Reusable prompts"
+                    },
+                    "schema": {
+                      "type": "string",
+                      "description": "JSON schemas for validation"
+                    },
+                    "temp": {
+                      "type": "string",
+                      "description": "Temporary files (auto-cleaned)"
+                    }
+                  }
+                },
+                "keyFiles": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "purpose": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "workspace": {
+              "type": "array",
+              "description": "Key workspace configuration files",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "purpose": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "description": "Projects/modules included in this workspace",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "path",
+          "description",
+          "technology",
+          "keyDirectories",
+          "entryPointFiles"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Project name"
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to project directory (relative to workspace root)"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this project does and its purpose"
+          },
+          "technology": {
+            "type": "object",
+            "description": "Technology stack for this project",
+            "properties": {
+              "languages": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Programming languages (e.g., ['TypeScript', 'Python'])"
+              },
+              "frameworks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Frameworks used (e.g., ['React', 'Express'])"
+              },
+              "buildTool": {
+                "type": "string",
+                "description": "Build tool (e.g., 'npm', 'gradle', 'maven')"
+              }
+            }
+          },
+          "keyDirectories": {
+            "type": "object",
+            "description": "Important directories and what they contain",
+            "properties": {
+              "source": {
+                "type": "string",
+                "description": "Path to source code directory (e.g., 'src')"
+              },
+              "tests": {
+                "type": "string",
+                "description": "Path to tests directory (e.g., 'tests', '__tests__')"
+              },
+              "documentation": {
+                "type": "string",
+                "description": "Path to project-specific documentation (e.g., 'docs')"
+              },
+              "configuration": {
+                "type": "string",
+                "description": "Path to configuration files (e.g., 'config')"
+              },
+              "build": {
+                "type": "string",
+                "description": "Path to build output directory (e.g., 'dist', 'build')"
+              }
+            }
+          },
+          "entryPointFiles": {
+            "type": "array",
+            "description": "Key files to read first for understanding this project",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string",
+                  "description": "Path relative to project directory"
+                },
+                "purpose": {
+                  "type": "string",
+                  "description": "What information this file provides"
+                }
+              }
+            }
+          },
+          "scope": {
+            "type": "string",
+            "description": "What capability or domain this project provides (e.g., 'authentication', 'api-gateway', 'data-processing')"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of this project in the workspace",
+            "enum": [
+              "active",
+              "planned",
+              "archived"
+            ]
+          },
+          "versionTracking": {
+            "type": "object",
+            "description": "Version coordination for linked projects",
+            "properties": {
+              "currentVersion": {
+                "type": "string",
+                "description": "Current version tag or commit SHA (e.g., 'v1.2.0', 'abc1234')"
+              },
+              "compatibleWith": {
+                "type": "string",
+                "description": "Version constraint for compatibility (e.g., '>=1.0.0', 'main branch')"
+              },
+              "lastVerified": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When compatibility was last verified"
+              },
+              "gitRemote": {
+                "type": "string",
+                "description": "Git remote URL for this project"
+              },
+              "defaultBranch": {
+                "type": "string",
+                "description": "Default branch name (e.g., 'main', 'master')"
+              }
+            }
+          },
+          "modules": {
+            "type": "array",
+            "description": "Major packages, services, or components within this project. Enables lookup-based access instead of search.",
+            "items": {
+              "type": "object",
+              "required": ["id", "name", "path", "type"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*$",
+                  "description": "Stable identifier for cross-referencing (snake_case). Used in references like 'project:module_id'"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Human-readable display name"
+                },
+                "path": {
+                  "type": "string",
+                  "description": "Path relative to project root directory"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["app", "service", "library", "package", "data", "config"],
+                  "description": "Module classification: app (runnable), service (backend), library (shared code), package (internal module), data (schemas/fixtures), config (configuration)"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "What this module does and its purpose"
+                },
+                "technology": {
+                  "type": "object",
+                  "description": "Technology details if different from project-level",
+                  "properties": {
+                    "language": {
+                      "type": "string",
+                      "description": "Primary language (e.g., 'Python', 'Dart')"
+                    },
+                    "framework": {
+                      "type": "string",
+                      "description": "Framework used (e.g., 'Neo4j', 'Flutter')"
+                    }
+                  }
+                },
+                "entryPoints": {
+                  "type": "array",
+                  "description": "Key entry points for accessing this module",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "file"],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Entry point name (e.g., 'CypherLoader', 'main')"
+                      },
+                      "file": {
+                        "type": "string",
+                        "description": "File path relative to module directory"
+                      },
+                      "symbol": {
+                        "type": "string",
+                        "description": "Exported symbol name (class, function) if applicable"
+                      }
+                    }
+                  }
+                },
+                "submodules": {
+                  "type": "array",
+                  "description": "Nested modules within this module",
+                  "items": {
+                    "type": "object",
+                    "required": ["id", "path"],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]*$",
+                        "description": "Submodule identifier"
+                      },
+                      "path": {
+                        "type": "string",
+                        "description": "Path relative to parent module"
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": ["app", "service", "library", "package", "data", "config"]
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["active", "scaffold", "planned", "deprecated"],
+                  "default": "active",
+                  "description": "Development status of this module"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tempFileManagement": {
+      "type": "object",
+      "description": "Rules for managing temporary files created by Claude agents",
+      "required": [
+        "location",
+        "maxAgeHours",
+        "autoCleanup"
+      ],
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "Directory for temporary files (relative to workspace root)",
+          "default": "temp"
+        },
+        "maxAgeHours": {
+          "type": "integer",
+          "description": "Maximum age in hours before files are eligible for cleanup",
+          "minimum": 1,
+          "default": 24
+        },
+        "autoCleanup": {
+          "type": "boolean",
+          "description": "Whether automatic cleanup is enabled",
+          "default": true
+        },
+        "fileTypes": {
+          "type": "array",
+          "description": "Types of temporary files agents may create",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type identifier (e.g., 'execution-report', 'search-cache', 'agent-log')"
+              },
+              "pattern": {
+                "type": "string",
+                "description": "Filename pattern (e.g., 'exec-*.md', '*.log')"
+              },
+              "maxAgeHours": {
+                "type": "integer",
+                "description": "Override maxAgeHours for this file type"
+              }
+            }
+          }
+        },
+        "preservePatterns": {
+          "type": "array",
+          "description": "Filename patterns to never auto-delete",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "workspace": {
+        "name": "lucid_stack",
+        "rootDirectory": "/Users/rayk/Projects/lucid_stack",
+        "workspaceFile": ".idea/jb-workspace.xml",
+        "description": "IntelliJ Workspace Project for the lucid commands technology stack",
+        "lastUpdated": "2025-11-18T15:00:00Z"
+      },
+      "scopes": {
+        "workspaceOperations": {
+          "capabilities": {
+            "directory": "capabilities",
+            "description": "Strategic capabilities that the technology stack delivers. Each capability has its own directory containing capability_track.json and optional documentation.",
+            "structure": "capabilities/{capability-id}/capability_track.json",
+            "trackingFile": "capability_track.json"
+          },
+          "outcomes": {
+            "baseDirectory": "outcomes",
+            "subdirectories": {
+              "queued": "outcomes/queued",
+              "ready": "outcomes/ready",
+              "inProgress": "outcomes/in-progress",
+              "blocked": "outcomes/blocked",
+              "completed": "outcomes/completed"
+            },
+            "description": "Structured work units that realize the capabilities",
+            "trackingFile": "outcome_track.json"
+          },
+          "status": {
+            "directory": "status",
+            "description": "Tracking and project state files",
+            "keyFiles": [
+              {
+                "name": "outcome_summary.json",
+                "path": "status/outcome_summary.json",
+                "purpose": "Summary index of all outcomes for quick lookups"
+              },
+              {
+                "name": "capability_summary.json",
+                "path": "status/capability_summary.json",
+                "purpose": "Summary index of all capabilities for strategic planning and maturity tracking"
+              }
+            ]
+          },
+          "research": {
+            "directory": "research",
+            "description": "Results of research on project-related topics"
+          }
+        },
+        "configuration": {
+          "claude": {
+            "directory": ".claude",
+            "subdirectories": {
+              "commands": "commands",
+              "prompts": "prompts",
+              "schema": "schema",
+              "temp": "temp"
+            },
+            "keyFiles": [
+              {
+                "name": "outcome_track_schema.json",
+                "path": "schema/outcome_track_schema.json",
+                "purpose": "Schema for tracking individual outcomes"
+              },
+              {
+                "name": "outcome_summary_schema.json",
+                "path": "schema/outcome_summary_schema.json",
+                "purpose": "Schema for outcome summary index"
+              },
+              {
+                "name": "capability_track_schema.json",
+                "path": "schema/capability_track_schema.json",
+                "purpose": "Schema for tracking individual capabilities"
+              },
+              {
+                "name": "capability_summary_schema.json",
+                "path": "schema/capability_summary_schema.json",
+                "purpose": "Schema for capability summary index"
+              },
+              {
+                "name": "project_map_schema.json",
+                "path": "schema/project_map_schema.json",
+                "purpose": "Schema for this project map"
+              }
+            ]
+          },
+          "workspace": [
+            {
+              "name": "jb-workspace.xml",
+              "path": ".idea/jb-workspace.xml",
+              "purpose": "IntelliJ workspace configuration - lists included projects"
+            }
+          ]
+        }
+      },
+      "projects": [
+        {
+          "name": "lucid-auth-service",
+          "path": "projects/lucid-auth-service",
+          "description": "Authentication and authorization service for the lucid stack",
+          "technology": {
+            "languages": ["TypeScript"],
+            "frameworks": ["Express", "Passport"],
+            "buildTool": "npm"
+          },
+          "keyDirectories": {
+            "source": "projects/lucid-auth-service/src",
+            "tests": "projects/lucid-auth-service/tests",
+            "documentation": "projects/lucid-auth-service/docs",
+            "configuration": "projects/lucid-auth-service/config",
+            "build": "projects/lucid-auth-service/dist"
+          },
+          "entryPointFiles": [
+            {
+              "name": "README.md",
+              "path": "README.md",
+              "purpose": "Project overview and setup instructions"
+            },
+            {
+              "name": "package.json",
+              "path": "package.json",
+              "purpose": "Dependencies and scripts"
+            },
+            {
+              "name": "ARCHITECTURE.md",
+              "path": "docs/ARCHITECTURE.md",
+              "purpose": "Architecture and design decisions"
+            }
+          ],
+          "scope": "authentication",
+          "status": "active"
+        },
+        {
+          "name": "lucid-api-gateway",
+          "path": "projects/lucid-api-gateway",
+          "description": "API gateway and routing service",
+          "technology": {
+            "languages": ["TypeScript"],
+            "frameworks": ["Express"],
+            "buildTool": "npm"
+          },
+          "keyDirectories": {
+            "source": "projects/lucid-api-gateway/src",
+            "tests": "projects/lucid-api-gateway/tests",
+            "documentation": "projects/lucid-api-gateway/docs",
+            "configuration": "projects/lucid-api-gateway/config",
+            "build": "projects/lucid-api-gateway/dist"
+          },
+          "entryPointFiles": [
+            {
+              "name": "README.md",
+              "path": "README.md",
+              "purpose": "Project overview and setup instructions"
+            }
+          ],
+          "scope": "api-management",
+          "status": "planned"
+        }
+      ],
+      "tempFileManagement": {
+        "location": "temp",
+        "maxAgeHours": 24,
+        "autoCleanup": true,
+        "fileTypes": [
+          {
+            "type": "execution-report",
+            "pattern": "exec-report-*.md",
+            "maxAgeHours": 72
+          },
+          {
+            "type": "agent-log",
+            "pattern": "agent-*.log",
+            "maxAgeHours": 12
+          },
+          {
+            "type": "search-cache",
+            "pattern": "search-*.json",
+            "maxAgeHours": 6
+          }
+        ],
+        "preservePatterns": [
+          "*.keep",
+          "README.md"
+        ]
+      }
+    }
+  ]
+}

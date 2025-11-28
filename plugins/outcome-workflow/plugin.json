@@ -1,0 +1,30 @@
+{
+  "name": "outcome-workflow",
+  "displayName": "Outcome Workflow",
+  "description": "Outcome lifecycle management (create, focus, complete)",
+  "version": "1.0.0",
+  "author": "rayk",
+  "dependencies": {
+    "claudeCode": ">=1.0.0",
+    "python": ">=3.11"
+  },
+  "commands": [
+    "outcome:create",
+    "outcome:edit",
+    "outcome:delete",
+    "outcome:decompose",
+    "outcome:focus",
+    "outcome:defocus",
+    "outcome:move",
+    "outcome:complete",
+    "outcome:design"
+  ],
+  "hooks": [],
+  "schemas": [
+    "outcome_track_schema.json",
+    "outcome_summary_schema.json"
+  ],
+  "sharedLibraries": [
+    "../../shared/cli-commons"
+  ]
+}

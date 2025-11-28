@@ -1,0 +1,26 @@
+{
+  "name": "session-manager",
+  "displayName": "Session Manager",
+  "description": "Session lifecycle tracking with accomplishment capture",
+  "version": "1.0.0",
+  "author": "rayk",
+  "dependencies": {
+    "claudeCode": ">=1.0.0",
+    "python": ">=3.11"
+  },
+  "commands": [
+    "session:update",
+    "session:info",
+    "session:validate"
+  ],
+  "hooks": [
+    "session_start.py",
+    "session_end.py"
+  ],
+  "schemas": [
+    "session_tracking_schema.json"
+  ],
+  "sharedLibraries": [
+    "../../shared/cli-commons"
+  ]
+}

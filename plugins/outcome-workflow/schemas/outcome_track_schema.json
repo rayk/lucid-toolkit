@@ -1,0 +1,1137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Outcome Tracking Schema",
+  "description": "Schema for tracking autonomous task outcomes and their constituent tasks",
+  "schemaVersion": "2.1.0",
+  "type": "object",
+  "required": [
+    "outcome",
+    "tasks",
+    "executionLog"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "object",
+      "description": "Metadata for the outcome folder and its overall progress",
+      "required": [
+        "id",
+        "name",
+        "directoryLabel",
+        "capabilityContributions",
+        "projects",
+        "observableEffects",
+        "state",
+        "estimatedTokens",
+        "reportsDirectory",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Numeric identifier. Integer for parents (1, 2, 3), decimal for children (5.1, 5.2)",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable outcome name (concept/subject first name, lowercase, max 5 words)",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+){0,4}$",
+          "maxLength": 100
+        },
+        "directoryLabel": {
+          "type": "string",
+          "description": "Full directory name in format [number]-[outcome-name] or [number].[child]-[outcome-name] for hierarchical outcomes (e.g., 001-authentication-provider, 010.1-sql-injection)",
+          "pattern": "^[0-9]+(\\.[0-9]+)?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+        },
+        "type": {
+          "type": "string",
+          "description": "Outcome type: atomic (single execution context) or parent (aggregates children)",
+          "enum": ["atomic", "parent"],
+          "default": "atomic"
+        },
+        "description": {
+          "type": "string",
+          "description": "Achievement description - WHAT to accomplish (achievement-focused, not process-focused)",
+          "maxLength": 500
+        },
+        "purpose": {
+          "type": "string",
+          "description": "Why this outcome is needed - the problem it solves",
+          "maxLength": 500
+        },
+        "scope": {
+          "type": "object",
+          "description": "What is included and excluded from this outcome",
+          "properties": {
+            "included": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "What IS this outcome responsible for achieving"
+            },
+            "excluded": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "What is NOT this outcome's responsibility"
+            }
+          }
+        },
+        "capabilityContributions": {
+          "type": "array",
+          "description": "Capabilities this outcome contributes towards with maturity percentages",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["capabilityId", "capabilityPath", "maturityContribution", "rationale"],
+            "properties": {
+              "capabilityId": {
+                "type": "string",
+                "description": "Capability identifier (e.g., 'authentication-system')",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "capabilityPath": {
+                "type": "string",
+                "description": "Path to capability_track.json file relative to workspace root",
+                "pattern": "^capabilities/[a-z0-9]+(-[a-z0-9]+)*/capability_track\\.json$"
+              },
+              "maturityContribution": {
+                "type": "number",
+                "description": "Percentage maturity increase this outcome delivers on completion",
+                "minimum": 0.1,
+                "maximum": 100
+              },
+              "rationale": {
+                "type": "string",
+                "description": "Explanation of how this outcome advances the capability"
+              },
+              "isPrimary": {
+                "type": "boolean",
+                "description": "True if this is the primary capability (largest contribution)",
+                "default": false
+              }
+            }
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "description": "DEPRECATED: Use capabilityContributions instead. Legacy array of capability paths for backward compatibility.",
+          "items": {
+            "type": "string",
+            "pattern": "^capabilities/[a-z0-9]+(-[a-z0-9]+)*/capability_track\\.json$"
+          },
+          "deprecated": true
+        },
+        "projects": {
+          "type": "array",
+          "description": "Projects this outcome relates to (must match project names declared in project_map.json)",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["projectName", "involvement"],
+            "properties": {
+              "projectName": {
+                "type": "string",
+                "description": "Project name as declared in project_map.json projects array (e.g., 'lucid-auth-service', 'luon')"
+              },
+              "involvement": {
+                "type": "string",
+                "description": "How this outcome involves the project",
+                "enum": ["primary", "secondary", "integration"]
+              },
+              "affectedAreas": {
+                "type": "array",
+                "description": "Specific areas/directories within the project that will be affected",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "rationale": {
+                "type": "string",
+                "description": "Why this project is involved in the outcome"
+              }
+            }
+          }
+        },
+        "linkedModules": {
+          "type": "array",
+          "description": "Specific project modules this outcome affects. Uses module reference syntax: project:module_id, project:module_id/subpath, or project:module_id#entrypoint",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z_][a-z0-9_]*:[a-z][a-z0-9_]*(/[a-z0-9_]+)*(#[A-Za-z_][A-Za-z0-9_]*)?$",
+            "description": "Module reference in format project:module[/subpath][#entry]. Example: luon:neo4j_service, user_apps:lucid_home, luon:ontology/legal"
+          },
+          "default": [],
+          "examples": [
+            ["luon:neo4j_service", "luon:ontology/legal"],
+            ["user_apps:lucid_home", "user_apps:lucid_ui_kit"],
+            ["luon:neo4j_service#CypherLoader"]
+          ]
+        },
+        "observableEffects": {
+          "type": "array",
+          "description": "Behavioral changes that prove outcome completion - validation criteria (NOT implementation artifacts)",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["effect", "actorPerspective", "verificationMethod"],
+            "properties": {
+              "effect": {
+                "type": "string",
+                "description": "Given-When-Then acceptance criterion describing observable behavioral change"
+              },
+              "actorPerspective": {
+                "type": "string",
+                "description": "Actor ID who can verify this effect (e.g., 'lot-owner', 'security-team')",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "verificationMethod": {
+                "type": "string",
+                "description": "How to prove this effect exists (e.g., 'automated tests', 'manual testing', 'security scan')"
+              },
+              "verified": {
+                "type": "boolean",
+                "description": "Whether this effect has been verified",
+                "default": false
+              },
+              "evidence": {
+                "type": ["object", "null"],
+                "description": "Evidence proving this effect was achieved",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["test", "screenshot", "log", "metric", "scan", "manual"],
+                    "description": "Type of evidence collected"
+                  },
+                  "reference": {
+                    "type": "string",
+                    "description": "Path to evidence file or external reference"
+                  },
+                  "verifiedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "When the effect was verified"
+                  },
+                  "verifiedBy": {
+                    "type": "string",
+                    "description": "Who or what verified the effect"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "outcomeDependencies": {
+          "type": "array",
+          "description": "Outcome directory labels that must complete before this outcome can start",
+          "items": {
+            "type": "string",
+            "description": "Directory label of outcome this depends on",
+            "pattern": "^[0-9]+(\\.[0-9]+)?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+          },
+          "default": []
+        },
+        "enables": {
+          "type": "array",
+          "description": "Outcome directory labels that become ready when this outcome completes",
+          "items": {
+            "type": "string",
+            "description": "Directory label of outcome this enables",
+            "pattern": "^[0-9]+(\\.[0-9]+)?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+          },
+          "default": []
+        },
+        "parentOutcome": {
+          "type": ["string", "null"],
+          "description": "Directory label of parent outcome if this is a child outcome",
+          "pattern": "^[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+        },
+        "parentContribution": {
+          "type": ["number", "null"],
+          "description": "For child outcomes only: percentage of parent's work this child represents. All children of a parent must sum to 100%. Example: if parent contributes +15% to a capability and this child has parentContribution: 33, then this child represents 33% of that work. Capability maturity updates only when parent completes (all children done).",
+          "minimum": 0.1,
+          "maximum": 100,
+          "default": null
+        },
+        "children": {
+          "type": "array",
+          "description": "For parent outcomes: directory labels of child outcomes. Children are NESTED under parent directory physically.",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+          },
+          "default": []
+        },
+        "childStates": {
+          "type": "object",
+          "description": "For parent outcomes: tracks execution state of each child. Keys are child directoryLabels, values are execution states.",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["pending", "success", "fail"]
+          }
+        },
+        "integrationValidation": {
+          "type": "array",
+          "description": "For parent outcomes: criteria that must pass when all children complete",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "state": {
+          "type": "string",
+          "description": "Current state of the outcome",
+          "enum": [
+            "queued",
+            "ready",
+            "in-progress",
+            "blocked",
+            "completed"
+          ]
+        },
+        "blocker": {
+          "type": ["object", "null"],
+          "description": "Current blocker preventing progress (null if not blocked)",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["dependency", "external", "technical", "resource", "approval"],
+              "description": "Category of blocker"
+            },
+            "description": {
+              "type": "string",
+              "description": "What is blocking progress"
+            },
+            "blockedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the outcome became blocked"
+            },
+            "blockedBy": {
+              "type": "string",
+              "description": "Who or what identified the blocker"
+            },
+            "resolutionPath": {
+              "type": "string",
+              "description": "How to resolve this blocker"
+            },
+            "resolvedAt": {
+              "type": ["string", "null"],
+              "format": "date-time",
+              "description": "When the blocker was resolved"
+            }
+          },
+          "required": ["type", "description", "blockedAt"]
+        },
+        "blockerHistory": {
+          "type": "array",
+          "description": "History of resolved blockers for audit trail",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "description": { "type": "string" },
+              "blockedAt": { "type": "string", "format": "date-time" },
+              "resolvedAt": { "type": "string", "format": "date-time" },
+              "resolution": { "type": "string" }
+            }
+          },
+          "default": []
+        },
+        "rationale": {
+          "type": "object",
+          "description": "Strategic alignment and decision rationale",
+          "properties": {
+            "problemStatement": {
+              "type": "string",
+              "description": "What problem does this outcome solve"
+            },
+            "alternativesConsidered": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "approach": { "type": "string" },
+                  "whyRejected": { "type": "string" }
+                }
+              }
+            },
+            "constraints": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Technical, resource, or external constraints"
+            },
+            "knownSideEffects": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Known consequences of this outcome"
+            },
+            "risks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["technical", "dependency", "resource", "schedule"]
+                  },
+                  "description": { "type": "string" },
+                  "mitigation": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "effort": {
+          "type": "object",
+          "description": "Effort estimation and complexity indicators",
+          "properties": {
+            "estimate": {
+              "type": "string",
+              "enum": ["very-low", "low", "average", "high", "very-high"],
+              "description": "Effort level category"
+            },
+            "tokenBudget": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Estimated token budget for completion"
+            },
+            "complexityIndicators": {
+              "type": "object",
+              "properties": {
+                "filesAffected": { "type": "integer", "minimum": 0 },
+                "systemsIntegrated": { "type": "integer", "minimum": 0 },
+                "integrationPoints": { "type": "integer", "minimum": 0 },
+                "novelty": {
+                  "type": "string",
+                  "enum": ["low", "medium", "high"]
+                }
+              }
+            }
+          }
+        },
+        "gitWorktree": {
+          "type": ["string", "null"],
+          "description": "Name of the git worktree associated with this outcome, if any"
+        },
+        "gitCommits": {
+          "type": "array",
+          "description": "List of git commits associated with this outcome",
+          "items": {
+            "type": "object",
+            "required": ["hash", "timestamp"],
+            "properties": {
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{7,40}$",
+                "description": "Git commit hash (short or full SHA)"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 datetime when commit was created"
+              },
+              "message": {
+                "type": "string",
+                "description": "Commit message"
+              },
+              "taskFileName": {
+                "type": "string",
+                "description": "Task file associated with this commit (if applicable)"
+              }
+            }
+          },
+          "default": []
+        },
+        "estimatedTokens": {
+          "type": "integer",
+          "description": "Total estimated tokens required to complete all tasks in this outcome",
+          "minimum": 0
+        },
+        "reportsDirectory": {
+          "type": "string",
+          "description": "Directory path relative to the outcome directory where execution reports and error reports are saved (e.g., 'reports')"
+        },
+        "evidenceDirectory": {
+          "type": "string",
+          "description": "Directory path relative to the outcome directory where evidence files are stored (e.g., 'evidence')",
+          "default": "evidence"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime when the outcome was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime when the outcome was last updated"
+        },
+        "completedAt": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "ISO 8601 datetime when the outcome was completed, or null if not completed"
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "description": "List of tasks within this outcome",
+      "items": {
+        "type": "object",
+        "required": [
+          "fileName",
+          "group",
+          "sequence",
+          "name",
+          "taskType",
+          "summary",
+          "specialists",
+          "state",
+          "estimatedTokens",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "description": "Full task file name in format [group]-[seq]-[task-name].md (e.g., 01-A-implement-authentication-provider.md)",
+            "pattern": "^[0-9]{2}-([A-Z]|\\*)-[a-z0-9]+(-[a-z0-9]+)*\\.md$"
+          },
+          "group": {
+            "type": "string",
+            "description": "Two-digit group number (e.g., 01, 02, 03)",
+            "pattern": "^[0-9]{2}$"
+          },
+          "sequence": {
+            "type": "string",
+            "description": "Sequence indicator: A-Z for sequential tasks, * for parallel tasks",
+            "pattern": "^([A-Z]|\\*)$"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable task name (lowercase, hyphen-separated)"
+          },
+          "taskType": {
+            "type": "string",
+            "description": "Type of task being performed",
+            "enum": [
+              "Code",
+              "Test",
+              "Verify",
+              "Research",
+              "Design",
+              "Analysis",
+              "Document",
+              "Audit"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "description": "One or two sentence summary of the task",
+            "maxLength": 500
+          },
+          "specialists": {
+            "type": "array",
+            "description": "List of specialist areas or skills that would increase the task probability of success",
+            "items": {
+              "type": "string",
+              "description": "Specialist area or skill (e.g., 'OAuth', 'TypeScript', 'Security', 'API Design')"
+            },
+            "minItems": 0
+          },
+          "context": {
+            "type": "array",
+            "description": "List of file paths that provide context needed for task execution at runtime",
+            "items": {
+              "type": "string",
+              "description": "Path to file that should be provided as context"
+            },
+            "default": []
+          },
+          "targets": {
+            "type": "array",
+            "description": "List of directories where artifacts are expected to be written, or paths to files expected to be modified. Does NOT include names of files to be created.",
+            "items": {
+              "type": "string",
+              "description": "Directory path or file path for expected modifications"
+            },
+            "default": []
+          },
+          "dependencies": {
+            "type": "array",
+            "description": "List of task fileNames that must complete successfully before this task can begin",
+            "items": {
+              "type": "string",
+              "description": "fileName of a task this task depends on"
+            },
+            "default": []
+          },
+          "state": {
+            "type": "string",
+            "description": "Current state of the task. 'ready' = not started, 'current' = in progress, 'success' = completed successfully, 'fail' = failed (will return to 'ready' if retried)",
+            "enum": [
+              "ready",
+              "current",
+              "success",
+              "fail"
+            ]
+          },
+          "estimatedTokens": {
+            "type": "integer",
+            "description": "Estimated token requirement for this task",
+            "minimum": 0
+          },
+          "maxRetries": {
+            "type": "integer",
+            "description": "Maximum number of retry attempts allowed for this task",
+            "minimum": 0,
+            "default": 3
+          },
+          "retryCount": {
+            "type": "integer",
+            "description": "Number of times this task has been retried",
+            "minimum": 0,
+            "default": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 datetime when the task was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 datetime when the task was last modified"
+          }
+        }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "description": "References to actors that are involved with this outcome (beneficiaries, stakeholders, contributors, approvers, or those to be informed)",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["actorId", "relationshipType"],
+        "properties": {
+          "actorId": {
+            "type": "string",
+            "description": "Actor identifier (directory label format, e.g., 'lot-owner', 'strata-manager', 'ncat')",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "relationshipType": {
+            "type": "string",
+            "enum": ["beneficiary", "stakeholder", "contributor", "approver", "informed"],
+            "description": "Nature of involvement: beneficiary = outcome primarily serves this actor, stakeholder = actor has significant interest, contributor = actor helps deliver outcome, approver = actor must approve outcome, informed = actor should be notified of outcome"
+          },
+          "description": {
+            "type": "string",
+            "description": "Explanation of the actor's involvement in this outcome"
+          },
+          "approvalStatus": {
+            "type": ["object", "null"],
+            "description": "For approver relationship type: tracks approval workflow",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["pending", "approved", "rejected", "deferred"]
+              },
+              "decidedAt": {
+                "type": ["string", "null"],
+                "format": "date-time"
+              },
+              "comments": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "default": []
+    },
+    "executionLog": {
+      "type": "array",
+      "description": "Log of task execution invocations. Each execution attempt gets a unique entry.",
+      "items": {
+        "type": "object",
+        "required": [
+          "executionId",
+          "taskFileName",
+          "startDateTime",
+          "endDateTime",
+          "tokensConsumed",
+          "state",
+          "agentId",
+          "artifacts"
+        ],
+        "properties": {
+          "executionId": {
+            "type": "string",
+            "description": "Unique identifier for this execution attempt (UUID recommended)"
+          },
+          "taskFileName": {
+            "type": "string",
+            "description": "Reference to the task file that was executed",
+            "pattern": "^[0-9]{2}-([A-Z]|\\*)-[a-z0-9]+(-[a-z0-9]+)*\\.md$"
+          },
+          "startDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 datetime when task execution started"
+          },
+          "endDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 datetime when task execution completed"
+          },
+          "tokensConsumed": {
+            "type": "integer",
+            "description": "Actual tokens consumed during execution",
+            "minimum": 0
+          },
+          "tokenVariance": {
+            "type": "number",
+            "description": "Percentage variance from estimated tokens ((actual - estimated) / estimated * 100)"
+          },
+          "state": {
+            "type": "string",
+            "description": "Execution result state",
+            "enum": [
+              "success",
+              "fail"
+            ]
+          },
+          "agentId": {
+            "type": "string",
+            "description": "Identifier of the agent that executed the task"
+          },
+          "modelUsed": {
+            "type": "string",
+            "description": "AI model used for this execution (e.g., 'claude-sonnet-4-5', 'claude-opus-4')"
+          },
+          "errorMessage": {
+            "type": ["string", "null"],
+            "description": "Error message if state is 'fail', otherwise null"
+          },
+          "artifacts": {
+            "type": "array",
+            "description": "List of artifacts created or modified during task execution",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "type",
+                "directory",
+                "action"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the artifact"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of artifact (e.g., code, test, documentation, schema, config)"
+                },
+                "directory": {
+                  "type": "string",
+                  "description": "Directory path where the artifact is located"
+                },
+                "action": {
+                  "type": "string",
+                  "description": "Action performed on the artifact",
+                  "enum": [
+                    "created",
+                    "modified",
+                    "deleted"
+                  ]
+                }
+              }
+            },
+            "default": []
+          },
+          "executionReport": {
+            "type": ["object", "null"],
+            "description": "Optional execution report metadata",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the execution report markdown file"
+              },
+              "directory": {
+                "type": "string",
+                "description": "Directory path where the report is located (relative to outcome directory)"
+              },
+              "lineCount": {
+                "type": "integer",
+                "description": "Number of lines in the report",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "name",
+              "directory",
+              "lineCount"
+            ]
+          }
+        }
+      },
+      "default": []
+    }
+  },
+  "examples": [
+    {
+      "outcome": {
+        "id": 1,
+        "name": "jwt-authentication",
+        "directoryLabel": "001-jwt-authentication",
+        "type": "atomic",
+        "description": "Achieve secure JWT-based authentication with session persistence so that users can log in and maintain sessions across requests",
+        "purpose": "Users currently cannot securely access protected resources. This outcome establishes the authentication foundation required for all user-facing features.",
+        "scope": {
+          "included": ["JWT token generation", "Session persistence", "Credential validation"],
+          "excluded": ["OAuth integration", "MFA", "Biometric authentication"]
+        },
+        "capabilityContributions": [
+          {
+            "capabilityId": "authentication-system",
+            "capabilityPath": "capabilities/authentication-system/capability_track.json",
+            "maturityContribution": 5,
+            "rationale": "Establishes JWT foundation for user authentication",
+            "isPrimary": true
+          },
+          {
+            "capabilityId": "security-framework",
+            "capabilityPath": "capabilities/security-framework/capability_track.json",
+            "maturityContribution": 2,
+            "rationale": "Implements secure token handling patterns",
+            "isPrimary": false
+          }
+        ],
+        "projects": [
+          {
+            "projectName": "lucid-auth-service",
+            "involvement": "primary",
+            "affectedAreas": ["src/auth", "src/middleware", "src/types"],
+            "rationale": "Core authentication implementation lives in this service"
+          }
+        ],
+        "observableEffects": [
+          {
+            "effect": "Given a registered user with valid credentials, When they submit their email and password, Then they receive a valid session token and can access protected resources",
+            "actorPerspective": "lot-owner",
+            "verificationMethod": "Manual testing + automated integration tests",
+            "verified": false,
+            "evidence": null
+          },
+          {
+            "effect": "Given a user with invalid credentials, When they attempt to authenticate, Then they receive a 401 status with a clear error message and no session token is issued",
+            "actorPerspective": "lot-owner",
+            "verificationMethod": "Automated API tests",
+            "verified": false,
+            "evidence": null
+          },
+          {
+            "effect": "Given an authenticated user with a valid session, When they make subsequent requests within 24 hours, Then their session remains valid without re-authentication",
+            "actorPerspective": "lot-owner",
+            "verificationMethod": "Session duration monitoring",
+            "verified": false,
+            "evidence": null
+          },
+          {
+            "effect": "Given the authentication system is deployed, When a security scan is performed, Then zero critical authentication vulnerabilities are detected",
+            "actorPerspective": "security-team",
+            "verificationMethod": "OWASP ZAP scan results",
+            "verified": false,
+            "evidence": null
+          }
+        ],
+        "outcomeDependencies": [],
+        "enables": ["002-oauth-integration", "005-multi-factor-auth"],
+        "parentOutcome": null,
+        "children": [],
+        "state": "in-progress",
+        "blocker": null,
+        "blockerHistory": [],
+        "rationale": {
+          "problemStatement": "Users cannot securely access the system",
+          "alternativesConsidered": [
+            {
+              "approach": "Session-based cookies only",
+              "whyRejected": "Does not support mobile/API clients"
+            },
+            {
+              "approach": "OAuth-first approach",
+              "whyRejected": "Adds complexity before basic auth is established"
+            }
+          ],
+          "constraints": ["Must support mobile clients", "24-hour session maximum per security policy"],
+          "knownSideEffects": ["Existing basic auth will be deprecated"],
+          "risks": [
+            {
+              "type": "technical",
+              "description": "Token refresh edge cases",
+              "mitigation": "Comprehensive test coverage"
+            }
+          ]
+        },
+        "effort": {
+          "estimate": "average",
+          "tokenBudget": 150000,
+          "complexityIndicators": {
+            "filesAffected": 8,
+            "systemsIntegrated": 2,
+            "integrationPoints": 3,
+            "novelty": "low"
+          }
+        },
+        "gitWorktree": "outcome-001-auth",
+        "gitCommits": [
+          {
+            "hash": "a1b2c3d",
+            "timestamp": "2025-11-18T10:45:00Z",
+            "message": "outcome(001-jwt-authentication): implement JWT authentication system",
+            "taskFileName": "01-A-implement-jwt.md"
+          }
+        ],
+        "estimatedTokens": 150000,
+        "reportsDirectory": "reports",
+        "evidenceDirectory": "evidence",
+        "createdAt": "2025-11-18T10:00:00Z",
+        "updatedAt": "2025-11-18T14:30:00Z",
+        "completedAt": null
+      },
+      "tasks": [
+        {
+          "fileName": "01-A-implement-jwt.md",
+          "group": "01",
+          "sequence": "A",
+          "name": "implement-jwt",
+          "taskType": "Code",
+          "summary": "Implement the core JWT authentication module with token generation, validation, and refresh capabilities.",
+          "specialists": ["JWT", "TypeScript", "Security"],
+          "context": ["docs/authentication-requirements.md", "src/types/user.types.ts"],
+          "targets": ["src/auth", "src/types/auth.types.ts"],
+          "dependencies": [],
+          "state": "success",
+          "estimatedTokens": 50000,
+          "maxRetries": 3,
+          "retryCount": 0,
+          "createdAt": "2025-11-18T10:00:00Z",
+          "updatedAt": "2025-11-18T11:00:00Z"
+        },
+        {
+          "fileName": "01-B-implement-session.md",
+          "group": "01",
+          "sequence": "B",
+          "name": "implement-session",
+          "taskType": "Code",
+          "summary": "Implement session persistence layer with secure storage and automatic expiration.",
+          "specialists": ["Session Management", "Redis", "TypeScript"],
+          "context": ["src/auth/jwt.ts", "config/session.config.ts"],
+          "targets": ["src/auth/session", "src/middleware"],
+          "dependencies": ["01-A-implement-jwt.md"],
+          "state": "current",
+          "estimatedTokens": 40000,
+          "maxRetries": 3,
+          "retryCount": 0,
+          "createdAt": "2025-11-18T10:00:00Z",
+          "updatedAt": "2025-11-18T12:00:00Z"
+        },
+        {
+          "fileName": "02-*-security-scan.md",
+          "group": "02",
+          "sequence": "*",
+          "name": "security-scan",
+          "taskType": "Verify",
+          "summary": "Run OWASP ZAP security scan against authentication endpoints and verify zero critical vulnerabilities.",
+          "specialists": ["Security", "OWASP", "Penetration Testing"],
+          "context": ["src/auth/**/*"],
+          "targets": ["reports/security"],
+          "dependencies": ["01-A-implement-jwt.md", "01-B-implement-session.md"],
+          "state": "ready",
+          "estimatedTokens": 30000,
+          "maxRetries": 3,
+          "retryCount": 0,
+          "createdAt": "2025-11-18T10:00:00Z",
+          "updatedAt": "2025-11-18T10:00:00Z"
+        }
+      ],
+      "actors": [
+        {
+          "actorId": "lot-owner",
+          "relationshipType": "beneficiary",
+          "description": "Primary users who will authenticate to access owner portal",
+          "approvalStatus": null
+        },
+        {
+          "actorId": "strata-manager",
+          "relationshipType": "stakeholder",
+          "description": "Needs authentication for management portal access",
+          "approvalStatus": null
+        },
+        {
+          "actorId": "security-team",
+          "relationshipType": "approver",
+          "description": "Must approve security audit before completion",
+          "approvalStatus": {
+            "status": "pending",
+            "decidedAt": null,
+            "comments": ""
+          }
+        }
+      ],
+      "executionLog": [
+        {
+          "executionId": "exec-001-a1b2c3d4",
+          "taskFileName": "01-A-implement-jwt.md",
+          "startDateTime": "2025-11-18T10:15:00Z",
+          "endDateTime": "2025-11-18T10:45:00Z",
+          "tokensConsumed": 48500,
+          "tokenVariance": -3,
+          "state": "success",
+          "agentId": "agent-claude-sonnet-001",
+          "modelUsed": "claude-sonnet-4-5",
+          "errorMessage": null,
+          "artifacts": [
+            {
+              "name": "jwt.ts",
+              "type": "code",
+              "directory": "src/auth",
+              "action": "created"
+            },
+            {
+              "name": "jwt.test.ts",
+              "type": "test",
+              "directory": "src/auth/__tests__",
+              "action": "created"
+            }
+          ],
+          "executionReport": {
+            "name": "execution-report-01-A.md",
+            "directory": "reports",
+            "lineCount": 87
+          }
+        }
+      ]
+    },
+    {
+      "outcome": {
+        "id": 10,
+        "name": "security-vulnerabilities",
+        "directoryLabel": "010-security-vulnerabilities",
+        "type": "parent",
+        "description": "Achieve resolution of all identified security vulnerabilities from audit so that the system passes security compliance requirements",
+        "purpose": "Security audit identified critical vulnerabilities that must be resolved before production deployment",
+        "scope": {
+          "included": ["SQL injection fixes", "XSS prevention", "Auth bypass resolution", "Session security"],
+          "excluded": ["New feature development", "Performance optimization"]
+        },
+        "capabilityContributions": [
+          {
+            "capabilityId": "security-framework",
+            "capabilityPath": "capabilities/security-framework/capability_track.json",
+            "maturityContribution": 15,
+            "rationale": "Comprehensive security hardening across all identified vulnerability classes",
+            "isPrimary": true
+          }
+        ],
+        "projects": [
+          {
+            "projectName": "lucid-auth-service",
+            "involvement": "primary",
+            "affectedAreas": ["src/auth", "src/validation"],
+            "rationale": "Auth bypass and session security vulnerabilities"
+          },
+          {
+            "projectName": "lucid-api-gateway",
+            "involvement": "secondary",
+            "affectedAreas": ["src/middleware", "src/routes"],
+            "rationale": "SQL injection and XSS prevention at API layer"
+          }
+        ],
+        "observableEffects": [
+          {
+            "effect": "Given all child outcomes are complete, When a comprehensive security scan is performed, Then zero critical or high severity vulnerabilities are detected",
+            "actorPerspective": "security-team",
+            "verificationMethod": "OWASP ZAP + manual penetration testing",
+            "verified": false,
+            "evidence": null
+          },
+          {
+            "effect": "Given all security patches are applied, When the security team conducts audit review, Then the system receives compliance certification",
+            "actorPerspective": "security-team",
+            "verificationMethod": "Security team sign-off",
+            "verified": false,
+            "evidence": null
+          }
+        ],
+        "outcomeDependencies": [],
+        "enables": ["020-production-deployment"],
+        "parentOutcome": null,
+        "children": ["010.1-sql-injection", "010.2-xss-prevention", "010.3-auth-bypass", "010.4-session-issues"],
+        "integrationValidation": [
+          "All child outcomes completed",
+          "Comprehensive security scan passes",
+          "No regressions introduced"
+        ],
+        "state": "in-progress",
+        "blocker": null,
+        "blockerHistory": [],
+        "rationale": {
+          "problemStatement": "Security audit identified multiple vulnerability classes requiring remediation",
+          "alternativesConsidered": [
+            {
+              "approach": "Address vulnerabilities ad-hoc",
+              "whyRejected": "Risk of missing vulnerabilities and inconsistent remediation"
+            }
+          ],
+          "constraints": ["Must complete before production deployment", "Cannot break existing functionality"],
+          "knownSideEffects": ["Some API responses may change format"],
+          "risks": [
+            {
+              "type": "schedule",
+              "description": "Discovering additional vulnerabilities during remediation",
+              "mitigation": "Buffer time allocated, new findings become new child outcomes"
+            }
+          ]
+        },
+        "effort": {
+          "estimate": "high",
+          "tokenBudget": 180000,
+          "complexityIndicators": {
+            "filesAffected": 25,
+            "systemsIntegrated": 4,
+            "integrationPoints": 8,
+            "novelty": "medium"
+          }
+        },
+        "gitWorktree": null,
+        "gitCommits": [],
+        "estimatedTokens": 180000,
+        "reportsDirectory": "reports",
+        "evidenceDirectory": "evidence",
+        "createdAt": "2025-11-20T09:00:00Z",
+        "updatedAt": "2025-11-22T10:00:00Z",
+        "completedAt": null
+      },
+      "tasks": [],
+      "actors": [
+        {
+          "actorId": "security-team",
+          "relationshipType": "approver",
+          "description": "Must certify all vulnerabilities resolved",
+          "approvalStatus": {
+            "status": "pending",
+            "decidedAt": null,
+            "comments": ""
+          }
+        },
+        {
+          "actorId": "development-team",
+          "relationshipType": "contributor",
+          "description": "Implements vulnerability fixes across child outcomes",
+          "approvalStatus": null
+        }
+      ],
+      "executionLog": []
+    }
+  ]
+}

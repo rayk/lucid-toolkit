@@ -1,0 +1,976 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Session Summary Schema",
+  "description": "Tracks active Claude Code sessions and recent session history for context resumption and work tracking. Updated automatically by SessionStart/SessionEnd hooks.",
+  "schemaVersion": "1.1.0",
+  "type": "object",
+  "required": [
+    "summary",
+    "activeSessions",
+    "lastWorked",
+    "recentHistory",
+    "indexByOutcome",
+    "indexByBranch"
+  ],
+  "properties": {
+    "summary": {
+      "type": "object",
+      "description": "Aggregated statistics across all active and recent sessions",
+      "required": [
+        "activeSessionsCount",
+        "totalSessionsCompletedLast72Hours",
+        "currentFocusedOutcome",
+        "totalTokensConsumedLast72Hours",
+        "totalDurationMinutesLast72Hours",
+        "lastUpdated"
+      ],
+      "properties": {
+        "activeSessionsCount": {
+          "type": "integer",
+          "description": "Number of currently active sessions",
+          "minimum": 0
+        },
+        "totalSessionsCompletedLast72Hours": {
+          "type": "integer",
+          "description": "Number of sessions completed in the last 72 hours",
+          "minimum": 0
+        },
+        "currentFocusedOutcome": {
+          "type": "string",
+          "description": "Name of the outcome currently being worked on, or 'No Focus Set' if none",
+          "default": "No Focus Set"
+        },
+        "totalTokensConsumedLast72Hours": {
+          "type": "integer",
+          "description": "Sum of tokens consumed across all sessions in last 72 hours",
+          "minimum": 0
+        },
+        "totalDurationMinutesLast72Hours": {
+          "type": "integer",
+          "description": "Total session duration in minutes for last 72 hours",
+          "minimum": 0
+        },
+        "multiOutcomeSessionsCount": {
+          "type": "integer",
+          "description": "Number of active sessions working on multiple outcomes",
+          "minimum": 0
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime when this summary was last updated"
+        }
+      }
+    },
+    "activeSessions": {
+      "type": "array",
+      "description": "Currently active sessions (ephemeral - deleted on SessionEnd)",
+      "items": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "sessionSource",
+          "startedAt",
+          "lastActivityAt",
+          "environment",
+          "focusedOutcomes",
+          "events",
+          "statistics"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "Unique session identifier from Claude Code SessionStart hook (UUID or sess- prefixed)",
+            "pattern": "^(sess-[a-z0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$"
+          },
+          "sessionSource": {
+            "type": "string",
+            "enum": ["startup", "resume", "clear"],
+            "description": "How this session was initiated (from SessionStart hook)"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the session started"
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Most recent activity timestamp (updated on each event)"
+          },
+          "environment": {
+            "type": "object",
+            "description": "Session environment context from hooks",
+            "required": [
+              "workingDirectory",
+              "gitBranch",
+              "permissionMode",
+              "transcriptPath"
+            ],
+            "properties": {
+              "workingDirectory": {
+                "type": "string",
+                "description": "Current working directory (cwd from hook)"
+              },
+              "gitBranch": {
+                "type": ["string", "null"],
+                "description": "Active git branch at session start, or null if not in a git repo"
+              },
+              "gitCommitHash": {
+                "type": ["string", "null"],
+                "description": "Git commit hash at session start, or null if not in a git repo",
+                "pattern": "^[a-f0-9]{7,40}$"
+              },
+              "permissionMode": {
+                "type": "string",
+                "enum": ["default", "plan", "acceptEdits", "bypassPermissions"],
+                "description": "Permission mode from hook"
+              },
+              "transcriptPath": {
+                "type": "string",
+                "description": "Path to conversation transcript JSON"
+              }
+            }
+          },
+          "focusedOutcomes": {
+            "type": "array",
+            "description": "Outcomes being worked on in this session (supports multiple simultaneous outcomes)",
+            "items": {
+              "type": "object",
+              "required": [
+                "outcomeId",
+                "outcomeName",
+                "trackingFile",
+                "focusedAt"
+              ],
+              "properties": {
+                "outcomeId": {
+                  "type": "integer",
+                  "description": "Numeric outcome identifier",
+                  "minimum": 1
+                },
+                "outcomeName": {
+                  "type": "string",
+                  "description": "Human-readable outcome name"
+                },
+                "trackingFile": {
+                  "type": "string",
+                  "description": "Path to outcome_track.json (e.g., 'outcomes/in-progress/001-auth/outcome_track.json')",
+                  "pattern": "^outcomes/(queued|in-progress|completed)/[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}/outcome_track\\.json$"
+                },
+                "currentTask": {
+                  "type": ["string", "null"],
+                  "description": "Filename of task currently being worked on, or null if between tasks"
+                },
+                "focusedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When this outcome became focused in this session"
+                },
+                "lastActivityAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Last activity on this specific outcome in this session"
+                },
+                "capabilitiesAffected": {
+                  "type": "array",
+                  "description": "Capability IDs this outcome contributes to",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                  }
+                }
+              }
+            }
+          },
+          "events": {
+            "type": "array",
+            "description": "Major events in this session (capped at 100 events, oldest dropped)",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "required": [
+                "timestamp",
+                "eventType",
+                "description"
+              ],
+              "properties": {
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the event occurred"
+                },
+                "eventType": {
+                  "type": "string",
+                  "enum": [
+                    "session_start",
+                    "session_resume",
+                    "focus_outcome",
+                    "unfocus_outcome",
+                    "task_started",
+                    "task_completed",
+                    "task_failed",
+                    "outcome_state_changed",
+                    "capability_updated",
+                    "git_commit",
+                    "milestone_reached"
+                  ],
+                  "description": "Type of event that occurred"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Human-readable description of the event"
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Event-specific metadata",
+                  "properties": {
+                    "outcomeId": {
+                      "type": "integer",
+                      "description": "Outcome ID if event is outcome-specific"
+                    },
+                    "taskFile": {
+                      "type": "string",
+                      "description": "Task filename if event is task-specific"
+                    },
+                    "filesModified": {
+                      "type": "array",
+                      "description": "Files modified in this event",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "commitHash": {
+                      "type": "string",
+                      "description": "Git commit hash if event is a commit",
+                      "pattern": "^[a-f0-9]{7,40}$"
+                    },
+                    "tokensConsumed": {
+                      "type": "integer",
+                      "description": "Tokens consumed for this specific event"
+                    },
+                    "newState": {
+                      "type": "string",
+                      "description": "New state if event is a state change"
+                    },
+                    "previousState": {
+                      "type": "string",
+                      "description": "Previous state if event is a state change"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "statistics": {
+            "type": "object",
+            "description": "Cumulative statistics for this session",
+            "required": [
+              "eventsLogged",
+              "filesModified",
+              "tasksCompleted",
+              "tasksFailed",
+              "gitCommits",
+              "tokensConsumed",
+              "durationMinutes"
+            ],
+            "properties": {
+              "eventsLogged": {
+                "type": "integer",
+                "description": "Total number of events logged (including those dropped from cap)",
+                "minimum": 0
+              },
+              "filesModified": {
+                "type": "integer",
+                "description": "Count of unique files modified in this session",
+                "minimum": 0
+              },
+              "tasksCompleted": {
+                "type": "integer",
+                "description": "Number of tasks completed across all outcomes",
+                "minimum": 0
+              },
+              "tasksFailed": {
+                "type": "integer",
+                "description": "Number of tasks failed across all outcomes",
+                "minimum": 0
+              },
+              "gitCommits": {
+                "type": "integer",
+                "description": "Number of git commits made in this session",
+                "minimum": 0
+              },
+              "tokensConsumed": {
+                "type": "integer",
+                "description": "Estimated tokens consumed in this session",
+                "minimum": 0
+              },
+              "durationMinutes": {
+                "type": "number",
+                "description": "Session duration in minutes (calculated from start to last activity)",
+                "minimum": 0
+              }
+            }
+          },
+          "isStale": {
+            "type": "boolean",
+            "description": "True if session hasn't had activity in >4 hours (possible crash/orphan)"
+          },
+          "sessionEndReason": {
+            "type": ["string", "null"],
+            "enum": ["clear", "logout", "prompt_input_exit", "crash", "timeout", "other", null],
+            "description": "Why the session ended (null while active, set by SessionEnd hook)",
+            "default": null
+          },
+          "gitStatusCleanAtEnd": {
+            "type": ["boolean", "null"],
+            "description": "True if no uncommitted changes at session end (null while active, set by SessionEnd hook)",
+            "default": null
+          },
+          "uncommittedFilesAtEnd": {
+            "type": ["integer", "null"],
+            "description": "Number of files with uncommitted changes at session end (null while active, set by SessionEnd hook)",
+            "minimum": 0,
+            "default": null
+          },
+          "subagentsLaunched": {
+            "type": "integer",
+            "description": "Number of subagents launched in this session (tracked by PreToolUse::Task hook)",
+            "minimum": 0,
+            "default": 0
+          },
+          "toolUsageCounts": {
+            "type": "object",
+            "description": "Count of times each tool was used in this session (tracked by PreToolUse hooks)",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "default": {}
+          }
+        }
+      }
+    },
+    "lastWorked": {
+      "type": ["object", "null"],
+      "description": "Most recently completed session context for quick resumption (null if no sessions completed yet)",
+      "required": [
+        "sessionId",
+        "completedAt",
+        "outcomes",
+        "context",
+        "sessionSummary"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "ID of the last completed session (UUID or sess- prefixed)",
+          "pattern": "^(sess-[a-z0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the session ended"
+        },
+        "outcomes": {
+          "type": "array",
+          "description": "Outcomes worked on in the last session",
+          "items": {
+            "type": "object",
+            "required": [
+              "outcomeId",
+              "outcomeName",
+              "trackingFile",
+              "workSummary"
+            ],
+            "properties": {
+              "outcomeId": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "outcomeName": {
+                "type": "string"
+              },
+              "trackingFile": {
+                "type": "string",
+                "pattern": "^outcomes/(queued|in-progress|completed)/[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}/outcome_track\\.json$"
+              },
+              "lastTask": {
+                "type": ["string", "null"],
+                "description": "Last task worked on (filename)"
+              },
+              "tasksCompleted": {
+                "type": "integer",
+                "description": "Tasks completed in this session for this outcome",
+                "minimum": 0
+              },
+              "tasksFailed": {
+                "type": "integer",
+                "description": "Tasks failed in this session for this outcome",
+                "minimum": 0
+              },
+              "workSummary": {
+                "type": "string",
+                "description": "Brief summary of work done on this outcome"
+              }
+            }
+          }
+        },
+        "context": {
+          "type": "object",
+          "description": "Contextual information for resumption",
+          "required": [
+            "gitBranch",
+            "filesModified"
+          ],
+          "properties": {
+            "gitBranch": {
+              "type": ["string", "null"],
+              "description": "Git branch at session end"
+            },
+            "gitCommitHash": {
+              "type": ["string", "null"],
+              "description": "Last git commit hash",
+              "pattern": "^[a-f0-9]{7,40}$"
+            },
+            "filesModified": {
+              "type": "array",
+              "description": "List of files modified in the session",
+              "items": {
+                "type": "string"
+              }
+            },
+            "keyDecisions": {
+              "type": "array",
+              "description": "Important decisions made during the session",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nextSteps": {
+              "type": "array",
+              "description": "Planned next steps (set by outcome tasks or user)",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "sessionSummary": {
+          "type": "object",
+          "description": "Summary statistics from the completed session",
+          "required": [
+            "durationMinutes",
+            "tokensConsumed",
+            "permissionMode"
+          ],
+          "properties": {
+            "durationMinutes": {
+              "type": "number",
+              "minimum": 0
+            },
+            "tokensConsumed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "permissionMode": {
+              "type": "string",
+              "enum": ["default", "plan", "acceptEdits", "bypassPermissions"]
+            },
+            "tasksCompletedTotal": {
+              "type": "integer",
+              "description": "Total tasks completed across all outcomes",
+              "minimum": 0
+            },
+            "gitCommitsTotal": {
+              "type": "integer",
+              "description": "Total git commits in the session",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "recentHistory": {
+      "type": "array",
+      "description": "Completed sessions from last 72 hours (oldest entries auto-pruned)",
+      "items": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "startedAt",
+          "completedAt",
+          "outcomes",
+          "accomplishments",
+          "tokensConsumed",
+          "durationMinutes",
+          "gitBranch"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "Unique session identifier (UUID or sess- prefixed)",
+            "pattern": "^(sess-[a-z0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the session started"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the session ended"
+          },
+          "sessionSource": {
+            "type": "string",
+            "enum": ["startup", "resume", "clear"],
+            "description": "How the session was initiated"
+          },
+          "outcomes": {
+            "type": "array",
+            "description": "Outcome IDs worked on in this session",
+            "items": {
+              "type": "object",
+              "required": ["outcomeId", "outcomeName"],
+              "properties": {
+                "outcomeId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "outcomeName": {
+                  "type": "string"
+                },
+                "tasksCompleted": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "accomplishments": {
+            "type": "string",
+            "description": "Brief summary of what was accomplished"
+          },
+          "tokensConsumed": {
+            "type": "integer",
+            "description": "Tokens consumed in this session",
+            "minimum": 0
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Session duration in minutes",
+            "minimum": 0
+          },
+          "gitBranch": {
+            "type": ["string", "null"],
+            "description": "Git branch worked on"
+          },
+          "gitCommits": {
+            "type": "integer",
+            "description": "Number of commits made",
+            "minimum": 0
+          },
+          "filesModifiedCount": {
+            "type": "integer",
+            "description": "Number of unique files modified",
+            "minimum": 0
+          },
+          "sessionEndReason": {
+            "type": "string",
+            "enum": ["clear", "logout", "prompt_input_exit", "crash", "timeout", "other"],
+            "description": "Why the session ended (from SessionEnd hook)"
+          },
+          "gitStatusClean": {
+            "type": "boolean",
+            "description": "True if no uncommitted changes at session end"
+          },
+          "uncommittedFiles": {
+            "type": "integer",
+            "description": "Number of files with uncommitted changes at end",
+            "minimum": 0
+          },
+          "subagentsLaunched": {
+            "type": "integer",
+            "description": "Number of subagents launched in this session",
+            "minimum": 0
+          },
+          "toolUsageSummary": {
+            "type": "object",
+            "description": "Summary of most-used tools",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "indexByOutcome": {
+      "type": "object",
+      "description": "Quick lookup: which sessions (active or recent) worked on each outcome. Keys are outcome tracking file paths, values are session IDs.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "Session ID"
+        }
+      }
+    },
+    "indexByBranch": {
+      "type": "object",
+      "description": "Quick lookup: which sessions (active or recent) worked on each git branch. Keys are branch names, values are session IDs.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "Session ID"
+        }
+      }
+    },
+    "staleSessionsDetected": {
+      "type": "array",
+      "description": "Sessions that appear orphaned (no activity in >4 hours). May indicate crashes.",
+      "items": {
+        "type": "object",
+        "required": ["sessionId", "lastActivityAt", "hoursSinceActivity"],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "Stale session identifier (UUID or sess- prefixed)",
+            "pattern": "^(sess-[a-z0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$"
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hoursSinceActivity": {
+            "type": "number",
+            "minimum": 0
+          },
+          "outcomes": {
+            "type": "array",
+            "description": "Outcomes that were being worked on",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "summary": {
+        "activeSessionsCount": 2,
+        "totalSessionsCompletedLast72Hours": 8,
+        "currentFocusedOutcome": "authentication-provider",
+        "totalTokensConsumedLast72Hours": 145000,
+        "totalDurationMinutesLast72Hours": 420,
+        "multiOutcomeSessionsCount": 1,
+        "lastUpdated": "2025-11-19T14:30:00Z"
+      },
+      "activeSessions": [
+        {
+          "sessionId": "sess-abc123def456",
+          "sessionSource": "startup",
+          "startedAt": "2025-11-19T13:00:00Z",
+          "lastActivityAt": "2025-11-19T14:30:00Z",
+          "environment": {
+            "workingDirectory": "/Users/rayk/Projects/lucid_stack",
+            "gitBranch": "feature/authentication",
+            "gitCommitHash": "a1b2c3d4e5f6",
+            "permissionMode": "default",
+            "transcriptPath": "/Users/rayk/.claude/transcripts/sess-abc123def456.json"
+          },
+          "focusedOutcomes": [
+            {
+              "outcomeId": 1,
+              "outcomeName": "authentication-provider",
+              "trackingFile": "outcomes/in-progress/001-authentication-provider/outcome_track.json",
+              "currentTask": "02-B-write-unit-tests.md",
+              "focusedAt": "2025-11-19T13:15:00Z",
+              "lastActivityAt": "2025-11-19T14:30:00Z",
+              "capabilitiesAffected": ["authentication-system", "security-framework"]
+            }
+          ],
+          "events": [
+            {
+              "timestamp": "2025-11-19T13:00:00Z",
+              "eventType": "session_start",
+              "description": "Session started - new workspace session",
+              "metadata": {}
+            },
+            {
+              "timestamp": "2025-11-19T13:15:00Z",
+              "eventType": "focus_outcome",
+              "description": "Started working on outcome: authentication-provider",
+              "metadata": {
+                "outcomeId": 1,
+                "taskFile": null
+              }
+            },
+            {
+              "timestamp": "2025-11-19T13:20:00Z",
+              "eventType": "task_started",
+              "description": "Started task: 01-A-setup-provider.md",
+              "metadata": {
+                "outcomeId": 1,
+                "taskFile": "01-A-setup-provider.md"
+              }
+            },
+            {
+              "timestamp": "2025-11-19T13:45:00Z",
+              "eventType": "task_completed",
+              "description": "Completed task: 01-A-setup-provider.md",
+              "metadata": {
+                "outcomeId": 1,
+                "taskFile": "01-A-setup-provider.md",
+                "filesModified": ["src/auth/provider.ts", "src/auth/types.ts"]
+              }
+            },
+            {
+              "timestamp": "2025-11-19T13:50:00Z",
+              "eventType": "git_commit",
+              "description": "Git commit: feat(auth): implement JWT authentication provider",
+              "metadata": {
+                "commitHash": "b2c3d4e5f6a7",
+                "filesModified": ["src/auth/provider.ts", "src/auth/types.ts"]
+              }
+            },
+            {
+              "timestamp": "2025-11-19T14:00:00Z",
+              "eventType": "task_started",
+              "description": "Started task: 02-B-write-unit-tests.md",
+              "metadata": {
+                "outcomeId": 1,
+                "taskFile": "02-B-write-unit-tests.md"
+              }
+            }
+          ],
+          "statistics": {
+            "eventsLogged": 6,
+            "filesModified": 4,
+            "tasksCompleted": 1,
+            "tasksFailed": 0,
+            "gitCommits": 1,
+            "tokensConsumed": 12500,
+            "durationMinutes": 90
+          },
+          "isStale": false,
+          "sessionEndReason": null,
+          "gitStatusCleanAtEnd": null,
+          "uncommittedFilesAtEnd": null,
+          "subagentsLaunched": 2,
+          "toolUsageCounts": {
+            "Read": 15,
+            "Edit": 8,
+            "Write": 2,
+            "Bash": 3,
+            "Task": 2
+          }
+        },
+        {
+          "sessionId": "sess-xyz789ghi012",
+          "sessionSource": "resume",
+          "startedAt": "2025-11-19T10:00:00Z",
+          "lastActivityAt": "2025-11-19T12:00:00Z",
+          "environment": {
+            "workingDirectory": "/Users/rayk/Projects/lucid_stack",
+            "gitBranch": "feature/api-rate-limiting",
+            "gitCommitHash": "c3d4e5f6a7b8",
+            "permissionMode": "default",
+            "transcriptPath": "/Users/rayk/.claude/transcripts/sess-xyz789ghi012.json"
+          },
+          "focusedOutcomes": [
+            {
+              "outcomeId": 5,
+              "outcomeName": "api-rate-limiting",
+              "trackingFile": "outcomes/in-progress/005-api-rate-limiting/outcome_track.json",
+              "currentTask": "03-A-implement-redis-backend.md",
+              "focusedAt": "2025-11-19T10:05:00Z",
+              "lastActivityAt": "2025-11-19T12:00:00Z",
+              "capabilitiesAffected": ["api-management", "security-framework"]
+            }
+          ],
+          "events": [
+            {
+              "timestamp": "2025-11-19T10:00:00Z",
+              "eventType": "session_resume",
+              "description": "Session resumed from previous context",
+              "metadata": {}
+            },
+            {
+              "timestamp": "2025-11-19T10:05:00Z",
+              "eventType": "focus_outcome",
+              "description": "Resumed work on outcome: api-rate-limiting",
+              "metadata": {
+                "outcomeId": 5
+              }
+            },
+            {
+              "timestamp": "2025-11-19T11:30:00Z",
+              "eventType": "task_completed",
+              "description": "Completed task: 02-*-write-middleware-tests.md",
+              "metadata": {
+                "outcomeId": 5,
+                "taskFile": "02-*-write-middleware-tests.md",
+                "filesModified": ["tests/middleware/rate-limit.test.ts"]
+              }
+            }
+          ],
+          "statistics": {
+            "eventsLogged": 3,
+            "filesModified": 3,
+            "tasksCompleted": 1,
+            "tasksFailed": 0,
+            "gitCommits": 0,
+            "tokensConsumed": 8200,
+            "durationMinutes": 120
+          },
+          "isStale": false,
+          "sessionEndReason": null,
+          "gitStatusCleanAtEnd": null,
+          "uncommittedFilesAtEnd": null,
+          "subagentsLaunched": 1,
+          "toolUsageCounts": {
+            "Read": 10,
+            "Edit": 5,
+            "Bash": 2,
+            "Task": 1
+          }
+        }
+      ],
+      "lastWorked": {
+        "sessionId": "sess-previous789",
+        "completedAt": "2025-11-19T09:00:00Z",
+        "outcomes": [
+          {
+            "outcomeId": 3,
+            "outcomeName": "user-profile-service",
+            "trackingFile": "outcomes/completed/003-user-profile-service/outcome_track.json",
+            "lastTask": "03-A-deploy-to-staging.md",
+            "tasksCompleted": 3,
+            "tasksFailed": 0,
+            "workSummary": "Completed all tasks for user profile service, deployed to staging"
+          }
+        ],
+        "context": {
+          "gitBranch": "feature/user-profiles",
+          "gitCommitHash": "d4e5f6a7b8c9",
+          "filesModified": [
+            "src/user/profile-service.ts",
+            "src/user/profile-controller.ts",
+            "tests/user/profile.test.ts",
+            "deploy/staging-config.yml"
+          ],
+          "keyDecisions": [
+            "Using PostgreSQL jsonb for flexible profile attributes",
+            "Implementing caching layer with Redis for performance"
+          ],
+          "nextSteps": [
+            "Monitor staging deployment for 24 hours",
+            "Run load tests before production deployment"
+          ]
+        },
+        "sessionSummary": {
+          "durationMinutes": 62,
+          "tokensConsumed": 18500,
+          "permissionMode": "default",
+          "tasksCompletedTotal": 3,
+          "gitCommitsTotal": 2
+        }
+      },
+      "recentHistory": [
+        {
+          "sessionId": "sess-previous789",
+          "startedAt": "2025-11-19T08:00:00Z",
+          "completedAt": "2025-11-19T09:00:00Z",
+          "sessionSource": "startup",
+          "outcomes": [
+            {
+              "outcomeId": 3,
+              "outcomeName": "user-profile-service",
+              "tasksCompleted": 3
+            }
+          ],
+          "accomplishments": "Completed user profile service implementation and deployed to staging",
+          "tokensConsumed": 18500,
+          "durationMinutes": 62,
+          "gitBranch": "feature/user-profiles",
+          "gitCommits": 2,
+          "filesModifiedCount": 4,
+          "sessionEndReason": "logout",
+          "gitStatusClean": true,
+          "uncommittedFiles": 0,
+          "subagentsLaunched": 0,
+          "toolUsageSummary": {
+            "Read": 8,
+            "Edit": 6,
+            "Write": 1,
+            "Bash": 4
+          }
+        },
+        {
+          "sessionId": "sess-older456",
+          "startedAt": "2025-11-18T14:00:00Z",
+          "completedAt": "2025-11-18T15:30:00Z",
+          "sessionSource": "startup",
+          "outcomes": [
+            {
+              "outcomeId": 1,
+              "outcomeName": "authentication-provider",
+              "tasksCompleted": 0
+            },
+            {
+              "outcomeId": 2,
+              "outcomeName": "session-management",
+              "tasksCompleted": 2
+            }
+          ],
+          "accomplishments": "Completed session management tasks, started auth provider planning",
+          "tokensConsumed": 15000,
+          "durationMinutes": 90,
+          "gitBranch": "feature/authentication",
+          "gitCommits": 1,
+          "filesModifiedCount": 5,
+          "sessionEndReason": "clear",
+          "gitStatusClean": false,
+          "uncommittedFiles": 2,
+          "subagentsLaunched": 3,
+          "toolUsageSummary": {
+            "Read": 12,
+            "Edit": 4,
+            "Task": 3,
+            "Bash": 2
+          }
+        }
+      ],
+      "indexByOutcome": {
+        "outcomes/in-progress/001-authentication-provider/outcome_track.json": [
+          "sess-abc123def456",
+          "sess-older456"
+        ],
+        "outcomes/in-progress/005-api-rate-limiting/outcome_track.json": [
+          "sess-xyz789ghi012"
+        ],
+        "outcomes/completed/003-user-profile-service/outcome_track.json": [
+          "sess-previous789"
+        ]
+      },
+      "indexByBranch": {
+        "feature/authentication": [
+          "sess-abc123def456",
+          "sess-older456"
+        ],
+        "feature/api-rate-limiting": [
+          "sess-xyz789ghi012"
+        ],
+        "feature/user-profiles": [
+          "sess-previous789"
+        ]
+      },
+      "staleSessionsDetected": []
+    }
+  ]
+}

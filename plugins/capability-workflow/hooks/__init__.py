@@ -1,0 +1,1 @@
+"""Capability snapshot generation module."""
