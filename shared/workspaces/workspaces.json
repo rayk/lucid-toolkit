@@ -1,0 +1,10 @@
+{
+  "$schema": "./workspaces_schema.json",
+  "schemaVersion": "1.0.0",
+  "description": "Registry of shared workspaces that plugin instances can subscribe to",
+  "workspaces": [],
+  "metadata": {
+    "created": "2025-11-28T00:00:00Z",
+    "updated": "2025-11-28T00:00:00Z"
+  }
+}

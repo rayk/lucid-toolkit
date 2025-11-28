@@ -1,0 +1,23 @@
+{
+  "name": "think",
+  "displayName": "Thinking Tools",
+  "description": "Structured analysis using mental models",
+  "version": "1.0.0",
+  "author": "rayk",
+  "dependencies": {
+    "claudeCode": ">=1.0.0"
+  },
+  "commands": [
+    "think:consider",
+    "think:assess",
+    "think:reflect"
+  ],
+  "skills": [
+    "consider"
+  ],
+  "templates": [
+    "mental-models.md",
+    "assessment-framework.md"
+  ],
+  "sharedLibraries": []
+}

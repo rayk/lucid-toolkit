@@ -1,57 +1,70 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "lucid-toolkit",
-  "displayName": "Lucid Toolkit",
-  "description": "Capability-driven development tools for Claude Code",
-  "version": "1.0.0",
-  "author": "rayk",
+  "owner": {
+    "name": "rayk",
+    "email": "rayk@lucid-toolkit.dev"
+  },
+  "metadata": {
+    "version": "1.1.0",
+    "description": "Capability-driven development tools for Claude Code"
+  },
   "plugins": [
     {
-      "name": "capability-workflow",
-      "path": "plugins/capability-workflow",
+      "name": "capability",
+      "source": "./plugins/capability",
       "description": "Strategic capability management with maturity tracking",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "category": "workflow",
+      "tags": ["capability", "maturity", "strategic-planning"]
     },
     {
-      "name": "outcome-workflow",
-      "path": "plugins/outcome-workflow",
+      "name": "outcome",
+      "source": "./plugins/outcome",
       "description": "Outcome lifecycle management (create, focus, complete)",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "category": "workflow",
+      "tags": ["outcome", "lifecycle", "task-management"]
     },
     {
-      "name": "session-manager",
-      "path": "plugins/session-manager",
-      "description": "Session lifecycle tracking with accomplishment capture",
-      "version": "1.0.0"
+      "name": "context",
+      "source": "./plugins/context",
+      "description": "Context window conservation with delegation protocols and payload storage",
+      "version": "1.1.0",
+      "category": "productivity",
+      "tags": ["context", "delegation", "token-optimization", "payload-store"]
     },
     {
-      "name": "thinking-tools",
-      "path": "plugins/thinking-tools",
+      "name": "think",
+      "source": "./plugins/think",
       "description": "Structured analysis using mental models",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "category": "analysis",
+      "tags": ["mental-models", "decision-making", "analysis"]
     },
     {
-      "name": "maker-toolkit",
-      "path": "plugins/maker-toolkit",
-      "description": "Build Claude Code skills, commands, and agents",
-      "version": "1.0.0"
+      "name": "workspace",
+      "source": "./plugins/workspace",
+      "description": "Multi-project management with validation and cross-reference integrity",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["workspace", "multi-project", "validation"]
     },
     {
-      "name": "workspace-validator",
-      "path": "plugins/workspace-validator",
-      "description": "Schema validation and workspace health checks",
-      "version": "1.0.0"
-    },
-    {
-      "name": "delegation-protocol",
-      "path": "plugins/delegation-protocol",
-      "description": "Context-saving patterns for efficient Claude Code usage",
-      "version": "1.0.0"
-    },
-    {
-      "name": "planner",
-      "path": "plugins/planner",
+      "name": "plan",
+      "source": "./plugins/plan",
       "description": "TDD execution prompt generator with cost-efficient model delegation",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["tdd", "execution", "prompt-generation"]
+    },
+    {
+      "name": "specialize",
+      "source": "./plugins/specialize",
+      "description": "Technology-specialized subagents with MCP server integrations",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["subagents", "mcp", "neo4j", "specialist"]
     }
   ]
 }

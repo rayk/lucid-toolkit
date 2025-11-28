@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/settings.schema.json",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 hooks/pre-commit-validation.py",
+            "condition": "toolInput.command matches 'git commit'"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,121 +1,161 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Project instructions for Claude Code working in this repository.
+
+<critical_behavior>
+## Context Preservation
+
+Primary goal: Preserve main context by delegating exploration and multi-step work to sub-agents.
+
+Claude's context window is finite. When exhausted mid-task, work is lost. Sub-agents (Task tool) operate in isolated contexts—use them to protect the main conversation.
+
+### Decision Principle
+
+Delegate by default. Execute directly only for simple, certain operations.
+
+**Delegate when (any apply):**
+- Location unknown: "find where X happens" → Task(Explore)
+- Multi-file operation: "fix X across codebase" → Task(general-purpose)
+- Uncertain scope: tool count unclear → Task
+- Exploration needed: understanding before acting → Task(Explore)
+
+**Execute directly when (ALL must apply):**
+- Single, specific file path already known
+- 1-2 tool calls, certain
+- No search/exploration component
+
+### Specificity Trap
+
+Specific user input (error messages, function names) without file paths creates false confidence. You know WHAT to find, not WHERE or HOW MANY. Treat specific mutation requests as exploration until locations are confirmed.
+
+Exception: User provides exact file path.
+
+### Transition Awareness
+
+After research (WebSearch, exploratory Read), the next request often asks to ACT on findings. This is the highest-risk moment. Default to delegation when transitioning from research to action.
+
+### Trade-off
+
+False positives (unnecessary delegation) acceptable. Context exhaustion is not.
+</critical_behavior>
+
+## Request → Action Matrix
+
+| Request | Action | Rationale |
+|---------|--------|-----------|
+| "Where is auth configured?" | Task(Explore) | Unknown location |
+| "Fix getUserById" | Task(general-purpose) | Find + analyze + edit |
+| "Error: 'path not found' in config" | Task(general-purpose) | Specificity trap |
+| "Add import to src/utils.ts" | Direct Edit | Known file, single op |
+| "What does this file do?" [in context] | Direct answer | Already read |
+| "Fix the performance issue" | Ask → Task | Ambiguous, then delegate |
+| "Change timeout to 5000 in config.ts" | Direct Edit | Specific + location given |
+
+## Constraints
+
+DO NOT:
+- Execute multi-file operations directly in main context
+- Assume file locations without confirmation
+- Guess values, paths, or behaviors when ambiguous
+- Add features, refactoring, or "improvements" beyond what was requested
+
+DO:
+- Clarify ambiguous requests before acting (AskUserQuestion)
+- Use Task(Explore) for any "find where" operations
+- Keep solutions minimal and focused on the request
+- State conclusions directly without hedging
+
+## Clarification Protocol
+
+**Clarify when:**
+- Request has multiple valid interpretations
+- Success criteria are undefined
+- Technical approach requires choosing between alternatives
+
+**Do not clarify when:**
+- Request is clear and actionable
+- Standard conventions apply unambiguously
+
+**Precedence:** Ask → Delegate → Direct
+
+---
 
 ## Repository Overview
 
-Lucid Toolkit is a Claude Code plugin marketplace implementing capability-driven development workflows. Plugins are modular and installable independently via the Claude Code plugin system.
+Lucid Toolkit is a Claude Code plugin marketplace implementing capability-driven development workflows.
 
-## Installation Commands
+## Commands
 
 ```bash
 # Add marketplace
 /plugin marketplace add rayk/lucid-toolkit
 
-# Install specific plugin
-/plugin install capability-workflow@lucid-toolkit
+# Install plugin
+/plugin install capability@lucid-toolkit
 
 # Install shared CLI library (required for hooks/scripts)
 cd shared/cli-commons && pip install -e .
 
-# Install with dev dependencies
-pip install -e ".[dev]"
-```
-
-## Testing Commands
-
-```bash
-# Run tests for CLI commons
+# Run tests
 cd shared/cli-commons && pytest
-
-# With coverage
-pytest --cov=lucid_cli_commons
 ```
 
-## Architecture
+## Structure
+
+```
+lucid-toolkit/
+├── .claude/                 # Local commands, skills, agents
+│   ├── commands/           # Slash commands for this repo
+│   ├── skills/             # Skills for this repo
+│   └── agents/             # Subagent definitions
+├── .claude-plugin/         # Marketplace configuration
+│   └── marketplace.json
+├── plugins/                # Installable plugins
+│   ├── capability/         # Strategic capability management
+│   ├── outcome/            # Outcome lifecycle management
+│   ├── context/            # Context window conservation
+│   ├── think/              # Mental models (consider, assess)
+│   ├── workspace/          # Multi-project management
+│   └── plan/               # TDD execution prompts
+└── shared/
+    └── cli-commons/        # Python utilities for hooks
+```
 
 ### Plugin Structure
 
-Each plugin under `plugins/` follows this structure:
 ```
 plugins/{name}/
-├── plugin.json          # Plugin metadata and command/skill declarations
-├── commands/            # Slash commands (*.md with YAML frontmatter)
-├── skills/              # Skills (SKILL.md files with XML structure)
+├── plugin.json          # Metadata and declarations
+├── commands/            # Slash commands (*.md)
+├── skills/              # Skills (SKILL.md)
 ├── hooks/               # Python lifecycle scripts
-├── agents/              # Subagent configurations (*.md)
-├── templates/           # File templates
-└── schemas/             # JSON schemas for validation
+├── schemas/             # JSON schemas
+└── templates/           # File templates
 ```
 
-### Available Plugins (8)
-
-**Core Workflow:**
-- `capability-workflow` - Strategic capability management with maturity tracking (capabilities → outcomes)
-- `outcome-workflow` - Outcome lifecycle (queued → ready → in-progress → blocked → completed)
-- `session-manager` - Session lifecycle tracking
-
-**Analysis & Development:**
-- `thinking-tools` - Mental models (consider, assess, reflect commands)
-- `maker-toolkit` - Build skills, commands, and agents with quality auditing
-- `workspace-validator` - Schema validation and health checks
-- `planner` - TDD execution prompt generator with model delegation
-
-**Best Practices:**
-- `delegation-protocol` - Context-saving patterns (delegate 3+ ops to subagents)
-
-### Shared Library
-
-`shared/cli-commons/` provides Python utilities for plugin hooks:
-- `lucid_cli_commons.schema` - JSON Schema validation
-- `lucid_cli_commons.git` - Git operations
-- `lucid_cli_commons.fs` - Atomic file writes, path utilities
-- `lucid_cli_commons.crossref` - Cross-reference management
-
-### Key Patterns
+## Key Concepts
 
 **Capability-Driven Development:**
-- Capabilities = strategic goals measured by maturity percentage
+- Capabilities = strategic goals with maturity percentage
 - Outcomes = tactical work units that build capabilities
-- Outcomes define `capabilityContributions` with maturity percentages
-- When outcome completes, capability maturity increases
+- Outcome completion → capability maturity increases
 
 **Outcome Hierarchy:**
-- Parent outcomes aggregate children (nested directories: `005-parent/005.1-child/`)
+- Parent outcomes aggregate children (`005-parent/005.1-child/`)
 - Children have `parentContribution` %, parent owns `capabilityContributions`
-- Parent moves → all children move together
-
-**Delegation Protocol:**
-- Count operations before classifying requests
-- 3+ tool calls → delegate to subagent
-- Specific user input ≠ simple solution (the "specificity trap")
-
-**Skills vs Commands:**
-- Skills (SKILL.md): Interactive guidance with progressive disclosure, XML structure
-- Commands (*.md): Executable workflows with YAML frontmatter, arguments
-
-### Token Budget Guidelines (from delegation-protocol)
-
-| Operation Type | Budget | Model |
-|----------------|--------|-------|
-| File search, pattern matching | 1500 | haiku |
-| Yes/no validation | 800 | haiku |
-| Code analysis, flow tracing | 2000 | sonnet |
-| Multi-file fix + commit | 2500 | sonnet |
-| Synthesis, complex reasoning | 3000 | opus |
 
 ## Naming Conventions
 
 | Entity | Pattern | Example |
 |--------|---------|---------|
 | Capability ID | `^[a-z0-9]+(-[a-z0-9]+)*$` | `auth-system` |
-| Outcome Dir | `^[0-9]+-[a-z0-9-]+$` | `005-ontology-workflow` |
-| Child Outcome | `^[0-9]+\.[0-9]+-[a-z0-9-]+$` | `005.1-ontology-testing` |
+| Outcome Dir | `^[0-9]+-[a-z0-9-]+$` | `005-ontology` |
+| Child Outcome | `^[0-9]+\.[0-9]+-[a-z0-9-]+$` | `005.1-testing` |
 
 ## Cross-Reference Integrity
 
-When modifying tracking files, maintain referential integrity across:
+When modifying tracking files, maintain referential integrity:
 - `capabilities/*/capability_track.json` - Individual capability state
-- `outcomes/*/outcome_track.json` - Outcome state and capability links
+- `outcomes/*/outcome_track.json` - Outcome state and links
 - `status/capability_summary.json` - Central capability index
 - `status/outcome_summary.json` - Central outcome index

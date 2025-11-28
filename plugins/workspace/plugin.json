@@ -1,0 +1,36 @@
+{
+  "name": "workspace",
+  "displayName": "Workspace",
+  "description": "Multi-project management with shared registry, health validation, and cross-reference integrity",
+  "version": "1.0.0",
+  "author": "rayk",
+  "dependencies": {
+    "claudeCode": ">=1.0.0",
+    "python": ">=3.11"
+  },
+  "commands": [
+    "workspace:init",
+    "workspace:add",
+    "workspace:remove",
+    "workspace:list",
+    "workspace:switch",
+    "workspace:subscribe",
+    "workspace:unsubscribe",
+    "workspace:health",
+    "workspace:validate",
+    "workspace:resolve"
+  ],
+  "skills": [],
+  "settings": "settings.json",
+  "schemas": [
+    "workspace_schema.json",
+    "project_map_schema.json"
+  ],
+  "sharedLibraries": [
+    "../../shared/cli-commons"
+  ],
+  "sharedData": {
+    "workspacesRegistry": "../../shared/workspaces/workspaces.json",
+    "workspacesSchema": "../../shared/workspaces/workspaces_schema.json"
+  }
+}

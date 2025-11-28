@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workspace Configuration",
+  "description": "Multi-project workspace configuration for managing related repositories and projects as a unified development environment",
+  "schemaVersion": "1.0.0",
+  "type": "object",
+  "required": ["id", "name", "type", "projects"],
+
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique workspace identifier (kebab-case)",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "examples": ["my-workspace", "platform-services", "frontend-apps"]
+    },
+
+    "name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100,
+      "description": "Human-readable workspace name",
+      "examples": ["My Workspace", "Platform Services", "Frontend Applications"]
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Purpose and scope of this workspace",
+      "examples": ["Collection of microservices for the platform backend", "All frontend applications and shared UI components"]
+    },
+
+    "type": {
+      "type": "string",
+      "enum": ["monorepo", "multi-repo", "hybrid"],
+      "description": "Workspace organization type: monorepo (single repo, multiple packages), multi-repo (separate repos), hybrid (mix of both)"
+    },
+
+    "rootPath": {
+      "type": "string",
+      "description": "Absolute path to workspace root directory",
+      "examples": ["/Users/dev/workspaces/platform", "/home/dev/projects/frontend"]
+    },
+
+    "primaryStack": {
+      "type": "string",
+      "description": "Primary technology stack or language focus",
+      "examples": ["TypeScript/Node.js", "Python", "Go", "Rust", "Mixed"]
+    },
+
+    "projects": {
+      "type": "array",
+      "description": "Projects registered in this workspace",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "path", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique project identifier within workspace (kebab-case)",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable project name"
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to project relative to workspace root",
+            "examples": ["./packages/core", "./services/api", "../external-lib"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["library", "service", "application", "tool", "docs", "config"],
+            "description": "Project type classification"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["primary", "supporting", "shared"],
+            "description": "Role within the workspace: primary (main projects), supporting (helpers/tools), shared (used by multiple projects)",
+            "default": "primary"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief project description"
+          },
+          "language": {
+            "type": "string",
+            "description": "Primary programming language",
+            "examples": ["TypeScript", "Python", "Go", "Rust", "Java"]
+          },
+          "framework": {
+            "type": "string",
+            "description": "Primary framework if applicable",
+            "examples": ["React", "FastAPI", "Express", "Django"]
+          },
+          "tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Categorization tags",
+            "default": []
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Project ID of workspace project this depends on"
+            },
+            "description": "Inter-project dependencies within workspace",
+            "default": []
+          },
+          "externalUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Git remote URL for external/cloned projects"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "archived", "deprecated"],
+            "description": "Project status",
+            "default": "active"
+          }
+        }
+      },
+      "minItems": 1
+    },
+
+    "settings": {
+      "type": "object",
+      "description": "Workspace-level settings",
+      "properties": {
+        "defaultShell": {
+          "type": "string",
+          "description": "Default shell for workspace commands",
+          "default": "bash"
+        },
+        "sharedConfigs": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Shared configuration files applied across projects",
+          "examples": [[".editorconfig", ".prettierrc", "tsconfig.base.json"]],
+          "default": []
+        },
+        "buildOrder": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Project IDs in dependency-resolved build order",
+          "default": []
+        },
+        "envFiles": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Workspace-level environment files",
+          "default": []
+        }
+      }
+    },
+
+    "metadata": {
+      "type": "object",
+      "description": "Workspace metadata",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When workspace was created"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When workspace was last updated"
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "User who created workspace"
+        },
+        "version": {
+          "type": "string",
+          "description": "Workspace configuration version",
+          "default": "1.0.0"
+        }
+      }
+    }
+  },
+
+  "examples": [
+    {
+      "id": "platform-services",
+      "name": "Platform Services",
+      "description": "Backend microservices for the platform",
+      "type": "multi-repo",
+      "rootPath": "/Users/dev/workspaces/platform",
+      "primaryStack": "TypeScript/Node.js",
+      "projects": [
+        {
+          "id": "api-gateway",
+          "name": "API Gateway",
+          "path": "./api-gateway",
+          "type": "service",
+          "role": "primary",
+          "description": "Main API gateway service",
+          "language": "TypeScript",
+          "framework": "Express",
+          "tags": ["api", "gateway"],
+          "dependencies": ["shared-utils"]
+        },
+        {
+          "id": "shared-utils",
+          "name": "Shared Utilities",
+          "path": "./shared/utils",
+          "type": "library",
+          "role": "shared",
+          "description": "Common utilities used across services",
+          "language": "TypeScript",
+          "tags": ["shared", "utilities"],
+          "dependencies": []
+        },
+        {
+          "id": "user-service",
+          "name": "User Service",
+          "path": "./services/user",
+          "type": "service",
+          "role": "primary",
+          "description": "User management microservice",
+          "language": "TypeScript",
+          "framework": "Express",
+          "tags": ["microservice", "users"],
+          "dependencies": ["shared-utils"]
+        }
+      ],
+      "settings": {
+        "defaultShell": "bash",
+        "sharedConfigs": [".editorconfig", "tsconfig.base.json"],
+        "buildOrder": ["shared-utils", "api-gateway", "user-service"],
+        "envFiles": [".env.workspace"]
+      },
+      "metadata": {
+        "created": "2025-01-15T00:00:00Z",
+        "updated": "2025-01-20T14:30:00Z",
+        "createdBy": "dev",
+        "version": "1.0.0"
+      }
+    }
+  ]
+}

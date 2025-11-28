@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Context Tracking",
+  "description": "Schema for tracking context window usage and conservation metrics during Claude Code sessions",
+  "schemaVersion": "1.0.0",
+  "type": "object",
+  "required": ["sessionId", "startTime", "status", "metrics"],
+
+  "properties": {
+    "sessionId": {
+      "type": ["string", "null"],
+      "description": "Unique session identifier assigned by Claude Code"
+    },
+
+    "startTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when session started"
+    },
+
+    "endTime": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when session ended"
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["active", "completed", "interrupted"],
+      "description": "Current session status"
+    },
+
+    "metrics": {
+      "type": "object",
+      "description": "Context conservation metrics",
+      "properties": {
+        "toolCalls": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total tool calls made in main context"
+        },
+        "delegations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of Task tool delegations to subagents"
+        },
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "description": {
+                "type": "string"
+              },
+              "tokenEstimate": {
+                "type": "integer"
+              }
+            }
+          },
+          "description": "Context checkpoints created during session"
+        },
+        "contextSaved": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Estimated tokens saved through delegation"
+        }
+      }
+    },
+
+    "violations": {
+      "type": "array",
+      "description": "Protocol violations detected during session",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["direct_execution", "specificity_trap", "missing_delegation", "context_overflow"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          }
+        }
+      }
+    }
+  }
+}

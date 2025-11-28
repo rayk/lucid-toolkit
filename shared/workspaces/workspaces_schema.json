@@ -1,0 +1,376 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Shared Workspaces Registry",
+  "description": "Central registry of workspaces that multiple plugin instances can subscribe to for multi-project coordination",
+  "schemaVersion": "1.0.0",
+  "type": "object",
+  "required": ["schemaVersion", "workspaces"],
+
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to this schema file"
+    },
+
+    "schemaVersion": {
+      "type": "string",
+      "description": "Version of this schema",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Description of this registry"
+    },
+
+    "workspaces": {
+      "type": "array",
+      "description": "List of registered shared workspaces",
+      "items": {
+        "$ref": "#/definitions/workspace"
+      }
+    },
+
+    "metadata": {
+      "type": "object",
+      "description": "Registry metadata",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When registry was created"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When registry was last updated"
+        }
+      }
+    }
+  },
+
+  "definitions": {
+    "workspace": {
+      "type": "object",
+      "required": ["id", "name", "type", "homePath", "projects"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique workspace identifier (kebab-case). Also used as the workspace home directory name.",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "examples": ["platform-services", "frontend-apps", "shared-libs"]
+        },
+
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Human-readable workspace name"
+        },
+
+        "description": {
+          "type": "string",
+          "description": "Purpose and scope of this workspace"
+        },
+
+        "type": {
+          "type": "string",
+          "enum": ["monorepo", "multi-repo", "hybrid"],
+          "description": "Workspace organization type"
+        },
+
+        "homePath": {
+          "type": "string",
+          "description": "Path to workspace home directory within shared/workspaces/ (e.g., 'shared/workspaces/{workspace-id}/'). Contains capabilities/ and outcomes/ subdirectories.",
+          "pattern": "^shared/workspaces/[a-z0-9]+(-[a-z0-9]+)*/$",
+          "examples": ["shared/workspaces/platform-services/", "shared/workspaces/frontend-apps/"]
+        },
+
+        "rootPath": {
+          "type": "string",
+          "description": "Absolute path to workspace project root directory (where code lives)"
+        },
+
+        "primaryStack": {
+          "type": "string",
+          "description": "Primary technology stack",
+          "examples": ["TypeScript/Node.js", "Python", "Go", "Mixed"]
+        },
+
+        "directories": {
+          "type": "object",
+          "description": "Standard workspace subdirectories for plugin artifacts",
+          "properties": {
+            "capabilities": {
+              "type": "string",
+              "description": "Path to capabilities directory relative to workspace home",
+              "default": "capabilities/"
+            },
+            "outcomes": {
+              "type": "string",
+              "description": "Path to outcomes directory relative to workspace home",
+              "default": "outcomes/"
+            },
+            "status": {
+              "type": "string",
+              "description": "Path to status directory for summary files",
+              "default": "status/"
+            }
+          },
+          "default": {
+            "capabilities": "capabilities/",
+            "outcomes": "outcomes/",
+            "status": "status/"
+          }
+        },
+
+        "projects": {
+          "type": "array",
+          "description": "Projects in this workspace",
+          "items": {
+            "$ref": "#/definitions/project"
+          },
+          "minItems": 1
+        },
+
+        "subscribers": {
+          "type": "array",
+          "description": "Plugin instances subscribed to this workspace",
+          "items": {
+            "$ref": "#/definitions/subscriber"
+          },
+          "default": []
+        },
+
+        "settings": {
+          "type": "object",
+          "description": "Workspace-level settings",
+          "properties": {
+            "defaultShell": {
+              "type": "string",
+              "default": "bash"
+            },
+            "sharedConfigs": {
+              "type": "array",
+              "items": {"type": "string"},
+              "default": []
+            },
+            "buildOrder": {
+              "type": "array",
+              "items": {"type": "string"},
+              "default": []
+            }
+          }
+        },
+
+        "status": {
+          "type": "string",
+          "enum": ["active", "archived", "deprecated"],
+          "default": "active",
+          "description": "Workspace lifecycle status"
+        },
+
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When workspace was created"
+        },
+
+        "updated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When workspace was last updated"
+        }
+      }
+    },
+
+    "project": {
+      "type": "object",
+      "required": ["id", "name", "path", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique project identifier within workspace (kebab-case)",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+
+        "name": {
+          "type": "string",
+          "description": "Human-readable project name"
+        },
+
+        "path": {
+          "type": "string",
+          "description": "Path to project relative to workspace root"
+        },
+
+        "absolutePath": {
+          "type": "string",
+          "description": "Resolved absolute path to project directory"
+        },
+
+        "type": {
+          "type": "string",
+          "enum": ["library", "service", "application", "tool", "docs", "config"],
+          "description": "Project type classification"
+        },
+
+        "role": {
+          "type": "string",
+          "enum": ["primary", "supporting", "shared"],
+          "default": "primary",
+          "description": "Role within the workspace"
+        },
+
+        "description": {
+          "type": "string",
+          "description": "Brief project description"
+        },
+
+        "language": {
+          "type": "string",
+          "description": "Primary programming language"
+        },
+
+        "framework": {
+          "type": "string",
+          "description": "Primary framework if applicable"
+        },
+
+        "tags": {
+          "type": "array",
+          "items": {"type": "string"},
+          "default": []
+        },
+
+        "dependencies": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Project IDs this project depends on",
+          "default": []
+        },
+
+        "repositoryUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Git remote URL for this project"
+        },
+
+        "status": {
+          "type": "string",
+          "enum": ["active", "archived", "deprecated"],
+          "default": "active"
+        }
+      }
+    },
+
+    "subscriber": {
+      "type": "object",
+      "required": ["instanceId", "projectPath", "subscribedAt"],
+      "description": "A plugin instance that has subscribed to this workspace",
+      "properties": {
+        "instanceId": {
+          "type": "string",
+          "description": "Unique identifier for the plugin instance (typically derived from project path hash)",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+
+        "projectPath": {
+          "type": "string",
+          "description": "Absolute path to the project where plugin is installed"
+        },
+
+        "projectName": {
+          "type": "string",
+          "description": "Name of the project where plugin is installed"
+        },
+
+        "subscribedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this instance subscribed"
+        },
+
+        "lastAccess": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this instance last accessed the workspace"
+        },
+
+        "accessLevel": {
+          "type": "string",
+          "enum": ["read", "write", "admin"],
+          "default": "write",
+          "description": "Permission level for this subscriber"
+        }
+      }
+    }
+  },
+
+  "examples": [
+    {
+      "$schema": "./workspaces_schema.json",
+      "schemaVersion": "1.0.0",
+      "description": "Registry of shared workspaces",
+      "workspaces": [
+        {
+          "id": "platform-services",
+          "name": "Platform Services",
+          "description": "Backend microservices for the platform",
+          "type": "multi-repo",
+          "homePath": "shared/workspaces/platform-services/",
+          "rootPath": "/Users/dev/workspaces/platform",
+          "primaryStack": "TypeScript/Node.js",
+          "directories": {
+            "capabilities": "capabilities/",
+            "outcomes": "outcomes/",
+            "status": "status/"
+          },
+          "projects": [
+            {
+              "id": "api-gateway",
+              "name": "API Gateway",
+              "path": "./api-gateway",
+              "absolutePath": "/Users/dev/workspaces/platform/api-gateway",
+              "type": "service",
+              "role": "primary",
+              "language": "TypeScript",
+              "dependencies": ["shared-utils"]
+            },
+            {
+              "id": "shared-utils",
+              "name": "Shared Utilities",
+              "path": "./shared/utils",
+              "absolutePath": "/Users/dev/workspaces/platform/shared/utils",
+              "type": "library",
+              "role": "shared",
+              "language": "TypeScript",
+              "dependencies": []
+            }
+          ],
+          "subscribers": [
+            {
+              "instanceId": "api-gateway-abc123",
+              "projectPath": "/Users/dev/workspaces/platform/api-gateway",
+              "projectName": "API Gateway",
+              "subscribedAt": "2025-01-15T10:00:00Z",
+              "lastAccess": "2025-01-20T14:30:00Z",
+              "accessLevel": "write"
+            }
+          ],
+          "settings": {
+            "buildOrder": ["shared-utils", "api-gateway"],
+            "sharedConfigs": [".editorconfig"]
+          },
+          "status": "active",
+          "created": "2025-01-15T00:00:00Z",
+          "updated": "2025-01-20T14:30:00Z"
+        }
+      ],
+      "metadata": {
+        "created": "2025-01-01T00:00:00Z",
+        "updated": "2025-01-20T14:30:00Z"
+      }
+    }
+  ]
+}
