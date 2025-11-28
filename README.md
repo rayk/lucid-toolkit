@@ -26,18 +26,57 @@ The Lucid Toolkit provides a comprehensive suite of plugins that implement capab
 
 ## Installation
 
-### Full Toolkit
+### From GitHub Marketplace (Recommended)
+
+Add the Lucid Toolkit marketplace to Claude Code:
+
+```shell
+/plugin marketplace add rayk/lucid-toolkit
+```
+
+Then install plugins interactively:
+
+```shell
+/plugin
+```
+
+Or install a specific plugin directly:
+
+```shell
+/plugin install capability-workflow@lucid-toolkit
+```
+
+### Team Configuration
+
+For team-wide access, add to your `.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "lucid-toolkit": {
+      "source": {
+        "source": "github",
+        "repo": "rayk/lucid-toolkit"
+      }
+    }
+  }
+}
+```
+
+### Manual Installation
+
+If you prefer manual installation:
 
 ```bash
 # Clone the repository
 git clone https://github.com/rayk/lucid-toolkit.git ~/.claude/plugins/lucid-toolkit
 
-# Link plugins to your workspace
+# Link all plugins to your workspace
 cd ~/.claude/plugins
 ln -s lucid-toolkit/plugins/* .
 ```
 
-### Individual Plugin
+To install a single plugin manually:
 
 ```bash
 # Clone the repository
