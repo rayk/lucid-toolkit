@@ -46,6 +46,12 @@
       "path": "plugins/delegation-protocol",
       "description": "Context-saving patterns for efficient Claude Code usage",
       "version": "1.0.0"
+    },
+    {
+      "name": "planner",
+      "path": "plugins/planner",
+      "description": "TDD execution prompt generator with cost-efficient model delegation",
+      "version": "1.0.0"
     }
   ]
 }
