@@ -1,6 +1,6 @@
 ---
 description: Generate a concise snapshot of all capabilities showing structure, maturity, and key metrics
-allowed-tools: [Read]
+allowed-tools: [Read, Glob]
 ---
 
 <objective>
@@ -11,6 +11,7 @@ Performance: Instant display from cached snapshot.
 
 <context>
 @capabilities/SNAPSHOT.md
+Backup source: @status/capability_summary.json
 </context>
 
 <process>
@@ -19,12 +20,20 @@ Display the snapshot contents to the user.
 Note: This snapshot is automatically regenerated whenever capability_summary.json changes.
 </process>
 
-<error_handling>
-If capabilities/SNAPSHOT.md is missing:
-1. Show error: "Snapshot file not found at capabilities/SNAPSHOT.md"
-2. Suggest: "Run capability operations to trigger automatic regeneration"
-3. Advanced: Manually regenerate with: `echo '{}' | python3 hooks/hooks/regenerate_snapshot.py`
-</error_handling>
+<fallback>
+If capabilities/SNAPSHOT.md does not exist or cannot be read:
+
+1. Read status/capability_summary.json instead
+2. Generate snapshot display from the data:
+   - Group capabilities by domain
+   - Show maturity % for each capability
+   - Calculate portfolio average maturity
+   - Flag any blocked or at-risk capabilities
+3. Display with note: "⚠️ Generated on-the-fly (cached SNAPSHOT.md not found)"
+4. Suggest: "Run any capability command to regenerate the cached snapshot"
+
+This ensures the user always gets capability data even when the cache is stale.
+</fallback>
 
 <success_criteria>
 - Snapshot displayed instantly from cache

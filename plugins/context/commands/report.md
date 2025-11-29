@@ -1,6 +1,8 @@
 ---
 description: Report misbehavior of any plugin skill, command, or subagent for later debugging
 argument-hint: <problem description>
+model-hint: haiku
+allowed-tools: [Bash, Write, AskUserQuestion]
 ---
 
 <objective>
@@ -10,7 +12,7 @@ This command:
 - Captures user's description of the problem
 - Records session ID and debug log reference
 - Identifies recent actions before the report
-- Saves structured report to shared/fault directory
+- Saves structured report to ~/.claude/fault directory
 </objective>
 
 <context>
@@ -30,20 +32,13 @@ Timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
    - Component name (e.g., /capability:snapshot, delegate skill)
 
 3. **Gather Context Automatically**:
-   ```bash
-   # Get session ID from latest debug log
-   SESSION_ID=$(head -1 ~/.claude/debug/latest | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
-
-   # Get debug log filename
-   DEBUG_LOG=$(readlink ~/.claude/debug/latest)
-
-   # Get last 50 lines of activity (for recent actions)
-   tail -50 ~/.claude/debug/latest | grep -E "Tool|Hook|command|skill"
-   ```
+   - Extract session ID from ~/.claude/debug/latest
+   - Get debug log filename from the symlink
+   - Capture last 50 lines of relevant activity
 
 4. **Create Report File**:
    - Generate report ID: `fault-YYYYMMDD-HHMMSS`
-   - Path: `shared/fault/{report-id}.json`
+   - Path: `~/.claude/fault/{report-id}.json`
 
 5. **Save Report**:
    ```json
@@ -86,7 +81,7 @@ Timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
 
    Problem: [User description]
 
-   Report saved to: shared/fault/fault-20251129-153045.json
+   Report saved to: ~/.claude/fault/fault-20251129-153045.json
 
    To debug later:
    - Review debug log: ~/.claude/debug/abc12345-...txt
@@ -109,7 +104,7 @@ If problem description doesn't clearly identify the component, ask:
 - Debug log path saved
 - Component identified
 - Recent actions captured
-- Report saved to shared/fault/
+- Report saved to ~/.claude/fault/
 - User can locate report for debugging
 </success_criteria>
 
@@ -138,6 +133,6 @@ capability	command	/capability:snapshot
 
 x-problem: Command ran step-by-step instead of displaying cached content instantly
 x-recentActionsCount: 5
-x-reportPath: shared/fault/fault-20251129-153045.json
+x-reportPath: ~/.claude/fault/fault-20251129-153045.json
 ```
 </output_format>

@@ -20,6 +20,44 @@ Workspace home: @../../shared/workspaces/{workspace-id}/
 Schemas: @schemas/workspace_schema.json, @schemas/project_map_schema.json
 </context>
 
+<execution_strategy>
+## Parallel Execution Requirements
+
+CRITICAL: Use parallel tool calls to maximize performance.
+
+**Parallel Group A** (launch Phase 1 and Phase 2 simultaneously):
+- Phase 1 and Phase 2 are INDEPENDENT - run them in a SINGLE message with multiple tool calls
+- Use parallel Glob calls for capabilities/ and outcomes/ directories
+- Use parallel Read calls for capability_summary.json and outcome_summary.json
+
+**Sequential Group B** (wait for Group A to complete):
+- Phase 3 depends on Phase 1+2 results
+- Phase 4 depends on Phase 3 results
+- These MUST run sequentially
+
+**Parallel Group C** (launch Phases 5, 6, 7 simultaneously):
+- These phases are INDEPENDENT of each other and of Group B
+- Run in a SINGLE message with parallel tool calls:
+  - Phase 5: Read sessions_summary.json, check timestamps
+  - Phase 6: Glob for temp file patterns
+  - Phase 7: Bash git status
+
+**Final** (after all groups complete):
+- Phase 8: Generate consolidated report
+
+## Tool Call Pattern
+
+Example for Group A:
+```
+Message 1: [Glob capabilities/**/*.json] + [Glob outcomes/**/*.json] + [Read capability_summary.json] + [Read outcome_summary.json]
+```
+
+Example for Group C:
+```
+Message N: [Read sessions_summary.json] + [Glob **/temp-*] + [Glob **/exec-report-*] + [Bash git status]
+```
+</execution_strategy>
+
 <process>
 ## 8-Phase Health Check
 
@@ -90,6 +128,29 @@ Schemas: @schemas/workspace_schema.json, @schemas/project_map_schema.json
 - Display workspace statistics
 - Provide remediation recommendations
 </process>
+
+<interactive_mode>
+## User Interaction for Issues
+
+When issues are detected during any phase (unless --batch flag is set):
+
+1. Pause after the phase completes
+2. Use AskUserQuestion with options:
+   - **"Fix automatically"**: Apply the suggested fix and continue
+   - **"Skip this"**: Record issue in report but don't fix, continue
+   - **"Abort"**: Stop health check and show partial report
+
+3. For CRITICAL severity issues, always prompt regardless of --batch flag
+
+Example prompt after Phase 3 finds issues:
+```
+Question: "Phase 3 found 2 cross-reference issues. How should I proceed?"
+Options:
+- "Fix automatically" (apply fixes and continue)
+- "Skip" (record issues, continue without fixing)
+- "Abort" (stop and show report)
+```
+</interactive_mode>
 
 <options>
 **--fix**: Automatically repair issues where possible

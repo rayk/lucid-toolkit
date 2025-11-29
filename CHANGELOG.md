@@ -5,10 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3] - 2025-11-29
+
+### Fixed
+- **capability:snapshot** - Added fallback generation from `capability_summary.json` when `SNAPSHOT.md` is missing, instead of showing error
+- **workspace:health** - Added parallel execution strategy for independent phases (1-2 together, 5-7 together) and interactive mode with user prompts for issue resolution
+- **context:report** - Changed save path from project directory to `~/.claude/fault/` for proper isolation; added `model-hint: haiku` for faster execution
+
+### Changed
+- **capability plugin** bumped to v1.0.2
+- **context plugin** bumped to v1.2.1
+- **workspace plugin** bumped to v1.1.0
+
 ## [2.0.2] - 2025-11-29
 
 ### Added
-- **context:report command** - Report misbehavior of any plugin skill, command, or subagent. Captures session ID, debug log reference, and recent actions for later debugging. Reports saved to `shared/fault/`.
+- **context:report command** - Report misbehavior of any plugin skill, command, or subagent. Captures session ID, debug log reference, and recent actions for later debugging. Reports saved to `~/.claude/fault/`.
 
 ## [2.0.1] - 2025-11-29
 

@@ -2,7 +2,7 @@
   "name": "capability",
   "displayName": "Capability Workflow",
   "description": "Strategic capability management with maturity tracking",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0",
