@@ -2,7 +2,7 @@
   "name": "context",
   "displayName": "Context Manager",
   "description": "Session lifecycle tracking with context window conservation and delegation protocols",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0",
@@ -14,7 +14,8 @@
     "context:compact",
     "context:budget",
     "context:update",
-    "context:validate"
+    "context:validate",
+    "context:report"
   ],
   "skills": [
     "delegate",
