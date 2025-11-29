@@ -1,7 +1,7 @@
 {
   "name": "think",
   "displayName": "Thinking Tools v2.0",
-  "description": "Parallel multi-agent problem solving with 12 mental models, voting, adversarial analysis, and performance measurement",
+  "description": "Parallel multi-agent problem solving with 13 mental models, voting, adversarial analysis, and performance measurement",
   "version": "2.0.0",
   "author": "rayk",
   "dependencies": {
@@ -30,6 +30,7 @@
     "models/second-order",
     "models/swot",
     "models/via-negativa",
+    "models/six-hats",
     "orchestrators/classifier",
     "orchestrators/orchestrator",
     "orchestrators/synthesizer",

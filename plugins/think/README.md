@@ -4,7 +4,7 @@ Structured problem-solving and analysis using mental models and decision framewo
 
 ## Overview
 
-The Thinking Tools plugin provides systematic approaches to analyzing problems, making decisions, and evaluating solutions. It includes 12 proven mental models accessible through 3 commands, with intelligent model selection based on problem type and context.
+The Thinking Tools plugin provides systematic approaches to analyzing problems, making decisions, and evaluating solutions. It includes 13 proven mental models accessible through 5 commands, with intelligent model selection based on problem type and context.
 
 ## Installation
 
@@ -42,7 +42,7 @@ Structured reflection on recent behavior and decisions. Analyzes protocol violat
 
 ### `consider`
 Core skill for applying mental models to problems. Features:
-- Automatic problem classification (8 types: diagnosis, decision, prioritization, innovation, risk, focus, optimization, strategy)
+- Automatic problem classification (9 types: diagnosis, decision, prioritization, innovation, risk, focus, optimization, strategy, deliberation)
 - Interactive focus area selection
 - Intelligent model selection using a 24-row selection matrix
 - Efficient information gathering (local/web/user)
@@ -52,7 +52,7 @@ See `/think:consider` command for access.
 
 ## Mental Models
 
-The plugin includes 12 mental models organized by category:
+The plugin includes 13 mental models organized by category:
 
 ### Root Cause & Diagnosis
 - **5-Whys**: Iterative root cause drilling ("Why did this happen?" × 5)
@@ -75,6 +75,9 @@ The plugin includes 12 mental models organized by category:
 
 ### Strategic Analysis
 - **SWOT**: Map strengths, weaknesses, opportunities, threats
+
+### Deliberation & Group Thinking
+- **Six Hats**: Parallel perspectives (facts, feelings, risks, benefits, alternatives, process)
 
 Each model includes a complete execution template in `skills/consider/references/`.
 

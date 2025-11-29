@@ -1,16 +1,17 @@
 # Workspace Plugin
 
-Multi-project management with shared registry, health validation, and cross-reference integrity for Claude Code.
+IntelliJ workspace project management with index synchronization to member projects.
 
 ## Overview
 
-The Workspace plugin enables management of multiple related projects or repositories as a single unified workspace. It provides:
+The Workspace plugin implements the IntelliJ workspace model where the **workspace itself IS a project** containing capabilities, outcomes, plans, research, and status directories. Member projects are added to the workspace and receive synchronized indexes of workspace artifacts.
 
-- **Shared Registry**: Central workspace registry with multi-project coordination
-- **Subscriber Model**: Multiple projects can subscribe to the same workspace
-- **Health Validation**: 8-phase systematic health checks with auto-repair
-- **Cross-Reference Integrity**: Validation of capability-outcome relationships
-- **Module Resolution**: Quick navigation via `project:module` references
+Key features:
+- **Workspace IS a Project**: The workspace is an IntelliJ project that contains all planning artifacts
+- **Index Synchronization**: Workspace indexes are automatically synced to member projects
+- **Comprehensive Source Mapping**: `project-map.json` maps all project sources, modules, and entry points
+- **10-Phase Health Validation**: Systematic health checks with auto-repair
+- **Module Resolution**: Quick navigation via `project:module[/subpath][#entry]` references
 
 ## Installation
 
@@ -26,120 +27,104 @@ The Workspace plugin enables management of multiple related projects or reposito
 
 - Claude Code >= 1.0.0
 - Python >= 3.11
-- Shared CLI library (required for hooks/scripts):
+- Shared CLI library (required for hooks):
   ```bash
   cd shared/cli-commons && pip install -e .
   ```
 
 ## Architecture
 
-### Shared Workspace Registry
+### Workspace Structure
 
-Workspaces are stored in a shared registry at `shared/workspaces/workspaces.json`. Each workspace has its own home directory containing capabilities, outcomes, and status artifacts.
+The workspace project contains all planning and tracking artifacts:
 
 ```
-shared/workspaces/
-├── workspaces.json              # Central registry of all workspaces
-├── workspaces_schema.json       # Validation schema
-└── {workspace-id}/              # Workspace home directory
-    ├── capabilities/            # Capability artifacts
-    ├── outcomes/                # Outcome artifacts (queued/in-progress/completed)
-    └── status/                  # Summary files and snapshots
+lucid-workspace/                    # Workspace IS the project
+├── workspace.json                  # Workspace definition + project list
+├── project-map.json                # Source maps for all projects
+├── capabilities/                   # Strategic capabilities by domain
+├── outcomes/                       # Work units by state
+│   ├── queued/
+│   ├── ready/
+│   ├── in-progress/
+│   ├── blocked/
+│   └── completed/
+├── plans/                          # Roadmaps and execution plans
+├── research/                       # Domain research and analysis
+├── status/                         # Summary indexes
+│   ├── capability_summary.json
+│   ├── outcome_summary.json
+│   └── actor_summary.json
+├── schemas/                        # JSON validation schemas
+└── .idea/jb-workspace.xml         # IntelliJ workspace flag
 ```
 
-### Subscriber Model
+### Project Integration
 
-Multiple projects can subscribe to the same workspace with different access levels:
+Each member project receives a `.claude/workspace.json` with:
+- **Indexes**: Paths with descriptions to capabilities, outcomes, plans, research, status
+- **Projects List**: All workspace projects with relative paths for navigation
+- **Sync Metadata**: Last sync timestamp and auto-sync settings
 
-- **read**: View workspace, list projects
-- **write**: Add/remove projects, create artifacts
-- **admin**: Delete workspace, manage subscribers
+```
+member-project/.claude/
+└── workspace.json                  # Receives indexes + project list
+    ├── indexes.capabilities        # Path + description + count + domains
+    ├── indexes.outcomes            # Path + description + state counts
+    ├── indexes.plans               # Path + description + items
+    ├── indexes.research            # Path + description + items
+    └── projects[]                  # All workspace projects
+```
 
 ## Commands
 
-### Project Management
+### Workspace Management
 
 #### `/workspace:init [workspace-name]`
-Initialize a new multi-project workspace.
+Initialize the current directory as an IntelliJ workspace project.
 
-Creates workspace entry in shared registry, workspace home directory with subdirectories (capabilities/, outcomes/, status/), and subscribes current project as admin.
-
-#### `/workspace:subscribe [workspace-id]`
-Subscribe current project to an existing shared workspace.
-
-Registers this plugin instance as a subscriber, enabling access to all workspace projects and settings.
-
-#### `/workspace:unsubscribe [workspace-id]`
-Remove current project's subscription from a workspace.
-
-Preserves workspace and its projects (only removes subscription).
+Creates `workspace.json`, `project-map.json`, and all standard directories.
 
 #### `/workspace:add [project-path or git-url]`
-Add an existing project or repository to the current workspace.
+Add a project to the workspace.
 
-Supports local paths or git URLs (will clone if URL provided).
+Updates `workspace.json` and `project-map.json`, creates project's `.claude/workspace.json` with indexes.
 
 #### `/workspace:remove [project-name]`
 Remove a project from workspace configuration.
 
 Preserves project files on disk (configuration only).
 
-#### `/workspace:list [--verbose | --json]`
-Display all projects in subscribed workspaces.
+### Project Connection
 
-Options:
-- `--verbose`: Detailed project information
-- `--json`: JSON output
+#### `/workspace:join [workspace-path]`
+Connect current project to an existing workspace (run from project directory).
+
+Creates `.claude/workspace.json` with indexes to workspace artifacts.
+
+#### `/workspace:leave [--keep-in-workspace]`
+Disconnect current project from its workspace.
+
+Removes `.claude/workspace.json`. By default, also removes project from workspace.
+
+### Synchronization
+
+#### `/workspace:sync [--project <id>] [--dry-run]`
+Synchronize workspace indexes to all member projects.
+
+Reads current state from workspace status files and updates each project's `.claude/workspace.json`.
+
+**Auto-sync**: When `capability_summary.json` or `outcome_summary.json` changes, the sync hook automatically updates all projects.
+
+### Navigation
+
+#### `/workspace:list [--verbose | --json]`
+Display all projects in the workspace with sync status.
+
+Shows project types, roles, languages, sync status, and module counts.
 
 #### `/workspace:switch [project-name]`
 Switch working context to a specific project.
-
-Changes directory, loads project-specific configurations, and displays project overview.
-
-### Validation & Health
-
-#### `/workspace:health [--fix | --verbose | --phase N]`
-Execute comprehensive 8-phase workspace health check.
-
-**Phases:**
-1. Capability Directory-Summary Sync
-2. Outcome Directory-Summary Sync
-3. Cross-Reference Integrity
-4. Index Validation & Rebuild
-5. Temporal Health Checks
-6. Temp File Cleanup
-7. Git Health Check
-8. Comprehensive Report
-
-**Options:**
-- `--fix`: Auto-repair issues
-- `--verbose`: Detailed output
-- `--phase N`: Run specific phase (1-8)
-- `--dry-run`: Preview changes
-- `--json`: JSON output
-
-**Output Format:**
-```
-/workspace:health: [HEALTHY|ISSUES] | Fixes: N | Cap: N (M%) | Out: Q/I/C | Proj: N
-
-Issues Found: 2 (0 critical, 1 high, 1 medium)
-- HIGH: Broken reference in outcome 005-auth
-- MEDIUM: Stale index entry for deprecated capability
-```
-
-#### `/workspace:validate [--schemas | --refs | --all]`
-Deep validation of workspace configurations.
-
-Validates:
-- JSON schemas for all tracking files
-- @ file references in instruction files
-- Project map compliance
-- Naming pattern compliance
-
-**Options:**
-- `--schemas`: Validate JSON schemas only
-- `--refs`: Validate @ references only
-- `--all`: Full validation (default)
 
 #### `/workspace:resolve <project:module[/subpath][#entry]>`
 Resolve module references to absolute paths.
@@ -148,61 +133,79 @@ Resolve module references to absolute paths.
 
 | Pattern | Example | Description |
 |---------|---------|-------------|
-| project:module | luon:neo4j_service | Module in specific project |
-| module_id | neo4j_service | Search all projects (if unique) |
-| project:module/subpath | luon:neo4j_service/cypher | Subpath within module |
-| project:module#entry | luon:neo4j_service#CypherLoader | Entry point file |
+| `project:module` | `lucid-knowledge:neo4j_service` | Module in specific project |
+| `module_id` | `neo4j_service` | Search all projects (if unique) |
+| `project:module/subpath` | `lucid-knowledge:evolution/wrangler` | Subpath within module |
+| `project:module#entry` | `lucid-knowledge:neo4j_service#CypherLoader` | Entry point file |
+
+### Validation & Health
+
+#### `/workspace:health [--fix | --verbose | --phase N]`
+Execute comprehensive 10-phase workspace health check.
+
+**Phases:**
+0. Workspace Structure Validation
+1. Capability Directory-Summary Sync
+2. Outcome Directory-Summary Sync
+3. Cross-Reference Integrity
+4. Index Validation & Rebuild
+5. Project Sync Validation
+6. Temporal Health Checks
+7. Temp File Cleanup
+8. Git Health Check
+9. Comprehensive Report
+
+**Options:**
+- `--fix`: Auto-repair issues
+- `--verbose`: Detailed output
+- `--phase N`: Run specific phase (0-9)
+- `--dry-run`: Preview changes
+- `--json`: JSON output
+
+#### `/workspace:validate [--schemas | --refs | --all]`
+Deep validation of workspace configurations.
 
 ## Usage Examples
 
-### Initialize and Subscribe
+### Initialize Workspace and Add Projects
 
 ```bash
-# Create a new workspace
-/workspace:init platform-services
+# In the workspace project directory
+/workspace:init "My Workspace"
 
-# Subscribe another project to the workspace
-cd /path/to/another/project
-/workspace:subscribe platform-services
+# Add projects
+/workspace:add ../my-library
+/workspace:add ../my-service
 ```
 
-### Health Checks
+### Connect a Project to Workspace
 
 ```bash
+# In the project directory
+/workspace:join ../my-workspace
+```
+
+### Sync and Health Checks
+
+```bash
+# Manually sync indexes to all projects
+/workspace:sync
+
 # Run health check
 /workspace:health --verbose
 
 # Auto-fix issues
 /workspace:health --fix
-
-# Run specific phase
-/workspace:health --phase 3
 ```
 
 ### Navigation
 
 ```bash
-# List all projects
+# List all projects with sync status
 /workspace:list
 
-# Switch to a project
-/workspace:switch api-gateway
-
 # Resolve module path
-/workspace:resolve luon:neo4j_service#CypherLoader
-```
-
-### Validation
-
-```bash
-# Full validation before commit
-/workspace:validate --all
-
-# Check schemas only
-/workspace:validate --schemas
-
-# Check references only
-/workspace:validate --refs
+/workspace:resolve lucid-knowledge:neo4j_service#CypherLoader
 ```
 
 ## Workspace Types
@@ -223,29 +226,16 @@ cd /path/to/another/project
 | `tool` | Development/build tool |
 | `docs` | Documentation project |
 | `config` | Shared configuration |
-
-## Naming Conventions
-
-| Entity | Pattern | Example |
-|--------|---------|---------|
-| Capability ID | `^[a-z0-9]+(-[a-z0-9]+)*$` | `auth-system` |
-| Outcome Dir | `^[0-9]+-[a-z0-9-]+$` | `001-setup-auth` |
-| Child Outcome | `^[0-9]+\.[0-9]+-[a-z0-9-]+$` | `001.1-oauth` |
-| Module ID | `^[a-z][a-z0-9_]*$` | `neo4j_service` |
-
-## Integration with Lucid Toolkit
-
-| Plugin | Uses Workspace For |
-|--------|-------------------|
-| **capability** | `{workspace-home}/capabilities/` |
-| **outcome** | `{workspace-home}/outcomes/` |
-| **context** | Session tracking, workspace context |
+| `planning` | Planning/workspace project |
 
 ## Schemas
 
-- `workspaces_schema.json` - Shared registry validation
-- `workspace_schema.json` - Local workspace configuration
-- `project_map_schema.json` - Project navigation and module lookup
+| Schema | Purpose |
+|--------|---------|
+| `workspace_schema.json` | Workspace project configuration |
+| `project_workspace_schema.json` | Project's `.claude/workspace.json` |
+| `project_map_schema.json` | Source mapping for all projects |
+| `actor_summary_schema.json` | Stakeholder registry |
 
 ## File Structure
 
@@ -253,18 +243,36 @@ cd /path/to/another/project
 plugins/workspace/
 ├── plugin.json              # Plugin metadata
 ├── README.md               # This file
-├── commands/               # Slash commands
+├── settings.json           # Hook configuration
+├── commands/
 │   ├── init.md            # Initialize workspace
-│   ├── subscribe.md       # Subscribe to workspace
-│   ├── unsubscribe.md     # Leave workspace
 │   ├── add.md             # Add project
 │   ├── remove.md          # Remove project
+│   ├── join.md            # Join workspace (from project)
+│   ├── leave.md           # Leave workspace
+│   ├── sync.md            # Sync indexes
 │   ├── list.md            # List projects
 │   ├── switch.md          # Switch context
-│   ├── health.md          # 8-phase health check
+│   ├── health.md          # 10-phase health check
 │   ├── validate.md        # Schema/ref validation
 │   └── resolve.md         # Module resolution
+├── hooks/
+│   ├── pre-commit-validation.py    # Validate before commit
+│   └── sync-on-summary-change.py   # Auto-sync on changes
 └── schemas/
-    ├── workspace_schema.json      # Workspace configuration schema
-    └── project_map_schema.json    # Project map schema
+    ├── workspace_schema.json        # Workspace config (v2.0.0)
+    ├── project_workspace_schema.json # Project index receiver
+    ├── project_map_schema.json      # Source mapping (v2.0.0)
+    └── actor_summary_schema.json    # Stakeholder registry
 ```
+
+## Version History
+
+### v2.0.0
+- **Breaking**: Workspace IS the project (IntelliJ model)
+- Added `plans/` and `research/` directories
+- New index synchronization model with `project_workspace_schema.json`
+- New commands: `join`, `leave`, `sync`
+- Removed: `subscribe`, `unsubscribe` (replaced by join/leave)
+- Auto-sync hook for summary changes
+- 10-phase health check (added Phase 0 and Phase 5)

@@ -38,8 +38,9 @@ This command:
 </objective>
 
 <context>
-Workspace home: @../../shared/workspaces/{workspace-id}/
-Schemas: @schemas/workspace_schema.json, @schemas/project_map_schema.json
+Workspace config: @workspace.json
+Project map: @project-map.json
+Schemas: @schemas/workspace_schema.json, @schemas/project_workspace_schema.json, @schemas/project_map_schema.json
 </context>
 
 <execution_strategy>
@@ -84,18 +85,26 @@ DO NOT split groups into multiple messages or execute fewer tools than specified
 </execution_strategy>
 
 <process>
-## 8-Phase Health Check
+## 10-Phase Health Check
+
+### Phase 0: Workspace Structure Validation (NEW)
+- Verify `workspace.json` exists at workspace root
+- Verify `project-map.json` exists
+- Validate required directories: capabilities/, outcomes/, plans/, research/, status/, schemas/
+- Check IntelliJ integration: `.idea/jb-workspace.xml`
+- Validate against workspace_schema.json
+- **Fix**: Create missing directories, initialize missing files
 
 ### Phase 1: Capability Directory-Summary Synchronization
-- Scan `{workspace-home}/capabilities/` for directories
-- Compare with `{workspace-home}/status/capability_summary.json`
+- Scan `capabilities/` for directories
+- Compare with `status/capability_summary.json`
 - Detect missing `capability_track.json` files
 - Validate schema compliance
 - Detect orphaned summary entries
 - **Fix**: Create skeleton track files and summary entries
 
 ### Phase 2: Outcome Directory-Summary Synchronization
-- Scan `{workspace-home}/outcomes/queued|in-progress|completed/`
+- Scan `outcomes/queued|ready|in-progress|blocked|completed/`
 - Validate folder naming: `^[0-9]+-[a-z0-9-]+$`
 - Check for missing `outcome_track.json` files
 - Validate state consistency (location matches track file)
@@ -131,14 +140,25 @@ DO NOT split groups into multiple messages or execute fewer tools than specified
   - Report as MEDIUM severity if missing
 - **Fix**: Rebuild indexes from source data, add missing shared modules
 
-### Phase 5: Temporal Health Checks
+### Phase 5: Project Sync Validation (NEW)
+- For each project in workspace.json:
+  - Verify project directory exists
+  - Check `.claude/workspace.json` exists
+  - Validate indexes are up-to-date (compare sync.lastSync with status file timestamps)
+  - Verify project listed in project-map.json
+  - Check all projects have each other in their projects arrays
+- Detect out-of-sync projects (sync.lastSync older than status files)
+- Detect orphaned projects (in config but directory missing)
+- **Fix**: Run `/workspace:sync` to update indexes, remove orphaned entries
+
+### Phase 6: Temporal Health Checks
 - Detect zombie sessions (>24h old)
 - Flag old sessions (>12h)
 - Identify stale history (>72h) for pruning
 - Validate timestamps on summary files
 - **Fix**: Prune old history, update timestamps
 
-### Phase 6: Temp File Cleanup
+### Phase 7: Temp File Cleanup
 - Clean files based on retention policy:
   - exec-report-*.md: 72 hours
   - agent-*.log: 12 hours
@@ -147,13 +167,13 @@ DO NOT split groups into multiple messages or execute fewer tools than specified
 - Respect preserve patterns
 - **Fix**: Delete expired temp files
 
-### Phase 7: Git Health Check
+### Phase 8: Git Health Check
 - Check uncommitted tracking files
 - Validate remote tracking
 - Detect merge conflicts
 - **Report**: Warnings for uncommitted changes
 
-### Phase 8: Comprehensive Health Report
+### Phase 9: Comprehensive Health Report
 - Generate severity-based report (CRITICAL/HIGH/MEDIUM/LOW/INFO)
 - Show phase results with pass/fail
 - Display workspace statistics

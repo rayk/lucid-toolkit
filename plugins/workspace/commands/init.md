@@ -1,148 +1,208 @@
 ---
-description: Initialize a new multi-project workspace configuration
+description: Initialize a new workspace project (the workspace IS the project)
 argument-hint: [workspace-name]
 ---
 
 <objective>
-Initialize a new workspace for managing multiple related projects/repositories as a unified development environment.
+Initialize the current directory as an IntelliJ workspace project. The workspace itself IS a project that contains capabilities, outcomes, plans, research, and status directories. Other projects are added to this workspace via `/workspace:add` or IntelliJ's "Add project to workspace".
 
 This command creates:
-- A workspace entry in the shared registry (`shared/workspaces/workspaces.json`)
-- A workspace home directory (`shared/workspaces/{workspace-id}/`)
-- Standard subdirectories for capabilities, outcomes, and status
-- Automatic subscription for the current project as admin
+- `workspace.json` at workspace root - defines workspace identity and lists member projects
+- `project-map.json` at workspace root - comprehensive source map for all projects
+- Standard directories: capabilities/, outcomes/, plans/, research/, status/, schemas/
+- IntelliJ integration via `.idea/` configuration
 </objective>
 
 <context>
-Shared registry: @../../shared/workspaces/workspaces.json
-Schema validation: @../../shared/workspaces/workspaces_schema.json
-Local schema: @schemas/workspace_schema.json
+Workspace schema: @schemas/workspace_schema.json
+Project workspace schema: @schemas/project_workspace_schema.json
+Project map schema: @schemas/project_map_schema.json
 Actor summary schema: @schemas/actor_summary_schema.json
 </context>
 
 <process>
-1. **Load Shared Registry**:
-   - Read `shared/workspaces/workspaces.json`
-   - If registry doesn't exist: Initialize with empty workspaces array
-   - Check for existing workspace with same ID to prevent duplicates
+1. **Verify Workspace Location**:
+   - Confirm current directory should be the workspace project
+   - Check for existing `workspace.json` to prevent re-initialization
+   - Verify `.idea/` directory exists (IntelliJ project)
 
 2. **Gather Workspace Identity**:
    - If $ARGUMENTS provided: Use as workspace name
    - Otherwise: Ask user for workspace name
-   - Generate workspace ID following pattern: `^[a-z0-9]+(-[a-z0-9]+)*$`
-   - Determine workspace root directory (current directory or specified path)
-   - Verify ID is unique in shared registry
+   - Generate workspace ID from name: lowercase, hyphenated (pattern: `^[a-z0-9]+(-[a-z0-9]+)*$`)
+   - Current directory becomes workspace root
 
 3. **Capture Workspace Metadata**:
    - **Name**: Human-readable workspace name
    - **Description**: Purpose and scope of this workspace
    - **Type**: monorepo | multi-repo | hybrid
-   - **Primary Language/Stack**: Main technology focus
+   - **Primary Stack**: Main technology focus (e.g., Python, TypeScript)
 
-4. **Configure Initial Projects**:
-   - Scan current directory for existing projects (look for package.json, pyproject.toml, Cargo.toml, go.mod, etc.)
-   - Present discovered projects to user for confirmation
-   - For each project capture:
-     - **Path**: Relative path from workspace root
-     - **absolutePath**: Resolved absolute path
-     - **Name**: Project identifier
-     - **Type**: library | service | application | tool | docs
-     - **Role**: primary | supporting | shared
+4. **Create Workspace Directories**:
+   ```
+   {workspace-root}/
+   ├── capabilities/           # Strategic capabilities by domain
+   ├── outcomes/               # Work units by state
+   │   ├── queued/
+   │   ├── ready/
+   │   ├── in-progress/
+   │   ├── blocked/
+   │   └── completed/
+   ├── plans/                  # Roadmaps and execution plans
+   ├── research/               # Domain research and analysis
+   ├── status/                 # Summary indexes
+   └── schemas/                # JSON schemas for validation
+   ```
 
-5. **Establish Workspace Settings**:
-   - **Default shell**: Shell to use for workspace commands
-   - **Shared configurations**: List of shared config files (.editorconfig, .prettierrc, etc.)
-   - **Build order**: Dependency-based project build sequence (if applicable)
-
-6. **Create Workspace Home Directory**:
-   - Create directory: `shared/workspaces/{workspace-id}/`
-   - Create subdirectory: `shared/workspaces/{workspace-id}/capabilities/`
-   - Create subdirectory: `shared/workspaces/{workspace-id}/outcomes/`
-   - Create subdirectory: `shared/workspaces/{workspace-id}/outcomes/queued/`
-   - Create subdirectory: `shared/workspaces/{workspace-id}/outcomes/in-progress/`
-   - Create subdirectory: `shared/workspaces/{workspace-id}/outcomes/completed/`
-   - Create subdirectory: `shared/workspaces/{workspace-id}/status/`
-   - Create initial tracking file: `shared/workspaces/{workspace-id}/status/actor_summary.json`:
-     ```json
-     {
-       "version": "1.0.0",
-       "actors": [],
-       "indexByType": {},
-       "indexByDomain": {},
-       "summary": {
-         "totalActors": 0,
-         "actorsByType": {},
-         "actorsByDomain": {},
-         "lastUpdated": "<ISO 8601 timestamp>"
-       }
+5. **Create workspace.json**:
+   Write workspace configuration at root:
+   ```json
+   {
+     "$schema": "./schemas/workspace_schema.json",
+     "id": "{workspace-id}",
+     "name": "{Workspace Name}",
+     "description": "{description}",
+     "type": "{monorepo|multi-repo|hybrid}",
+     "rootPath": "{absolute-path}",
+     "primaryStack": "{stack}",
+     "directories": {
+       "capabilities": "capabilities/",
+       "outcomes": "outcomes/",
+       "plans": "plans/",
+       "research": "research/",
+       "status": "status/",
+       "schemas": "schemas/"
+     },
+     "intellij": {
+       "ideaDirectory": ".idea/",
+       "workspaceFile": ".idea/jb-workspace.xml",
+       "modulesFile": ".idea/modules.xml"
+     },
+     "projects": [],
+     "projectMap": "project-map.json",
+     "settings": {
+       "defaultShell": "/bin/zsh",
+       "sharedConfigs": [],
+       "syncOnChange": true
+     },
+     "metadata": {
+       "created": "{ISO 8601 timestamp}",
+       "updated": "{ISO 8601 timestamp}",
+       "createdBy": "{user}",
+       "version": "2.0.0"
      }
-     ```
+   }
+   ```
 
-7. **Register in Shared Registry**:
-   - Create workspace entry in `shared/workspaces/workspaces.json`:
-     ```json
-     {
-       "id": "{workspace-id}",
-       "name": "{Workspace Name}",
-       "homePath": "shared/workspaces/{workspace-id}/",
-       "rootPath": "{absolute-path-to-code}",
-       "directories": {
-         "capabilities": "capabilities/",
-         "outcomes": "outcomes/",
-         "status": "status/"
-       },
-       "projects": [...],
-       "subscribers": [...]
-     }
-     ```
-   - Add current project as first subscriber with admin access
-   - Set created/updated timestamps
-   - Validate against workspaces_schema.json
-   - Save registry
-
-8. **Configure Shared Modules**:
-   - Add `@shared/status-line/` module reference to the project configuration:
-     ```json
-     {
-       "id": "status_line",
-       "name": "Status Line",
-       "path": "shared/status-line",
-       "type": "library",
-       "description": "Claude Code status line configuration utilities",
-       "technology": {
-         "language": "Python"
-       },
-       "entryPoints": [
-         {
-           "name": "status_line",
-           "file": "status_line.py",
-           "symbol": "StatusLine"
+6. **Create project-map.json**:
+   Initialize project map for source navigation:
+   ```json
+   {
+     "$schema": "./schemas/project_map_schema.json",
+     "workspace": {
+       "name": "{workspace-name}",
+       "rootDirectory": "{absolute-path}",
+       "workspaceFile": ".idea/jb-workspace.xml",
+       "description": "{description}",
+       "lastUpdated": "{ISO 8601 timestamp}"
+     },
+     "scopes": {
+       "workspaceOperations": {
+         "capabilities": {
+           "directory": "capabilities/",
+           "description": "Strategic capabilities organized by domain with maturity tracking"
+         },
+         "outcomes": {
+           "baseDirectory": "outcomes/",
+           "subdirectories": {
+             "queued": "outcomes/queued/",
+             "ready": "outcomes/ready/",
+             "inProgress": "outcomes/in-progress/",
+             "blocked": "outcomes/blocked/",
+             "completed": "outcomes/completed/"
+           },
+           "description": "Work units organized by execution state"
+         },
+         "plans": {
+           "directory": "plans/",
+           "description": "Strategic roadmaps and execution plans"
+         },
+         "research": {
+           "directory": "research/",
+           "description": "Domain research and technology evaluation"
+         },
+         "status": {
+           "directory": "status/",
+           "description": "Summary indexes for quick artifact lookup",
+           "keyFiles": [
+             {"name": "capability_summary.json", "purpose": "All capabilities index"},
+             {"name": "outcome_summary.json", "purpose": "All outcomes index"},
+             {"name": "actor_summary.json", "purpose": "Stakeholder registry"}
+           ]
          }
-       ],
-       "status": "active"
+       },
+       "configuration": {
+         "workspace": [
+           {"name": "workspace.json", "purpose": "Workspace configuration"},
+           {"name": "project-map.json", "purpose": "Project source mapping"}
+         ]
+       }
+     },
+     "projects": [],
+     "tempFileManagement": {
+       "location": "temp",
+       "maxAgeHours": 24,
+       "autoCleanup": true
      }
-     ```
-   - Register in project's `modules` array
+   }
+   ```
 
-9. **Initialize Cross-References**:
-   - Map inter-project dependencies
-   - Identify shared modules or libraries
-   - Document project boundaries
+7. **Initialize Status Files**:
+   Create `status/actor_summary.json`:
+   ```json
+   {
+     "$schema": "../schemas/actor_summary_schema.json",
+     "version": "1.0.0",
+     "actors": [],
+     "indexByType": {},
+     "indexByDomain": {},
+     "summary": {
+       "totalActors": 0,
+       "actorsByType": {},
+       "actorsByDomain": {},
+       "lastUpdated": "{ISO 8601 timestamp}"
+     }
+   }
+   ```
+
+8. **Update IntelliJ Configuration**:
+   - Verify `.idea/jb-workspace.xml` has workspace flag
+   - If missing, create with:
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project version="4">
+     <component name="WorkspaceSettings">
+       <option name="workspace" value="true" />
+     </component>
+   </project>
+   ```
+
+9. **Scan for Existing Projects**:
+   - Look for sibling directories with git repos
+   - Check for IntelliJ module references in `.idea/modules.xml`
+   - Present discovered projects to user
+   - Offer to add them via `/workspace:add`
 </process>
 
 <success_criteria>
-- Workspace registered in shared registry
-- Workspace home directory created at `shared/workspaces/{workspace-id}/`
-- Subdirectories created: capabilities/, outcomes/, status/
-- Outcomes subdirectories created: queued/, in-progress/, completed/
-- Workspace ID follows naming pattern `^[a-z0-9]+(-[a-z0-9]+)*$`
-- Workspace ID is unique (no duplicates in registry)
-- At least one project registered in workspace
-- Current project subscribed as admin
-- Workspace type correctly identified
-- All discovered projects presented for user review
-- `@shared/status-line/` module configured in project's modules array
-- Document validates against workspaces_schema.json
+- `workspace.json` created at workspace root
+- `project-map.json` created at workspace root
+- All directories created: capabilities/, outcomes/, plans/, research/, status/, schemas/
+- Outcome subdirectories: queued/, ready/, in-progress/, blocked/, completed/
+- `status/actor_summary.json` initialized
+- IntelliJ workspace flag set in `.idea/jb-workspace.xml`
+- Workspace ID follows pattern `^[a-z0-9]+(-[a-z0-9]+)*$`
+- Files validate against respective schemas
 </success_criteria>
 
 <output_format>
@@ -154,62 +214,52 @@ actionStatus: CompletedActionStatus
 @id: workspace/{workspace-id}
 name: {workspace-name}
 x-type: {monorepo|multi-repo|hybrid}
-x-projects: {count}
-result: Workspace initialized at shared/workspaces/{workspace-id}/
+x-rootPath: {absolute-path}
+result: Workspace initialized
 
-directoriesCreated[7]: capabilities/,outcomes/,outcomes/queued/,outcomes/in-progress/,outcomes/completed/,status/,{workspace-id}/
-filesCreated[1]: status/actor_summary.json
-filesUpdated[1]: workspaces.json
+directoriesCreated[10]: capabilities/,outcomes/,outcomes/queued/,outcomes/ready/,outcomes/in-progress/,outcomes/blocked/,outcomes/completed/,plans/,research/,status/,schemas/
+filesCreated[3]: workspace.json,project-map.json,status/actor_summary.json
 ```
 
 **Use TOON when:**
-- Returning initialization results to subagents
-- Automated workspace setup workflows
-- Token efficiency is critical
+- Returning results to subagents
+- Automated workspace setup
+- Token efficiency needed
 
 **Use markdown when:**
-- Final user-facing output with detailed setup info
-- Interactive initialization process
+- User-facing output
+- Interactive setup
 </output_format>
 
 <output>
 Directories created:
-- `shared/workspaces/{workspace-id}/`
-- `shared/workspaces/{workspace-id}/capabilities/`
-- `shared/workspaces/{workspace-id}/outcomes/`
-- `shared/workspaces/{workspace-id}/outcomes/queued/`
-- `shared/workspaces/{workspace-id}/outcomes/in-progress/`
-- `shared/workspaces/{workspace-id}/outcomes/completed/`
-- `shared/workspaces/{workspace-id}/status/`
+- `capabilities/` - Strategic capabilities by domain
+- `outcomes/` - Work units (queued/, ready/, in-progress/, blocked/, completed/)
+- `plans/` - Roadmaps and execution plans
+- `research/` - Domain research and analysis
+- `status/` - Summary indexes
+- `schemas/` - JSON validation schemas
 
 Files created:
-- `shared/workspaces/{workspace-id}/status/actor_summary.json` - Empty actor registry
+- `workspace.json` - Workspace configuration
+- `project-map.json` - Project source mapping
+- `status/actor_summary.json` - Empty stakeholder registry
 
-Files updated:
-- `shared/workspaces/workspaces.json` - New workspace added to registry
-
-Summary displayed:
-- Workspace name, ID, and type
-- Workspace home path
-- Number of projects registered
-- Detected inter-project dependencies
-- Subscription confirmation (admin access)
+Summary:
+- Workspace: {name} ({id})
+- Type: {monorepo|multi-repo|hybrid}
+- Root: {absolute-path}
+- Projects: 0 (use /workspace:add to add projects)
 </output>
 
 <verification>
 Before completing, verify:
-- [ ] Shared registry loaded/created
-- [ ] Workspace ID is unique in registry
-- [ ] Workspace ID is valid (lowercase, hyphenated)
-- [ ] Workspace home directory created
-- [ ] All subdirectories created (capabilities, outcomes, status)
-- [ ] Outcomes subdirectories created (queued, in-progress, completed)
-- [ ] Actor summary file created at `status/actor_summary.json` with empty registry structure
-- [ ] All intended projects are registered with absolute paths
-- [ ] Current project added as admin subscriber
-- [ ] Project paths are correct and accessible
-- [ ] Workspace type matches actual structure
-- [ ] `@shared/status-line/` module added to project modules array
-- [ ] Schema validation passes
-- [ ] Registry saved successfully
+- [ ] Current directory confirmed as workspace location
+- [ ] workspace.json created with valid schema reference
+- [ ] project-map.json created with valid schema reference
+- [ ] All directories created and accessible
+- [ ] status/actor_summary.json initialized
+- [ ] IntelliJ .idea/jb-workspace.xml has workspace flag
+- [ ] Workspace ID is valid format
+- [ ] Schema validation passes for all JSON files
 </verification>

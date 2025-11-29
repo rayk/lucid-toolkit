@@ -1,17 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Workspace Configuration",
-  "description": "Multi-project workspace configuration for managing related repositories and projects as a unified development environment",
-  "schemaVersion": "1.0.0",
+  "description": "IntelliJ workspace project configuration - the workspace IS a project that contains capabilities, outcomes, plans, research, and status directories, with references to member projects",
+  "schemaVersion": "2.0.0",
   "type": "object",
-  "required": ["id", "name", "type", "projects"],
+  "required": ["id", "name", "type", "rootPath", "directories", "projects"],
 
   "properties": {
     "id": {
       "type": "string",
       "description": "Unique workspace identifier (kebab-case)",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-      "examples": ["my-workspace", "platform-services", "frontend-apps"]
+      "examples": ["lucid-workspace", "platform-services"]
     },
 
     "name": {
@@ -19,13 +19,12 @@
       "minLength": 2,
       "maxLength": 100,
       "description": "Human-readable workspace name",
-      "examples": ["My Workspace", "Platform Services", "Frontend Applications"]
+      "examples": ["Lucid Workspace", "Platform Services"]
     },
 
     "description": {
       "type": "string",
-      "description": "Purpose and scope of this workspace",
-      "examples": ["Collection of microservices for the platform backend", "All frontend applications and shared UI components"]
+      "description": "Purpose and scope of this workspace"
     },
 
     "type": {
@@ -36,19 +35,79 @@
 
     "rootPath": {
       "type": "string",
-      "description": "Absolute path to workspace root directory",
-      "examples": ["/Users/dev/workspaces/platform", "/home/dev/projects/frontend"]
+      "description": "Absolute path to workspace root directory (the workspace project itself)",
+      "examples": ["/Users/dev/Projects/lucid-workspace"]
     },
 
     "primaryStack": {
       "type": "string",
       "description": "Primary technology stack or language focus",
-      "examples": ["TypeScript/Node.js", "Python", "Go", "Rust", "Mixed"]
+      "examples": ["Python", "TypeScript/Node.js", "Mixed"]
+    },
+
+    "directories": {
+      "type": "object",
+      "description": "Workspace operational directories - these exist within the workspace project",
+      "required": ["capabilities", "outcomes", "status"],
+      "properties": {
+        "capabilities": {
+          "type": "string",
+          "description": "Path to capabilities directory (relative to workspace root)",
+          "default": "capabilities/"
+        },
+        "outcomes": {
+          "type": "string",
+          "description": "Path to outcomes directory (relative to workspace root)",
+          "default": "outcomes/"
+        },
+        "plans": {
+          "type": "string",
+          "description": "Path to plans directory (relative to workspace root)",
+          "default": "plans/"
+        },
+        "research": {
+          "type": "string",
+          "description": "Path to research directory (relative to workspace root)",
+          "default": "research/"
+        },
+        "status": {
+          "type": "string",
+          "description": "Path to status/summaries directory (relative to workspace root)",
+          "default": "status/"
+        },
+        "schemas": {
+          "type": "string",
+          "description": "Path to JSON schemas directory (relative to workspace root)",
+          "default": "schemas/"
+        }
+      }
+    },
+
+    "intellij": {
+      "type": "object",
+      "description": "IntelliJ IDEA workspace integration settings",
+      "properties": {
+        "ideaDirectory": {
+          "type": "string",
+          "description": "Path to .idea directory (relative to workspace root)",
+          "default": ".idea/"
+        },
+        "workspaceFile": {
+          "type": "string",
+          "description": "Path to jb-workspace.xml file",
+          "default": ".idea/jb-workspace.xml"
+        },
+        "modulesFile": {
+          "type": "string",
+          "description": "Path to modules.xml file",
+          "default": ".idea/modules.xml"
+        }
+      }
     },
 
     "projects": {
       "type": "array",
-      "description": "Projects registered in this workspace",
+      "description": "Projects that are part of this workspace (added via IntelliJ or /workspace:add)",
       "items": {
         "type": "object",
         "required": ["id", "name", "path", "type"],
@@ -64,18 +123,22 @@
           },
           "path": {
             "type": "string",
-            "description": "Path to project relative to workspace root",
-            "examples": ["./packages/core", "./services/api", "../external-lib"]
+            "description": "Path to project relative to workspace root (use ../ for sibling directories)",
+            "examples": ["../lucid-knowledge", "./packages/core"]
+          },
+          "absolutePath": {
+            "type": "string",
+            "description": "Absolute path to project directory"
           },
           "type": {
             "type": "string",
-            "enum": ["library", "service", "application", "tool", "docs", "config"],
+            "enum": ["library", "service", "application", "tool", "docs", "config", "planning"],
             "description": "Project type classification"
           },
           "role": {
             "type": "string",
             "enum": ["primary", "supporting", "shared"],
-            "description": "Role within the workspace: primary (main projects), supporting (helpers/tools), shared (used by multiple projects)",
+            "description": "Role within the workspace",
             "default": "primary"
           },
           "description": {
@@ -85,32 +148,22 @@
           "language": {
             "type": "string",
             "description": "Primary programming language",
-            "examples": ["TypeScript", "Python", "Go", "Rust", "Java"]
+            "examples": ["Python", "TypeScript", "Dart"]
           },
           "framework": {
             "type": "string",
             "description": "Primary framework if applicable",
-            "examples": ["React", "FastAPI", "Express", "Django"]
+            "examples": ["Neo4j", "FastAPI", "Flutter"]
           },
-          "tags": {
-            "type": "array",
-            "items": {"type": "string"},
-            "description": "Categorization tags",
-            "default": []
-          },
-          "dependencies": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "description": "Project ID of workspace project this depends on"
-            },
-            "description": "Inter-project dependencies within workspace",
-            "default": []
-          },
-          "externalUrl": {
+          "gitRemote": {
             "type": "string",
             "format": "uri",
-            "description": "Git remote URL for external/cloned projects"
+            "description": "Git remote URL"
+          },
+          "defaultBranch": {
+            "type": "string",
+            "description": "Default git branch name",
+            "default": "main"
           },
           "status": {
             "type": "string",
@@ -120,7 +173,13 @@
           }
         }
       },
-      "minItems": 1
+      "minItems": 0
+    },
+
+    "projectMap": {
+      "type": "string",
+      "description": "Path to project-map.json file containing detailed source maps for all projects",
+      "default": "project-map.json"
     },
 
     "settings": {
@@ -130,26 +189,18 @@
         "defaultShell": {
           "type": "string",
           "description": "Default shell for workspace commands",
-          "default": "bash"
+          "default": "/bin/zsh"
         },
         "sharedConfigs": {
           "type": "array",
           "items": {"type": "string"},
           "description": "Shared configuration files applied across projects",
-          "examples": [[".editorconfig", ".prettierrc", "tsconfig.base.json"]],
           "default": []
         },
-        "buildOrder": {
-          "type": "array",
-          "items": {"type": "string"},
-          "description": "Project IDs in dependency-resolved build order",
-          "default": []
-        },
-        "envFiles": {
-          "type": "array",
-          "items": {"type": "string"},
-          "description": "Workspace-level environment files",
-          "default": []
+        "syncOnChange": {
+          "type": "boolean",
+          "description": "Automatically sync indexes to projects when summaries change",
+          "default": true
         }
       }
     },
@@ -175,7 +226,7 @@
         "version": {
           "type": "string",
           "description": "Workspace configuration version",
-          "default": "1.0.0"
+          "default": "2.0.0"
         }
       }
     }
@@ -183,60 +234,65 @@
 
   "examples": [
     {
-      "id": "platform-services",
-      "name": "Platform Services",
-      "description": "Backend microservices for the platform",
-      "type": "multi-repo",
-      "rootPath": "/Users/dev/workspaces/platform",
-      "primaryStack": "TypeScript/Node.js",
+      "id": "lucid-workspace",
+      "name": "Lucid Workspace",
+      "description": "Capability-driven development workspace for Lucid Commons strata management platform",
+      "type": "hybrid",
+      "rootPath": "/Users/rayk/Projects/lucid-workspace",
+      "primaryStack": "Python",
+      "directories": {
+        "capabilities": "capabilities/",
+        "outcomes": "outcomes/",
+        "plans": "plans/",
+        "research": "research/",
+        "status": "status/",
+        "schemas": "schemas/"
+      },
+      "intellij": {
+        "ideaDirectory": ".idea/",
+        "workspaceFile": ".idea/jb-workspace.xml",
+        "modulesFile": ".idea/modules.xml"
+      },
       "projects": [
         {
-          "id": "api-gateway",
-          "name": "API Gateway",
-          "path": "./api-gateway",
-          "type": "service",
-          "role": "primary",
-          "description": "Main API gateway service",
-          "language": "TypeScript",
-          "framework": "Express",
-          "tags": ["api", "gateway"],
-          "dependencies": ["shared-utils"]
-        },
-        {
-          "id": "shared-utils",
-          "name": "Shared Utilities",
-          "path": "./shared/utils",
+          "id": "lucid-knowledge",
+          "name": "Lucid Knowledge",
+          "path": "../lucid-knowledge",
+          "absolutePath": "/Users/rayk/Projects/lucid-knowledge",
           "type": "library",
-          "role": "shared",
-          "description": "Common utilities used across services",
-          "language": "TypeScript",
-          "tags": ["shared", "utilities"],
-          "dependencies": []
+          "role": "primary",
+          "description": "Knowledge graph evolution and query system built on Neo4j",
+          "language": "Python",
+          "framework": "Neo4j",
+          "gitRemote": "git@github.com:rayk/lucid-knowledge.git",
+          "defaultBranch": "main",
+          "status": "active"
         },
         {
-          "id": "user-service",
-          "name": "User Service",
-          "path": "./services/user",
-          "type": "service",
-          "role": "primary",
-          "description": "User management microservice",
-          "language": "TypeScript",
-          "framework": "Express",
-          "tags": ["microservice", "users"],
-          "dependencies": ["shared-utils"]
+          "id": "lucid-toolkit",
+          "name": "Lucid Toolkit",
+          "path": "../lucid-toolkit",
+          "absolutePath": "/Users/rayk/Projects/lucid-toolkit",
+          "type": "tool",
+          "role": "supporting",
+          "description": "Claude Code plugin marketplace with capability-driven development workflows",
+          "language": "Markdown",
+          "gitRemote": "git@github.com:rayk/lucid-toolkit.git",
+          "defaultBranch": "main",
+          "status": "active"
         }
       ],
+      "projectMap": "project-map.json",
       "settings": {
-        "defaultShell": "bash",
-        "sharedConfigs": [".editorconfig", "tsconfig.base.json"],
-        "buildOrder": ["shared-utils", "api-gateway", "user-service"],
-        "envFiles": [".env.workspace"]
+        "defaultShell": "/bin/zsh",
+        "sharedConfigs": [".editorconfig"],
+        "syncOnChange": true
       },
       "metadata": {
-        "created": "2025-01-15T00:00:00Z",
-        "updated": "2025-01-20T14:30:00Z",
-        "createdBy": "dev",
-        "version": "1.0.0"
+        "created": "2025-11-29T17:30:00Z",
+        "updated": "2025-11-29T21:45:00Z",
+        "createdBy": "rayk",
+        "version": "2.0.0"
       }
     }
   ]

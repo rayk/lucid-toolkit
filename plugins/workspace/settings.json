@@ -14,6 +14,20 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 hooks/sync-on-summary-change.py \"$TOOL_INPUT_FILE_PATH\"",
+            "condition": "toolInput.file_path matches '(capability_summary|outcome_summary)\\.json$'",
+            "order": 1,
+            "description": "Sync indexes to projects when capability or outcome summaries change"
+          }
+        ]
+      }
     ]
   }
 }

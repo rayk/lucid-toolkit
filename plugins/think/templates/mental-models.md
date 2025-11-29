@@ -18,6 +18,7 @@ A concise reference for selecting and applying mental models in the think plugin
 | "What happens next?" | Second-Order | Consequence chains |
 | "Where do we stand?" | SWOT | Strategic position |
 | "What should I remove?" | Via Negativa | Simplification |
+| "What are all the angles?" | Six Hats | Parallel perspectives |
 
 ## Model Summaries
 
@@ -61,6 +62,9 @@ Map Strengths, Weaknesses, Opportunities, Threats in a 2x2 matrix (internal/exte
 ### Via Negativa
 Improve by removing negatives rather than adding positives. What should you stop doing?
 
+### Six Thinking Hats
+Explore from six perspectives: White (facts), Red (feelings), Black (risks), Yellow (benefits), Green (alternatives), Blue (process). Everyone wears the same hat at the same time.
+
 ## Combining Models
 
 **For root cause analysis**: 5-Whys → First Principles → Inversion
@@ -70,3 +74,5 @@ Improve by removing negatives rather than adding positives. What should you stop
 **For prioritization**: Pareto → One Thing → Via Negativa
 
 **For strategy**: SWOT → Inversion → Second-Order
+
+**For group deliberation**: Six Hats → Second-Order → Opportunity Cost

@@ -33,6 +33,8 @@ Core principle: Match problem type to optimal model(s), minimize tokens through 
 | FOCUS | leverage | one-thing | pareto | eisenhower |
 | OPTIMIZATION | removal | via-negativa | pareto | one-thing |
 | STRATEGY | position | swot | inversion | second-order |
+| DELIBERATION | perspectives | six-hats | swot | inversion |
+| DECISION | emotions-logic | six-hats | 10-10-10 | inversion |
 </selection_matrix>
 
 <execution_patterns>
@@ -56,6 +58,7 @@ Core principle: Match problem type to optimal model(s), minimize tokens through 
 | inversion | sonnet | 1800 |
 | second-order | sonnet | 2000 |
 | swot | sonnet | 2500 |
+| six-hats | sonnet | 2500 |
 </model_tiers>
 
 <output_format>

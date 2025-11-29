@@ -1,8 +1,8 @@
 {
   "name": "workspace",
   "displayName": "Workspace",
-  "description": "Multi-project management with shared registry, health validation, and cross-reference integrity",
-  "version": "1.2.0",
+  "description": "IntelliJ workspace project management with index synchronization to member projects",
+  "version": "2.0.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0",
@@ -14,8 +14,9 @@
     "workspace:remove",
     "workspace:list",
     "workspace:switch",
-    "workspace:subscribe",
-    "workspace:unsubscribe",
+    "workspace:join",
+    "workspace:leave",
+    "workspace:sync",
     "workspace:health",
     "workspace:validate",
     "workspace:resolve"
@@ -24,14 +25,11 @@
   "settings": "settings.json",
   "schemas": [
     "workspace_schema.json",
+    "project_workspace_schema.json",
     "project_map_schema.json",
     "actor_summary_schema.json"
   ],
   "sharedLibraries": [
     "../../shared/cli-commons"
-  ],
-  "sharedData": {
-    "workspacesRegistry": "../../shared/workspaces/workspaces.json",
-    "workspacesSchema": "../../shared/workspaces/workspaces_schema.json"
-  }
+  ]
 }

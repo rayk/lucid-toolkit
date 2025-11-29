@@ -1,0 +1,443 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project Workspace Configuration",
+  "description": "Configuration file for a project that is part of a workspace. Contains indexes to workspace artifacts (capabilities, outcomes, plans, research) and list of sibling projects. Located at .claude/workspace.json within each project.",
+  "schemaVersion": "1.0.0",
+  "type": "object",
+  "required": ["projectId", "workspacePath", "indexes", "projects"],
+
+  "properties": {
+    "projectId": {
+      "type": "string",
+      "description": "This project's identifier within the workspace (kebab-case)",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "examples": ["lucid-knowledge", "lucid-toolkit"]
+    },
+
+    "projectName": {
+      "type": "string",
+      "description": "Human-readable project name"
+    },
+
+    "workspaceId": {
+      "type": "string",
+      "description": "ID of the workspace this project belongs to",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+
+    "workspaceName": {
+      "type": "string",
+      "description": "Human-readable workspace name"
+    },
+
+    "workspacePath": {
+      "type": "string",
+      "description": "Relative path from this project to the workspace root",
+      "examples": ["../lucid-workspace", "../../workspaces/platform"]
+    },
+
+    "workspaceAbsolutePath": {
+      "type": "string",
+      "description": "Absolute path to the workspace root directory"
+    },
+
+    "indexes": {
+      "type": "object",
+      "description": "Indexes to workspace artifacts - paths with descriptions of what's at each location",
+      "required": ["capabilities", "outcomes", "status"],
+      "properties": {
+        "capabilities": {
+          "type": "object",
+          "description": "Index to capability artifacts",
+          "required": ["path", "description"],
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Relative path from workspace root to capabilities directory",
+              "examples": ["capabilities/"]
+            },
+            "description": {
+              "type": "string",
+              "description": "What this directory contains",
+              "examples": ["Strategic capabilities organized by domain. Each capability has capability_track.json defining maturity, outcomes, and dependencies."]
+            },
+            "summaryFile": {
+              "type": "string",
+              "description": "Path to capability summary index file",
+              "examples": ["status/capability_summary.json"]
+            },
+            "count": {
+              "type": "integer",
+              "description": "Total number of capabilities"
+            },
+            "domains": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "List of capability domains",
+              "examples": [["compliance", "financial", "governance", "platform", "trust-security"]]
+            }
+          }
+        },
+        "outcomes": {
+          "type": "object",
+          "description": "Index to outcome artifacts",
+          "required": ["path", "description"],
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Relative path from workspace root to outcomes directory",
+              "examples": ["outcomes/"]
+            },
+            "description": {
+              "type": "string",
+              "description": "What this directory contains",
+              "examples": ["Work units organized by state (queued, ready, in-progress, blocked, completed). Each outcome has outcome_track.json defining tasks, capability contributions, and observable effects."]
+            },
+            "summaryFile": {
+              "type": "string",
+              "description": "Path to outcome summary index file",
+              "examples": ["status/outcome_summary.json"]
+            },
+            "states": {
+              "type": "object",
+              "description": "Subdirectories for each outcome state",
+              "properties": {
+                "queued": {"type": "string"},
+                "ready": {"type": "string"},
+                "in-progress": {"type": "string"},
+                "blocked": {"type": "string"},
+                "completed": {"type": "string"}
+              }
+            },
+            "counts": {
+              "type": "object",
+              "description": "Count of outcomes in each state",
+              "properties": {
+                "queued": {"type": "integer"},
+                "ready": {"type": "integer"},
+                "inProgress": {"type": "integer"},
+                "blocked": {"type": "integer"},
+                "completed": {"type": "integer"},
+                "total": {"type": "integer"}
+              }
+            }
+          }
+        },
+        "plans": {
+          "type": "object",
+          "description": "Index to planning artifacts",
+          "required": ["path", "description"],
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Relative path from workspace root to plans directory",
+              "examples": ["plans/"]
+            },
+            "description": {
+              "type": "string",
+              "description": "What this directory contains",
+              "examples": ["Strategic and tactical plans. Includes roadmaps, execution plans, and design documents that guide outcome execution."]
+            },
+            "items": {
+              "type": "array",
+              "description": "List of plan files/directories",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "path": {"type": "string"},
+                  "description": {"type": "string"},
+                  "type": {
+                    "type": "string",
+                    "enum": ["roadmap", "execution", "design", "architecture"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "research": {
+          "type": "object",
+          "description": "Index to research artifacts",
+          "required": ["path", "description"],
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Relative path from workspace root to research directory",
+              "examples": ["research/"]
+            },
+            "description": {
+              "type": "string",
+              "description": "What this directory contains",
+              "examples": ["Research documentation including domain analysis, technology evaluation, and competitive research that informs capability and outcome design."]
+            },
+            "items": {
+              "type": "array",
+              "description": "List of research files/directories",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "path": {"type": "string"},
+                  "description": {"type": "string"},
+                  "domain": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "status": {
+          "type": "object",
+          "description": "Index to status and summary files",
+          "required": ["path", "description"],
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Relative path from workspace root to status directory",
+              "examples": ["status/"]
+            },
+            "description": {
+              "type": "string",
+              "description": "What this directory contains",
+              "examples": ["Summary indexes and status tracking files. capability_summary.json and outcome_summary.json provide quick access to all artifacts without traversing directories."]
+            },
+            "files": {
+              "type": "array",
+              "description": "Key status files",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "path": {"type": "string"},
+                  "description": {"type": "string"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "projects": {
+      "type": "array",
+      "description": "All projects in the workspace (including this one) with paths for cross-project navigation",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "path", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project identifier",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable project name"
+          },
+          "path": {
+            "type": "string",
+            "description": "Path relative to this project's location",
+            "examples": [".", "../lucid-toolkit", "../lucid-workspace"]
+          },
+          "absolutePath": {
+            "type": "string",
+            "description": "Absolute path to project"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["library", "service", "application", "tool", "docs", "config", "planning", "workspace"],
+            "description": "Project type"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["primary", "supporting", "shared", "workspace"],
+            "description": "Role in the workspace"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief project description"
+          },
+          "isSelf": {
+            "type": "boolean",
+            "description": "True if this entry refers to the current project",
+            "default": false
+          },
+          "isWorkspace": {
+            "type": "boolean",
+            "description": "True if this entry refers to the workspace project itself",
+            "default": false
+          }
+        }
+      }
+    },
+
+    "projectMap": {
+      "type": "object",
+      "description": "Reference to the workspace's project-map.json for source navigation",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to project-map.json relative to workspace root",
+          "examples": ["project-map.json"]
+        },
+        "resolvePrefix": {
+          "type": "string",
+          "description": "Prefix to use when resolving module references (e.g., 'lucid-knowledge:neo4j_service')"
+        }
+      }
+    },
+
+    "sync": {
+      "type": "object",
+      "description": "Synchronization metadata",
+      "properties": {
+        "lastSync": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When indexes were last synchronized from workspace"
+        },
+        "autoSync": {
+          "type": "boolean",
+          "description": "Whether to automatically sync when workspace changes",
+          "default": true
+        },
+        "syncedBy": {
+          "type": "string",
+          "description": "What triggered the last sync (hook, command, manual)"
+        }
+      }
+    },
+
+    "metadata": {
+      "type": "object",
+      "description": "Configuration metadata",
+      "properties": {
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this project joined the workspace"
+        },
+        "schemaVersion": {
+          "type": "string",
+          "description": "Schema version for this configuration file",
+          "default": "1.0.0"
+        }
+      }
+    }
+  },
+
+  "examples": [
+    {
+      "projectId": "lucid-knowledge",
+      "projectName": "Lucid Knowledge",
+      "workspaceId": "lucid-workspace",
+      "workspaceName": "Lucid Workspace",
+      "workspacePath": "../lucid-workspace",
+      "workspaceAbsolutePath": "/Users/rayk/Projects/lucid-workspace",
+      "indexes": {
+        "capabilities": {
+          "path": "capabilities/",
+          "description": "Strategic capabilities organized by domain (compliance, financial, governance, platform, trust-security). Each capability has capability_track.json defining maturity percentage, required outcomes, and prerequisite dependencies.",
+          "summaryFile": "status/capability_summary.json",
+          "count": 31,
+          "domains": ["compliance", "financial", "governance", "platform", "trust-security"]
+        },
+        "outcomes": {
+          "path": "outcomes/",
+          "description": "Work units organized by state. Each outcome has outcome_track.json with tasks, capability contributions, observable effects, and execution logs. Parent outcomes contain child outcomes.",
+          "summaryFile": "status/outcome_summary.json",
+          "states": {
+            "queued": "outcomes/queued/",
+            "ready": "outcomes/ready/",
+            "in-progress": "outcomes/in-progress/",
+            "blocked": "outcomes/blocked/",
+            "completed": "outcomes/completed/"
+          },
+          "counts": {
+            "queued": 6,
+            "ready": 0,
+            "inProgress": 5,
+            "blocked": 0,
+            "completed": 0,
+            "total": 11
+          }
+        },
+        "plans": {
+          "path": "plans/",
+          "description": "Strategic roadmaps and execution plans. Contains design documents, architecture decisions, and phased implementation plans that guide outcome execution.",
+          "items": []
+        },
+        "research": {
+          "path": "research/",
+          "description": "Domain research and technology evaluation. Includes strata legislation analysis, Neo4j patterns, and competitive research informing capability design.",
+          "items": []
+        },
+        "status": {
+          "path": "status/",
+          "description": "Summary indexes for quick artifact access. capability_summary.json indexes all capabilities with maturity metrics. outcome_summary.json indexes all outcomes with progress tracking.",
+          "files": [
+            {
+              "name": "capability_summary.json",
+              "path": "status/capability_summary.json",
+              "description": "Central index of all 31 capabilities with maturity percentages, domains, and activity states"
+            },
+            {
+              "name": "outcome_summary.json",
+              "path": "status/outcome_summary.json",
+              "description": "Central index of all outcomes with state, progress, and capability contributions"
+            },
+            {
+              "name": "actor_summary.json",
+              "path": "status/actor_summary.json",
+              "description": "Registry of 26 domain actors (stakeholders) in the strata management ecosystem"
+            }
+          ]
+        }
+      },
+      "projects": [
+        {
+          "id": "lucid-workspace",
+          "name": "Lucid Workspace",
+          "path": "../lucid-workspace",
+          "absolutePath": "/Users/rayk/Projects/lucid-workspace",
+          "type": "workspace",
+          "role": "workspace",
+          "description": "Capability-driven development workspace for Lucid Commons",
+          "isWorkspace": true
+        },
+        {
+          "id": "lucid-knowledge",
+          "name": "Lucid Knowledge",
+          "path": ".",
+          "absolutePath": "/Users/rayk/Projects/lucid-knowledge",
+          "type": "library",
+          "role": "primary",
+          "description": "Knowledge graph evolution and query system built on Neo4j",
+          "isSelf": true
+        },
+        {
+          "id": "lucid-toolkit",
+          "name": "Lucid Toolkit",
+          "path": "../lucid-toolkit",
+          "absolutePath": "/Users/rayk/Projects/lucid-toolkit",
+          "type": "tool",
+          "role": "supporting",
+          "description": "Claude Code plugin marketplace with capability-driven development workflows"
+        }
+      ],
+      "projectMap": {
+        "path": "project-map.json",
+        "resolvePrefix": "lucid-knowledge"
+      },
+      "sync": {
+        "lastSync": "2025-11-29T22:00:00Z",
+        "autoSync": true,
+        "syncedBy": "workspace:sync"
+      },
+      "metadata": {
+        "joinedAt": "2025-11-29T21:45:00Z",
+        "schemaVersion": "1.0.0"
+      }
+    }
+  ]
+}

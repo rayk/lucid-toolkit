@@ -31,6 +31,7 @@ Core principle: Accurate classification leads to optimal model selection.
 | FOCUS | "focus", "leverage", "important" | Finding highest-impact actions |
 | OPTIMIZATION | "simplify", "remove", "reduce" | Improving by subtraction |
 | STRATEGY | "strategy", "position", "compete" | Assessing competitive position |
+| DELIBERATION | "perspectives", "group", "meeting", "angles", "discuss" | Exploring from multiple viewpoints |
 </problem_types>
 
 <classification_dimensions>
@@ -46,7 +47,7 @@ problem: {original problem statement}
 actionStatus: CompletedActionStatus
 
 classification:
-  primaryType: {DIAGNOSIS|DECISION|PRIORITIZATION|INNOVATION|RISK|FOCUS|OPTIMIZATION|STRATEGY}
+  primaryType: {DIAGNOSIS|DECISION|PRIORITIZATION|INNOVATION|RISK|FOCUS|OPTIMIZATION|STRATEGY|DELIBERATION}
   secondaryType: {optional - if problem spans types}
   temporalFocus: {PAST|PRESENT|FUTURE}
   complexity: {SIMPLE|COMPLICATED|COMPLEX}

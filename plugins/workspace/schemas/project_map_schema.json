@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Project Map Schema",
-  "description": "Central navigation map for Claude agents to understand workspace structure and locate files efficiently",
-  "schemaVersion": "1.0.0",
+  "description": "Comprehensive source map for all projects in the workspace. Enables agents and outcomes to reference any part of any project using project:module[/subpath][#entry] syntax.",
+  "schemaVersion": "2.0.0",
   "type": "object",
   "required": [
     "workspace",
@@ -147,6 +147,48 @@
                 },
                 "description": {
                   "type": "string"
+                },
+                "items": {
+                  "type": "array",
+                  "description": "Research documents and their topics",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "path": {"type": "string"},
+                      "description": {"type": "string"},
+                      "domain": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            },
+            "plans": {
+              "type": "object",
+              "description": "Planning artifacts directory",
+              "properties": {
+                "directory": {
+                  "type": "string",
+                  "description": "Path to plans directory"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "items": {
+                  "type": "array",
+                  "description": "Plan documents and their scope",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "path": {"type": "string"},
+                      "description": {"type": "string"},
+                      "type": {
+                        "type": "string",
+                        "enum": ["roadmap", "execution", "design", "architecture"]
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -567,7 +609,13 @@
           },
           "research": {
             "directory": "research",
-            "description": "Results of research on project-related topics"
+            "description": "Domain research and technology evaluation informing capability design",
+            "items": []
+          },
+          "plans": {
+            "directory": "plans",
+            "description": "Strategic roadmaps and execution plans guiding outcome execution",
+            "items": []
           }
         },
         "configuration": {
