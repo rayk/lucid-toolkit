@@ -2,7 +2,7 @@
   "name": "workspace",
   "displayName": "Workspace",
   "description": "Multi-project management with shared registry, health validation, and cross-reference integrity",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0",

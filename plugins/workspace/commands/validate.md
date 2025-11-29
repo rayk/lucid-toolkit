@@ -58,7 +58,13 @@ Validates all @ file references:
    - Check for SKILL.md or README.md variants
    - Skip schema.org keywords (type, return, etc.)
 
-3. **Report Broken References**
+3. **Validate Shared Module References**
+   - Check `@shared/status-line/` module is configured in project
+   - Verify module path exists: `shared/status-line/`
+   - Verify entry point exists: `shared/status-line/status_line.py`
+   - Report missing modules with recommendation to run `/workspace:init`
+
+4. **Report Broken References**
    ```
    path/to/file:line - @broken/reference
    ```
@@ -161,6 +167,7 @@ Recommendations:
 <success_criteria>
 - All requested validations executed
 - Errors reported with file:line references
+- `@shared/status-line/` module configuration validated
 - Actionable recommendations provided
 - Exit code reflects validation status (0=pass, 1=errors)
 </success_criteria>

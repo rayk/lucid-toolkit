@@ -100,7 +100,31 @@ Actor summary schema: @schemas/actor_summary_schema.json
    - Validate against workspaces_schema.json
    - Save registry
 
-8. **Initialize Cross-References**:
+8. **Configure Shared Modules**:
+   - Add `@shared/status-line/` module reference to the project configuration:
+     ```json
+     {
+       "id": "status_line",
+       "name": "Status Line",
+       "path": "shared/status-line",
+       "type": "library",
+       "description": "Claude Code status line configuration utilities",
+       "technology": {
+         "language": "Python"
+       },
+       "entryPoints": [
+         {
+           "name": "status_line",
+           "file": "status_line.py",
+           "symbol": "StatusLine"
+         }
+       ],
+       "status": "active"
+     }
+     ```
+   - Register in project's `modules` array
+
+9. **Initialize Cross-References**:
    - Map inter-project dependencies
    - Identify shared modules or libraries
    - Document project boundaries
@@ -117,6 +141,7 @@ Actor summary schema: @schemas/actor_summary_schema.json
 - Current project subscribed as admin
 - Workspace type correctly identified
 - All discovered projects presented for user review
+- `@shared/status-line/` module configured in project's modules array
 - Document validates against workspaces_schema.json
 </success_criteria>
 
@@ -184,6 +209,7 @@ Before completing, verify:
 - [ ] Current project added as admin subscriber
 - [ ] Project paths are correct and accessible
 - [ ] Workspace type matches actual structure
+- [ ] `@shared/status-line/` module added to project modules array
 - [ ] Schema validation passes
 - [ ] Registry saved successfully
 </verification>

@@ -125,7 +125,11 @@ DO NOT split groups into multiple messages or execute fewer tools than specified
 - Rebuild indexByDomain from capabilities
 - Rebuild indexByMaturity ranges
 - Detect stale index entries
-- **Fix**: Rebuild indexes from source data
+- **Validate shared module references**:
+  - Check `@shared/status-line/` module exists in project configuration
+  - Verify `shared/status-line/status_line.py` file exists
+  - Report as MEDIUM severity if missing
+- **Fix**: Rebuild indexes from source data, add missing shared modules
 
 ### Phase 5: Temporal Health Checks
 - Detect zombie sessions (>24h old)
