@@ -5,11 +5,13 @@ description: Structured problem-solving using mental models with intelligent app
 
 <objective>
 Analyze problems, decisions, and questions using proven mental frameworks. This skill:
-1. Classifies problems by type and characteristics
-2. Assesses information requirements (local, web, user)
-3. Gathers context efficiently using subagent coordination
-4. Selects and executes optimal mental model(s)
-5. Synthesizes actionable insights
+1. Recalls relevant past analyses from memory (if MCP memory available)
+2. Classifies problems by type and characteristics
+3. Assesses information requirements (local, web, user)
+4. Gathers context efficiently using subagent coordination
+5. Selects and executes optimal mental model(s)
+6. Synthesizes actionable insights
+7. Stores analysis to memory for future recall
 </objective>
 
 <quick_start>
@@ -33,6 +35,8 @@ The command will analyze, gather required information, then apply the right mode
 | FOCUS | "focus", "leverage", "important" | Finding highest-impact actions |
 | OPTIMIZATION | "simplify", "remove", "reduce" | Improving by subtraction |
 | STRATEGY | "strategy", "position", "compete" | Assessing competitive position |
+| DELIBERATION | "perspectives", "group", "meeting", "angles" | Exploring from multiple viewpoints |
+| SYSTEMIC | "symptoms", "causes", "constraint", "bottleneck" | Complex system diagnosis (TOC) |
 </problem_types>
 
 <classification_dimensions>
@@ -71,6 +75,10 @@ The command will analyze, gather required information, then apply the right mode
 | STRATEGY | Position | SWOT | Second-Order |
 | STRATEGY | Competition | SWOT | Inversion |
 | STRATEGY | Long-term | Second-Order | SWOT |
+| DELIBERATION | Perspectives | Six Hats | SWOT |
+| DELIBERATION | Emotions vs logic | Six Hats | 10-10-10 |
+| SYSTEMIC | Constraint | TOC | 5-Whys |
+| SYSTEMIC | Conflict resolution | TOC | Six Hats |
 </selection_matrix>
 
 </approach_selection>
@@ -91,6 +99,8 @@ The command will analyze, gather required information, then apply the right mode
 | Second-Order | Consequence analysis | "And then what happens?" |
 | SWOT | Strategic position | "Strengths/Weaknesses/Opportunities/Threats?" |
 | Via Negativa | Simplification | "What should I remove?" |
+| Six Hats | Parallel perspectives | "What are all the angles?" |
+| TOC | Systemic root cause + conflict resolution | "What constraint is blocking the system?" |
 
 **Full model templates**: See `references/` directory for complete execution frameworks.
 
@@ -237,6 +247,58 @@ Use multiple lenses simultaneously for validation:
 </parallel_triangulation>
 
 </combination_patterns>
+
+<memory_recall>
+
+**At analysis start, if MCP memory tools are available:**
+
+<step_0_recall>
+**Recall Past Context**
+
+Use `mcp__memory__search_nodes` to find relevant prior analyses:
+
+```
+search_nodes("{key problem terms}")
+```
+
+**Look for:**
+- Similar Problem entities (entityType: "Problem")
+- Related RootCause entities (entityType: "RootCause")
+- Applicable Insight entities (entityType: "Insight")
+
+**If matches found, use `mcp__memory__open_nodes` to get details:**
+
+```
+open_nodes(["problem-similar-issue", "insight-relevant-finding"])
+```
+
+**Present to user:**
+```
+## Prior Context (from memory)
+
+**Similar problems analyzed:**
+- [problem name]: [key observations]
+
+**Relevant insights:**
+- [insight]: [content, outcome]
+
+**Recurring root causes in this area:**
+- [root cause]: [occurrence count]
+```
+
+**Use prior context to:**
+- Suggest models that worked well before
+- Highlight root causes that recur
+- Avoid repeating failed approaches
+- Build on validated insights
+
+**Skip memory recall if:**
+- MCP memory tools not available
+- User requests fresh analysis
+- No relevant matches found
+</step_0_recall>
+
+</memory_recall>
 
 <process>
 
@@ -386,5 +448,13 @@ Model execution templates (read when applying specific model):
 - `references/second-order.md` - Consequence chains
 - `references/swot.md` - Strategic position
 - `references/via-negativa.md` - Improvement by subtraction
+- `references/six-hats.md` - Parallel perspective exploration
+- `references/toc.md` - Theory of Constraints logical thinking
 
 </references>
+
+<memory_reference>
+
+For memory schema details, see `mcp/memory-schema.md`.
+
+</memory_reference>

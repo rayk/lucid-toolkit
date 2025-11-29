@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.7] - 2025-11-29
+
+### Added
+- **TOC (Theory of Constraints) mental model** - Three-phase analysis (CRT → EC → FRT) for systemic problems with multiple symptoms, hidden conflicts, or when obvious fixes keep failing
+- **CLR Validator agent** - Adversarial logic validator using Goldratt's 8 Categories of Legitimate Reservation for rigorous causal chain validation
+- **SYSTEMIC problem type** - New classifier category for complex system diagnosis with keywords: symptoms, causes, constraint, bottleneck, systemic, root cause, chain
+- **TOC memory schema extensions** - 4 new entity types (UDE, CausalLink, Assumption, NegativeBranch), 8 new relation types, observation templates, and memory operations for cross-session TOC learning
+
+### Changed
+- **think plugin** bumped to v2.2.0 (13 → 14 mental models, 17 → 19 agents)
+
 ## [2.0.6] - 2025-11-29
 
 ### Added

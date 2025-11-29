@@ -32,6 +32,7 @@ Core principle: Accurate classification leads to optimal model selection.
 | OPTIMIZATION | "simplify", "remove", "reduce" | Improving by subtraction |
 | STRATEGY | "strategy", "position", "compete" | Assessing competitive position |
 | DELIBERATION | "perspectives", "group", "meeting", "angles", "discuss" | Exploring from multiple viewpoints |
+| SYSTEMIC | "symptoms", "causes", "constraint", "bottleneck", "systemic", "root cause", "chain" | Complex system diagnosis using Theory of Constraints |
 </problem_types>
 
 <classification_dimensions>
@@ -47,7 +48,7 @@ problem: {original problem statement}
 actionStatus: CompletedActionStatus
 
 classification:
-  primaryType: {DIAGNOSIS|DECISION|PRIORITIZATION|INNOVATION|RISK|FOCUS|OPTIMIZATION|STRATEGY|DELIBERATION}
+  primaryType: {DIAGNOSIS|DECISION|PRIORITIZATION|INNOVATION|RISK|FOCUS|OPTIMIZATION|STRATEGY|DELIBERATION|SYSTEMIC}
   secondaryType: {optional - if problem spans types}
   temporalFocus: {PAST|PRESENT|FUTURE}
   complexity: {SIMPLE|COMPLICATED|COMPLEX}

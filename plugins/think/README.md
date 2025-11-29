@@ -4,7 +4,7 @@ Structured problem-solving and analysis using mental models and decision framewo
 
 ## Overview
 
-The Thinking Tools plugin provides systematic approaches to analyzing problems, making decisions, and evaluating solutions. It includes 13 proven mental models accessible through 5 commands, with intelligent model selection based on problem type and context.
+The Thinking Tools plugin provides systematic approaches to analyzing problems, making decisions, and evaluating solutions. It includes 14 proven mental models accessible through 5 commands, with intelligent model selection based on problem type and context.
 
 ## Installation
 
@@ -52,7 +52,7 @@ See `/think:consider` command for access.
 
 ## Mental Models
 
-The plugin includes 13 mental models organized by category:
+The plugin includes 14 mental models organized by category:
 
 ### Root Cause & Diagnosis
 - **5-Whys**: Iterative root cause drilling ("Why did this happen?" × 5)
@@ -78,6 +78,9 @@ The plugin includes 13 mental models organized by category:
 
 ### Deliberation & Group Thinking
 - **Six Hats**: Parallel perspectives (facts, feelings, risks, benefits, alternatives, process)
+
+### Systemic Analysis
+- **Theory of Constraints (TOC)**: Three-phase analysis (CRT → EC → FRT) with CLR validation for systemic problems
 
 Each model includes a complete execution template in `skills/consider/references/`.
 
@@ -113,6 +116,12 @@ Assessment will analyze: assumptions, edge cases, failure modes, and provide con
 ```
 Reflection will: identify root cause, propose solutions, and implement if approved
 
+### Systemic Problem with Multiple Symptoms
+```bash
+/think:consider We have slow releases, customer complaints, and declining morale. The usual fixes aren't working.
+```
+System will likely apply: TOC with CLR validation
+
 ## Templates
 
 The plugin includes two template files:
@@ -143,6 +152,41 @@ Gathering is parallelized when possible to minimize token usage.
 
 - Claude Code >= 1.0.0
 - No shared libraries required
+
+### Optional: MCP Memory Server
+
+For persistent memory across sessions (recall past analyses, learn from patterns):
+
+```bash
+# Install the official MCP memory server
+npx -y @modelcontextprotocol/server-memory
+```
+
+**Configure in Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_FILE_PATH": "~/.claude/think-memory.jsonl"
+      }
+    }
+  }
+}
+```
+
+**What memory enables:**
+- Recall similar problems you've analyzed before
+- See which models worked well for each problem type
+- Track recurring root causes across analyses
+- Build on validated insights from past sessions
+
+**Memory is optional** - the plugin works fully without it, but won't persist insights across sessions.
+
+See `mcp/memory-schema.md` for the full entity/relation schema
 
 ## Related Plugins
 

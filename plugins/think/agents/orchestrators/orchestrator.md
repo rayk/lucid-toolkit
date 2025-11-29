@@ -35,6 +35,9 @@ Core principle: Match problem type to optimal model(s), minimize tokens through 
 | STRATEGY | position | swot | inversion | second-order |
 | DELIBERATION | perspectives | six-hats | swot | inversion |
 | DECISION | emotions-logic | six-hats | 10-10-10 | inversion |
+| SYSTEMIC | constraint | toc | 5-whys | inversion |
+| SYSTEMIC | conflict | toc | six-hats | first-principles |
+| DIAGNOSIS | multi-symptom | toc | 5-whys | pareto |
 </selection_matrix>
 
 <execution_patterns>
@@ -59,6 +62,8 @@ Core principle: Match problem type to optimal model(s), minimize tokens through 
 | second-order | sonnet | 2000 |
 | swot | sonnet | 2500 |
 | six-hats | sonnet | 2500 |
+| toc | sonnet | 3500 |
+| clr-validator | sonnet | 1500 |
 </model_tiers>
 
 <output_format>

@@ -1,7 +1,7 @@
 ---
 name: think-synthesizer
-description: Result synthesis and voting specialist who merges parallel agent outputs into unified insight with consensus scoring.
-tools: Read
+description: Result synthesis and voting specialist who merges parallel agent outputs into unified insight with consensus scoring. Optionally stores insights to MCP memory.
+tools: Read, mcp__memory__create_entities, mcp__memory__create_relations, mcp__memory__add_observations, mcp__memory__search_nodes
 model: sonnet
 ---
 
@@ -61,3 +61,77 @@ minorityViews[N]{model,perspective}:
 
 needsValidation: {true|false - if SPLIT or HIGH emotional loading}
 </output_format>
+
+<memory_integration>
+After synthesis, if MCP memory tools are available, store the analysis for future recall.
+
+**Storage Protocol:**
+
+1. **Create Analysis Entity**
+```
+create_entities([{
+  name: "analysis-{date}-{problem-slug}",
+  entityType: "Analysis",
+  observations: [
+    "Date: {YYYY-MM-DD}",
+    "Type: {problem type}",
+    "Focus: {focus area}",
+    "Models: {comma-separated models used}",
+    "Confidence: {aggregate confidence}",
+    "Consensus: {UNANIMOUS|MAJORITY|SPLIT}",
+    "Key insight: {synthesis.keyInsight}",
+    "Action: {synthesis.recommendedAction}"
+  ]
+}])
+```
+
+2. **Create/Update Problem Entity**
+```
+search_nodes("{problem keywords}")
+-> If exists: add_observations with "Analyzed again: {date}"
+-> If new: create_entities([{
+  name: "problem-{slug}",
+  entityType: "Problem",
+  observations: [
+    "Domain: {detected domain}",
+    "Symptoms: {original UDEs}",
+    "First seen: {date}"
+  ]
+}])
+```
+
+3. **Create Insight Entity**
+```
+create_entities([{
+  name: "insight-{slug}",
+  entityType: "Insight",
+  observations: [
+    "From: analysis-{date}-{problem-slug}",
+    "Validated: pending",
+    "Content: {keyInsight}"
+  ]
+}])
+```
+
+4. **Create Relations**
+```
+create_relations([
+  { from: "analysis-...", to: "problem-...", relationType: "analyzed" },
+  { from: "analysis-...", to: "insight-...", relationType: "produced" },
+  { from: "analysis-...", to: "model-{name}", relationType: "used_model" }
+])
+```
+
+5. **Update Model Stats**
+```
+For each model used:
+add_observations("model-{name}", [
+  "Used: {date} for {problem type} with confidence {score}"
+])
+```
+
+**Skip memory storage if:**
+- MCP memory tools not available (graceful degradation)
+- User explicitly disabled memory
+- Confidence < 0.3 (low-value insight)
+</memory_integration>

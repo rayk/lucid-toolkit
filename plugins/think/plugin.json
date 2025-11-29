@@ -1,11 +1,30 @@
 {
   "name": "think",
-  "displayName": "Thinking Tools v2.0",
-  "description": "Parallel multi-agent problem solving with 13 mental models, voting, adversarial analysis, and performance measurement",
-  "version": "2.0.0",
+  "displayName": "Thinking Tools v2.2",
+  "description": "Parallel multi-agent problem solving with 14 mental models, voting, adversarial analysis, persistent memory, and performance measurement",
+  "version": "2.2.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0"
+  },
+  "optionalDependencies": {
+    "mcp": {
+      "memory": {
+        "package": "@modelcontextprotocol/server-memory",
+        "description": "Persistent knowledge graph for cross-session learning",
+        "tools": [
+          "create_entities",
+          "create_relations",
+          "add_observations",
+          "delete_entities",
+          "delete_observations",
+          "delete_relations",
+          "read_graph",
+          "search_nodes",
+          "open_nodes"
+        ]
+      }
+    }
   },
   "commands": [
     "think:consider",
@@ -31,7 +50,9 @@
     "models/swot",
     "models/via-negativa",
     "models/six-hats",
+    "models/toc",
     "orchestrators/classifier",
+    "orchestrators/clr-validator",
     "orchestrators/orchestrator",
     "orchestrators/synthesizer",
     "orchestrators/validator"
@@ -39,6 +60,9 @@
   "templates": [
     "mental-models.md",
     "assessment-framework.md"
+  ],
+  "mcp": [
+    "memory-schema.md"
   ],
   "benchmarks": {
     "harness": "benchmarks/harness.py",
