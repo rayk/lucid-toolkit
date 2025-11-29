@@ -3,6 +3,28 @@ description: Execute comprehensive workspace health check and reconciliation
 argument-hint: [--fix | --verbose | --phase N]
 ---
 
+<delegation_mandate>
+CRITICAL: This command performs 30+ tool operations across 8 phases. You MUST delegate.
+
+**Phase 1 (Main Context - 0 tools):**
+- Parse $ARGUMENTS to extract flags (--fix, --verbose, --phase N, --dry-run, --json)
+- IMMEDIATELY delegate Phase 2
+
+**Phase 2 (Delegated via Task tool):**
+- ALL file operations, analysis, and health checks happen in subagent
+- subagent_type: Explore
+- Token budget: 4000 (sonnet model)
+- Return format: TOON (see output_format section)
+
+DO NOT in Main Context:
+- Read any workspace files
+- Scan any directories
+- Perform analysis
+- Make any file modifications
+
+The subagent has full access and will handle everything including user interaction.
+</delegation_mandate>
+
 <objective>
 Perform systematic 8-phase health check on workspace structure, validate cross-references, and optionally fix issues automatically.
 
@@ -56,6 +78,9 @@ Example for Group C:
 ```
 Message N: [Read sessions_summary.json] + [Glob **/temp-*] + [Glob **/exec-report-*] + [Bash git status]
 ```
+
+CRITICAL: Each group MUST be executed as a SINGLE message with ALL tools in parallel.
+DO NOT split groups into multiple messages or execute fewer tools than specified.
 </execution_strategy>
 
 <process>
@@ -77,7 +102,7 @@ Message N: [Read sessions_summary.json] + [Glob **/temp-*] + [Glob **/exec-repor
 - Detect stale and orphaned entries
 - **Fix**: Create skeleton files, recalculate summary stats
 
-### Phase 3: Cross-Reference Integrity Validation
+### Phase 3: Cross-Reference Integrity Validation (INTERACTIVE CHECKPOINT)
 - Validate capability → outcome references
 - Check outcome → capability references
 - Validate composed capability relationships
@@ -91,6 +116,8 @@ Message N: [Read sessions_summary.json] + [Glob **/temp-*] + [Glob **/exec-repor
 - Detect broken references (entity doesn't exist)
 - Detect stale references (entity moved state)
 - **Fix**: Remove broken references, update paths (circular dependencies require manual resolution)
+
+**After Phase 3**: If issues found, MUST call AskUserQuestion per interactive_mode before continuing.
 
 ### Phase 4: Index Validation & Rebuild
 - Validate and rebuild indexByType (atomic/composed)
@@ -132,15 +159,18 @@ Message N: [Read sessions_summary.json] + [Glob **/temp-*] + [Glob **/exec-repor
 <interactive_mode>
 ## User Interaction for Issues
 
-When issues are detected during any phase (unless --batch flag is set):
+CRITICAL REQUIREMENT: When ANY phase detects issues (unless --fix flag auto-fixes them):
 
-1. Pause after the phase completes
-2. Use AskUserQuestion with options:
-   - **"Fix automatically"**: Apply the suggested fix and continue
-   - **"Skip this"**: Record issue in report but don't fix, continue
-   - **"Abort"**: Stop health check and show partial report
+1. MUST pause execution after phase completion
+2. MUST call AskUserQuestion tool with EXACTLY these options:
+   - **"Fix automatically"**: Apply suggested fixes and continue to next phase
+   - **"Skip this"**: Record in report only, do NOT fix, continue to next phase
+   - **"Abort"**: Stop immediately and show partial report
 
-3. For CRITICAL severity issues, always prompt regardless of --batch flag
+3. ONLY skip this prompt if --fix flag was explicitly provided
+4. For CRITICAL severity issues, ALWAYS prompt even with --fix flag
+
+VALIDATION: Before proceeding to next phase, confirm AskUserQuestion was called if issues were detected.
 
 Example prompt after Phase 3 finds issues:
 ```
