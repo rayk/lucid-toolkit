@@ -1,26 +1,30 @@
 ---
 description: Generate a concise snapshot of all capabilities showing structure, maturity, and key metrics
+allowed-tools: [Read]
 ---
 
 <objective>
 Display the pre-computed capability snapshot showing hierarchical structure, maturity levels, and health indicators.
 
-Performance: Displays cached snapshot in <100ms (vs ~16s for LLM generation).
+Performance: Instant display from cached snapshot.
 </objective>
 
 <context>
-Pre-computed snapshot: @capabilities/SNAPSHOT.md
+@capabilities/SNAPSHOT.md
 </context>
 
 <process>
-1. Check if capabilities/SNAPSHOT.md exists
-2. If exists: Display its contents directly (no processing needed)
-3. If missing: Run the regeneration hook, then display:
-   ```bash
-   echo '{}' | python3 hooks/hooks/regenerate_snapshot.py
-   ```
-   Then read and display capabilities/SNAPSHOT.md
+Display the snapshot contents to the user.
+
+Note: This snapshot is automatically regenerated whenever capability_summary.json changes.
 </process>
+
+<error_handling>
+If capabilities/SNAPSHOT.md is missing:
+1. Show error: "Snapshot file not found at capabilities/SNAPSHOT.md"
+2. Suggest: "Run capability operations to trigger automatic regeneration"
+3. Advanced: Manually regenerate with: `echo '{}' | python3 hooks/hooks/regenerate_snapshot.py`
+</error_handling>
 
 <success_criteria>
 - Snapshot displayed instantly from cache
