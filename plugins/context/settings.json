@@ -7,7 +7,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 hooks/context_start.py"
+            "command": "python3 hooks/context_start.py",
+            "order": 1,
+            "description": "Initialize context tracking for session (runs first)"
           }
         ]
       }
@@ -18,7 +20,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 hooks/context_end.py"
+            "command": "python3 hooks/context_end.py",
+            "order": 1,
+            "description": "Finalize context tracking and generate session summary (runs first)"
           }
         ]
       }

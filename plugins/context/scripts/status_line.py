@@ -56,10 +56,10 @@ class Icons:
     ROI = "R"
 
 
-def load_context_summary(workspace_root: Path):
-    """Load context summary data."""
+def load_sessions_summary(workspace_root: Path):
+    """Load sessions summary data."""
     try:
-        summary_file = workspace_root / "status/context_summary.json"
+        summary_file = workspace_root / "status/sessions_summary.json"
         if summary_file.exists():
             with open(summary_file) as f:
                 return json.load(f)
@@ -242,8 +242,8 @@ def main():
         transcript_path = input_data.get("transcript_path", "")
         tokens = parse_transcript_tokens(transcript_path) if transcript_path else None
 
-        # Try to load context summary from workspace
-        context_data = load_context_summary(cwd_path)
+        # Try to load sessions summary from workspace
+        context_data = load_sessions_summary(cwd_path)
 
         focused = get_focused_outcome(context_data)
         focus_text = focused if focused else "No Focus Set"

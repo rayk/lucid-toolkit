@@ -8,7 +8,9 @@
           {
             "type": "command",
             "command": "python3 hooks/hooks/regenerate_snapshot.py",
-            "condition": "toolInput.file_path matches 'capability_summary.json'"
+            "condition": "toolInput.file_path matches 'capability_summary.json'",
+            "order": 1,
+            "description": "Regenerate capability snapshot markdown after summary updates"
           }
         ]
       }

@@ -167,7 +167,7 @@ Use `subagent_type: Explore` with thoroughness based on scope:
 **For market/competitor/industry research:**
 
 ```
-@type: SearchAction
+@type: AnalyzeAction
 query: "[specific research query]"
 
 @return ItemList (max 5 items):
@@ -345,6 +345,31 @@ Analysis is successful when:
 - User can take immediate action on recommendation
 
 </success_criteria>
+
+<output_format>
+
+## Classification Output Format
+
+For the problem classification section (step 1), use TOON structured format:
+
+```toon
+@type: AnalyzeAction
+name: problem-classification
+object: [problem statement text]
+actionStatus: CompletedActionStatus
+
+classification:
+primaryType: [DIAGNOSIS|DECISION|PRIORITIZATION|INNOVATION|RISK|FOCUS|OPTIMIZATION|STRATEGY]
+temporalFocus: [PAST|PRESENT|FUTURE]
+complexity: [SIMPLE|COMPLICATED|COMPLEX]
+emotionalLoading: [HIGH|LOW]
+
+signals[N]: [key,signal,words]
+```
+
+**Note:** Keep all reasoning, framework selection, model execution, and synthesis as markdown prose. Only use TOON for the structured classification output at the beginning of the analysis.
+
+</output_format>
 
 <references>
 

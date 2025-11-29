@@ -268,3 +268,38 @@ Skill execution complete when:
 - Ready message displayed
 - User can immediately begin work on the outcome
 </success_criteria>
+
+<output_format>
+## TOON Return Format (Subagent Usage)
+
+When this skill is invoked as a subagent, return in TOON format:
+
+**Success:**
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+name: focus
+object: 005-authentication
+result: outcomes/2-in-progress/005-authentication
+```
+
+**Failure (blocked outcome):**
+```toon
+@type: Action
+actionStatus: FailedActionStatus
+name: focus
+object: 005-authentication
+error: Outcome is blocked, cannot focus
+```
+
+**Fields:**
+- `@type`: Action (general operation)
+- `actionStatus`: CompletedActionStatus or FailedActionStatus
+- `name`: focus
+- `object`: outcome directory label
+- `result`: Path to the focused outcome directory (success only)
+- `error`: Error message (failure only)
+
+**Usage by calling command:**
+The `/outcome:focus` command delegates file operations to this skill and expects this TOON return format. The command parses the `result` field to load outcome_track.json into main context.
+</output_format>

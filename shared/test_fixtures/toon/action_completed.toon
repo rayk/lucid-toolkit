@@ -1,0 +1,5 @@
+@type: Action
+@id: test/action-001
+name: test-action
+actionStatus: CompletedActionStatus
+result: Action completed successfully

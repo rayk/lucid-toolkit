@@ -1,0 +1,14 @@
+@type: AnalyzeAction
+name: gap-analysis
+actionStatus: CompletedActionStatus
+
+assumptions[2]{assumption,riskLevel}:
+Infinite network bandwidth,high
+No concurrent writes,medium
+
+missingConstraints[2]{constraint,category}:
+Budget limitations,financial
+Latency SLA,performance
+
+blackBoxes[1]{component,issue}:
+Data processing,No implementation detail

@@ -76,7 +76,51 @@ Project map: @project_map.json
 </process>
 
 <output_format>
-## Success Output
+## TOON Format (for machine consumption)
+
+```toon
+@type: Action
+@id: resolve/{reference}
+actionStatus: CompletedActionStatus
+name: {module-name}
+x-project: {project-name}
+x-moduleType: {service|library|application}
+path: {absolute-path}
+
+entryPoints[N]{name,file}:
+CypherLoader,cypher_loader.py
+QueryEngine,query_engine.py
+```
+
+**With Entry Point:**
+```toon
+@type: Action
+@id: resolve/{reference}
+actionStatus: CompletedActionStatus
+name: {entry-point-name}
+x-project: {project-name}
+x-moduleType: {type}
+x-symbol: {class|function}
+path: {absolute-file-path}
+```
+
+**Error (Not Found):**
+```toon
+@type: Action
+@id: resolve/{reference}
+actionStatus: FailedActionStatus
+error: Module not found
+
+suggestions[N]: neo4j_service (luon),db_service (backend)
+```
+
+**Use TOON when:**
+- Returning resolution results to subagents
+- Feeding navigation systems
+- Cross-plugin module discovery
+- Token efficiency is critical
+
+## Markdown Success Output
 ```
 Resolved: luon:neo4j_service
 
@@ -90,7 +134,7 @@ Entry Points:
 - QueryEngine → query_engine.py
 ```
 
-## With Entry Point
+## Markdown With Entry Point
 ```
 Resolved: luon:neo4j_service#CypherLoader
 
@@ -98,7 +142,7 @@ File: /Users/dev/luon/src/neo4j_service/cypher_loader.py
 Symbol: CypherLoader (class)
 ```
 
-## Error Output
+## Markdown Error Output
 ```
 Error: Module 'unknown_service' not found
 
@@ -107,7 +151,7 @@ Did you mean:
 - db_service (backend)
 ```
 
-## Ambiguous Reference
+## Markdown Ambiguous Reference
 ```
 Error: Module 'db_service' exists in multiple projects
 

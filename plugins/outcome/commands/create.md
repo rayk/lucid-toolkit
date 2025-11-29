@@ -63,9 +63,11 @@ Example insufficient input:
 After Phase 1, delegate with this Task call:
 
 ```
-Task(general-purpose, model: sonnet, budget: 3000 tokens):
+Task(general-purpose, sonnet):
 
 Create outcome {NUMBER}-{NAME} in outcomes/0-queued/ with these specifications:
+
+**Token Budget:** Target 3000 tokens for response.
 
 **Outcome Details:**
 - Name: {extracted name}
@@ -89,14 +91,15 @@ Create outcome {NUMBER}-{NAME} in outcomes/0-queued/ with these specifications:
 9. Update outcome_summary.json with new entry
 10. If outcome has dependencies, update dependent outcome's outcomeDependencies
 
-**Return Format:**
-{
-  "created": true,
-  "directoryLabel": "NNN-outcome-name",
-  "filesCreated": ["outcome_track.json", "outcome-statement.md"],
-  "crossRefsUpdated": ["capability_track.json", "outcome_summary.json"],
-  "summary": "One sentence description"
-}
+**Return Format (TOON):**
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: NNN-outcome-name
+result: Created [outcome-name] for [primary-project]
+
+filesCreated[2]: outcome_track.json,outcome-statement.md
+crossRefsUpdated[2]: capability_track.json,outcome_summary.json
 ```
 </phase2_delegation>
 
@@ -146,6 +149,30 @@ Files created:
 For child outcomes:
 - `outcomes/0-queued/{PARENT}-{name}/{NNN}.{X}-{child-name}/` - Nested under parent directory
 </output>
+
+<output_format>
+## TOON Format (Subagent Returns)
+
+When delegating outcome creation to a subagent:
+
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: 005-ontology-sync
+result: Created ontology sync outcome for Neo4J integration
+
+filesCreated[2]: outcome_track.json,outcome-statement.md
+crossRefsUpdated[2]: capability_track.json,outcome_summary.json
+```
+
+**Fields:**
+- `@type`: CreateAction (artifact creation)
+- `actionStatus`: CompletedActionStatus if successful
+- `@id`: outcome directory label
+- `result`: Summary of what was created
+- `filesCreated[N]`: Inline array of files created
+- `crossRefsUpdated[N]`: Inline array of tracking files updated
+</output_format>
 
 <success_criteria>
 - Outcome directory created in `outcomes/0-queued/` (or nested under parent if child)

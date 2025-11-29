@@ -1,108 +1,216 @@
 ---
-name: assess
-description: Four-phase rigorous assessment protocol for solutions - gap analysis, framework selection, stress testing, and verdict
+description: Four-phase rigorous assessment with parallel stress testing
 argument-hint: [solution or problem description to assess]
+allowed-tools: Task, Read, AskUserQuestion
 ---
 
 <objective>
-Assess the solution or proposal described in $ARGUMENTS through a rigorous four-phase protocol.
-
-Do NOT immediately provide a verdict. Process systematically through gap analysis, framework selection, stress testing, and final recommendation. This ensures solutions are evaluated with engineering rigor rather than surface-level approval.
+Assess $ARGUMENTS through rigorous four-phase protocol with parallel stress testing:
+1. Gap Analysis (identify assumptions, constraints, black boxes)
+2. Framework Selection (match domain to evaluation frameworks)
+3. Parallel Stress Testing (4 agents test simultaneously)
+4. Verdict and Recommendation
 </objective>
 
-<process>
+<phase_1_gap_analysis>
+## Phase 1: Gap Analysis
 
-<phase name="interrogation" title="Gap Analysis">
-Before evaluating *if* the solution works, determine if you have enough information to know.
+Analyze the solution for gaps:
 
-1. **Identify Assumptions**: List all implicit assumptions the solution makes
-   - Examples: "assuming infinite network bandwidth," "assuming user compliance," "assuming no concurrent access"
+1. **Implicit Assumptions**: List everything taken for granted
+2. **Missing Constraints**: Budget, performance, regulatory, timeline
+3. **Black Boxes**: Vaguely described components
 
-2. **Missing Constraints**: What critical variables are missing?
-   - Budget limitations
-   - Latency/performance requirements
-   - Regulatory compliance (GDPR, SOC2, HIPAA)
-   - Legacy system integration
-   - Team expertise/capacity
-   - Timeline constraints
+```
+Task (general-purpose, haiku):
+  Analyze for gaps: "$ARGUMENTS"
 
-3. **The "Black Box" Check**: Identify components described vaguely
-   - Look for phrases like "then the data is processed," "the system handles it," "magic happens here"
-   - Flag any component that lacks implementation detail
+  Identify:
+  - All implicit assumptions
+  - Missing constraints (budget, latency, compliance, etc.)
+  - Black box components with vague descriptions
 
-**Output**: A bulleted list of critical missing information required for full sign-off.
-</phase>
+  @output TOON format:
+  @type: GapAnalysis
+  assumptions[N]{assumption,riskLevel}
+  missingConstraints[N]{constraint,category}
+  blackBoxes[N]{component,issue}
 
-<phase name="framework_selection" title="Framework Selection">
-Based on the nature of the problem, select the most appropriate rigorous framework(s):
+  @constraints: maxTokens: 1500
+```
+</phase_1_gap_analysis>
 
-| Problem Domain | Applicable Frameworks |
-|----------------|----------------------|
-| Distributed Systems | CAP Theorem, Fallacies of Distributed Computing, PACELC |
-| Security | STRIDE, Zero Trust, OWASP Top 10, Defense in Depth |
-| Operations/Process | Theory of Constraints, Value Stream Mapping |
-| Architecture | SOLID, 12-Factor App, Domain-Driven Design |
-| Reliability | Chaos Engineering Principles, SRE Golden Signals |
-| Data Systems | ACID vs BASE, Data Mesh Principles |
-| Scalability | Little's Law, Amdahl's Law, Universal Scalability Law |
+<phase_2_framework_selection>
+## Phase 2: Framework Selection
 
-**Output**: State which framework(s) you are using and why they apply to this specific solution.
-</phase>
+Based on solution domain, select evaluation frameworks:
 
-<phase name="stress_test" title="Rigorous Evaluation">
-Using the selected framework, critique the solution. Look for what breaks, not just what works.
+| Domain | Frameworks |
+|--------|------------|
+| Distributed Systems | CAP Theorem, PACELC, Fallacies |
+| Security | STRIDE, Zero Trust, OWASP Top 10 |
+| Architecture | SOLID, 12-Factor, DDD |
+| Reliability | Chaos Engineering, SRE Golden Signals |
+| Data | ACID vs BASE, Data Mesh |
+| Scalability | Little's Law, Amdahl's Law |
 
-1. **Edge Case Analysis**:
-   - Extreme load (10x, 100x expected traffic)
-   - Malicious input (SQL injection, XSS, buffer overflow attempts)
-   - Hardware failure (disk, network, power)
-   - Partial failures (degraded mode, split brain)
-   - Clock skew and ordering problems
+State which framework(s) apply and why.
+</phase_2_framework_selection>
 
-2. **Second-Order Effects**: If this solution succeeds, what new problems emerge?
-   - Vendor lock-in risk
-   - Technical/maintenance debt
-   - Cognitive load on teams
-   - Operational complexity increase
-   - Cost scaling characteristics
-   - Migration/exit strategy implications
+<phase_3_parallel_stress_testing>
+## Phase 3: Parallel Stress Testing
 
-3. **Single Points of Failure (SPOF)**: Identify bottlenecks that bring the whole system down
-   - Network hops
-   - Authentication services
-   - Database connections
-   - DNS resolution
-   - Certificate authorities
-   - Human dependencies (key person risk)
-</phase>
+Launch 4 stress test agents simultaneously:
 
-<phase name="verdict" title="Verdict and Recommendation">
-1. **Refined Solution**: Propose specific changes to address flaws found in Phase 3
-   - Architectural modifications
-   - Process improvements
-   - Additional safeguards
-   - Alternative approaches worth considering
+```
+Task 1 (general-purpose, haiku):
+  @role: Edge Case Analyst
+  Analyze solution for edge cases:
+  - 10x/100x load scenarios
+  - Malicious input handling
+  - Hardware failure modes
+  - Partial failures (degraded mode)
 
-2. **Confidence Score**: Rate the solution (0-100%) based ONLY on current information
-   - 0-25%: Critical gaps prevent any meaningful assessment
-   - 26-50%: Major concerns require resolution before proceeding
-   - 51-75%: Viable with identified improvements
-   - 76-100%: Sound approach with minor refinements needed
+  @output: edgeCases[N]{scenario,impact,severity}
+  @constraints: maxTokens: 1500
 
-3. **Next Steps**: Define exactly what needs clarification to move to the next stage
-   - Specific questions from Phase 1 that must be answered
-   - Tests or proofs-of-concept recommended
-   - Stakeholders who should review
-</phase>
+Task 2 (general-purpose, haiku):
+  @role: Second-Order Analyst
+  Analyze solution for second-order effects:
+  - Vendor lock-in implications
+  - Technical debt accumulation
+  - Team cognitive load changes
+  - Cost scaling patterns
 
-</process>
+  @output: secondOrderEffects[N]{effect,timeline,severity}
+  @constraints: maxTokens: 1500
+
+Task 3 (general-purpose, haiku):
+  @role: SPOF Analyst
+  Identify single points of failure:
+  - Infrastructure dependencies
+  - Data flow bottlenecks
+  - Human process dependencies
+  - Key person risks
+
+  @output: spofs[N]{component,impact,mitigation}
+  @constraints: maxTokens: 1500
+
+Task 4 (model-inversion, sonnet):
+  @role: Adversarial Analyst
+  Apply inversion: "How would this solution fail catastrophically?"
+
+  @output: failureModes[N]{mode,mechanism,avoidance}
+  @constraints: maxTokens: 1800
+```
+
+All 4 agents execute in parallel (single message).
+</phase_3_parallel_stress_testing>
+
+<phase_4_verdict>
+## Phase 4: Verdict and Recommendation
+
+Synthesize all stress test results:
+
+```
+Task (think-synthesizer, sonnet):
+  Synthesize stress test findings:
+  - Edge cases: {output 1}
+  - Second-order: {output 2}
+  - SPOFs: {output 3}
+  - Failure modes: {output 4}
+
+  Calculate:
+  - Critical flaws count
+  - Minor concerns count
+  - Aggregate confidence (0.0-1.0)
+
+  @constraints: maxTokens: 1500
+```
+
+**Confidence Scoring:**
+- 0.0-0.25: Critical gaps prevent assessment
+- 0.26-0.50: Major concerns require resolution
+- 0.51-0.75: Viable with improvements
+- 0.76-1.0: Sound with minor refinements
+
+Output verdict:
+
+```toon
+@type: AssessmentVerdict
+solution: {solution being assessed}
+actionStatus: CompletedActionStatus
+
+x-confidence: {0.0-1.0}
+
+verdict:
+  status: {viable-with-improvements|major-concerns|critical-gaps|sound-approach}
+  criticalFlaws: {count}
+  minorConcerns: {count}
+
+improvements[N]{area,recommendation}:
+  {area 1},{specific improvement}
+
+nextSteps[N]: {action 1},{action 2},{action 3}
+```
+</phase_4_verdict>
+
+<output_format>
+## Assessment Complete
+
+**Solution:** {restated solution}
+**Confidence:** {%} - {status}
+
+---
+
+### Gap Analysis
+- **Assumptions:** {count identified}
+- **Missing Constraints:** {list}
+- **Black Boxes:** {components needing detail}
+
+### Frameworks Applied
+- {framework 1}: {key findings}
+- {framework 2}: {key findings}
+
+### Stress Test Results
+
+**Edge Cases:**
+- {scenario}: {impact} - {severity}
+
+**Second-Order Effects:**
+- {effect}: {timeline}
+
+**Single Points of Failure:**
+- {component}: {mitigation}
+
+**Failure Modes:**
+- {mode}: {avoidance strategy}
+
+---
+
+### Verdict: {status}
+
+**Critical Flaws:** {count}
+**Minor Concerns:** {count}
+
+### Recommended Improvements
+1. {improvement 1}
+2. {improvement 2}
+
+### Next Steps
+- {step 1}
+- {step 2}
+
+---
+
+### Performance Metrics
+- Stress test agents: 4 (parallel)
+- Total tokens: ~{estimate}
+</output_format>
 
 <success_criteria>
-- All four phases completed in order
-- Phase 1 produces specific, answerable questions (not vague concerns)
-- Phase 2 selects frameworks with clear justification
-- Phase 3 identifies concrete failure modes, not theoretical worries
-- Phase 4 provides actionable recommendations with clear next steps
-- Confidence score reflects actual information available, not optimism
-- Output is structured and scannable for technical stakeholders
+- All 4 phases completed in order
+- Phase 3 executes 4 agents in parallel
+- Confidence score reflects actual findings
+- Improvements are specific and actionable
 </success_criteria>

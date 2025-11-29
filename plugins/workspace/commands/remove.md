@@ -56,6 +56,32 @@ Schema validation: @schemas/workspace_schema.json
 - Schema validation passes
 </success_criteria>
 
+<output_format>
+## TOON Format (for machine consumption)
+
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+@id: project/{project-name}
+name: remove-project
+object: {project-name}
+result: Project removed from workspace (files preserved)
+
+affectedDependents[N]: {dep1},{dep2}
+filesUpdated[1]: workspace.json
+x-filesPreserved: true
+```
+
+**Use TOON when:**
+- Returning removal results to subagents
+- Automated project cleanup workflows
+- Token efficiency is critical
+
+**Use markdown when:**
+- Final user-facing output with warnings
+- Interactive removal confirmation
+</output_format>
+
 <output>
 Updated file:
 - `workspace.json` - Updated with project removed

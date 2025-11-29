@@ -1,154 +1,265 @@
 ---
-description: Analyze problems using mental models with interactive approach selection
+description: Analyze problems using parallel multi-agent mental models with voting
 argument-hint: [problem, decision, or question to analyze]
+allowed-tools: Task, Read, AskUserQuestion
 ---
 
 <objective>
-Analyze $ARGUMENTS using structured problem-solving frameworks. This command:
-1. Examines the problem to identify its nature
-2. Asks user to confirm which aspects to focus on
-3. Selects and applies the optimal mental model(s)
-4. Synthesizes actionable insights
+Analyze $ARGUMENTS using parallel multi-agent reasoning:
+1. Classify problem type with voting (3 parallel classifiers)
+2. Select optimal models based on classification
+3. Execute models in parallel
+4. Synthesize with consensus scoring
+5. Validate high-stakes decisions
 
-Reference: @skills/consider/SKILL.md for selection matrix and model overview.
+Reference: @skills/consider/SKILL.md for selection matrix.
 </objective>
 
-<phase_1_problem_analysis>
-## Step 1: Understand the Problem
+<phase_1_classification_with_voting>
+## Step 1: Parallel Classification (Voting)
 
-Read the problem statement: $ARGUMENTS
+Launch 3 classifier agents simultaneously to classify the problem:
 
-Perform initial classification by examining:
-
-**Problem Signals** (detect from language):
-- "why" / "cause" / "root" → DIAGNOSIS
-- "should I" / "decide" / "choose" → DECISION
-- "overwhelmed" / "too many" / "prioritize" → PRIORITIZATION
-- "stuck" / "nothing works" / "assume" → INNOVATION
-- "fail" / "risk" / "wrong" → RISK
-- "focus" / "leverage" / "most important" → FOCUS
-- "simplify" / "remove" / "eliminate" → OPTIMIZATION
-- "strategy" / "position" / "compete" → STRATEGY
-- "consequences" / "then what" / "long-term" → CONSEQUENCES
-- "tradeoff" / "cost" / "give up" → TRADEOFF
-
-**Output your initial read:**
 ```
-**Problem Statement:** [restate concisely]
+Task 1 (think-classifier, haiku):
+  Classify problem: "$ARGUMENTS"
+  @constraints: maxTokens: 800
 
-**Initial Classification:**
-- Primary Type: [type from above]
-- Temporal Focus: [PAST | PRESENT | FUTURE]
-- Complexity: [SIMPLE | COMPLICATED | COMPLEX]
-- Emotional Loading: [HIGH | LOW]
+Task 2 (think-classifier, haiku):
+  Classify problem: "$ARGUMENTS"
+  @constraints: maxTokens: 800
 
-**Key Signals Detected:** [list phrases that triggered classification]
+Task 3 (think-classifier, haiku):
+  Classify problem: "$ARGUMENTS"
+  @constraints: maxTokens: 800
 ```
-</phase_1_problem_analysis>
+
+**Voting Rules:**
+- 3/3 agree → High confidence, proceed with consensus type
+- 2/3 agree → Medium confidence, proceed with majority
+- All differ → Ask user to confirm type
+
+**Output:**
+```toon
+@type: ClassificationConsensus
+votes[3]{classifier,primaryType,confidence}:
+  1,{type},{confidence}
+  2,{type},{confidence}
+  3,{type},{confidence}
+consensus: {UNANIMOUS|MAJORITY|SPLIT}
+finalType: {agreed type}
+```
+</phase_1_classification_with_voting>
 
 <phase_2_user_confirmation>
 ## Step 2: Confirm Focus with User
 
-Use AskUserQuestion with these questions based on detected type:
+Use AskUserQuestion:
 
-**Question 1: Problem Type Confirmation**
-Confirm or correct the detected problem type. Offer 2-3 alternatives.
+**Question 1: Confirm Classification**
+"Based on analysis, this appears to be a {type} problem. Is this correct?"
+Options: Confirm, Change to [alternatives]
 
-**Question 2: Aspect Focus** (multiSelect: true)
-Present relevant aspects based on problem type:
-
-| Type | Aspects to Offer |
-|------|------------------|
-| DIAGNOSIS | Root cause depth, Assumption verification, Simplest explanation |
-| DECISION | Time horizon impact, Tradeoff clarity, Failure prevention |
-| PRIORITIZATION | Urgency/importance, Impact ranking, Single leverage point |
-| INNOVATION | Assumption challenge, Inversion thinking, Subtraction approach |
-| RISK | Failure modes, Consequence chains, Defensive strategy |
-| FOCUS | Highest leverage, Vital few, What to eliminate |
-| OPTIMIZATION | What to remove, Efficiency gains, Simplification |
-| STRATEGY | Position assessment, Competitive dynamics, Long-term consequences |
+**Question 2: Focus Area** (if applicable)
+Present relevant aspects based on confirmed type.
 
 **Question 3: Depth**
-- Quick (1 model): Fast insight using best-fit approach
-- Thorough (2-3 models): Multiple perspectives for validation
+- Quick (1 model): Fast insight
+- Thorough (2-3 models): Multiple perspectives
+- Deep (3+ with validation): High-stakes decision
 </phase_2_user_confirmation>
 
-<phase_3_approach_selection>
-## Step 3: Select Approach(es)
+<phase_3_orchestration>
+## Step 3: Model Selection
 
-Based on confirmed type and focus, use the selection matrix in SKILL.md.
+Launch orchestrator agent:
 
-**Announce selection:**
 ```
-**Selected Approach(es):**
-- Primary: [MODEL NAME] - [one-line why it fits]
-- Supporting: [MODEL NAME or "None - quick analysis requested"]
+Task (think-orchestrator, sonnet):
+  Given classification: {consensus classification}
+  User preferences: {focus, depth}
+  Select models and execution pattern
+  @constraints: maxTokens: 1200
 ```
-</phase_3_approach_selection>
 
-<phase_4_execute_models>
-## Step 4: Execute Selected Model(s)
+Receive OrchestrationPlan with:
+- Primary, supporting, adversarial models
+- Execution pattern
+- Token budgets per model
+</phase_3_orchestration>
 
-Read the full template from the appropriate reference file:
-- @skills/consider/references/5-whys.md
-- @skills/consider/references/10-10-10.md
-- @skills/consider/references/eisenhower.md
-- @skills/consider/references/first-principles.md
-- @skills/consider/references/inversion.md
-- @skills/consider/references/occams-razor.md
-- @skills/consider/references/one-thing.md
-- @skills/consider/references/opportunity-cost.md
-- @skills/consider/references/pareto.md
-- @skills/consider/references/second-order.md
-- @skills/consider/references/swot.md
-- @skills/consider/references/via-negativa.md
+<phase_4_parallel_model_execution>
+## Step 4: Execute Models in Parallel
 
-Apply the model with full rigor using the template from the reference file.
-Do NOT abbreviate - use the complete framework.
-</phase_4_execute_models>
+Based on OrchestrationPlan, launch model agents.
+
+### Template Variable Interpolation
+
+**Extract values from OrchestrationPlan TOON output:**
+
+Given this OrchestrationPlan:
+```toon
+@type: OrchestrationPlan
+pattern: PARALLEL_TRIANGULATION
+models[3]{role,name,tier,budget}:
+  primary,5-whys,haiku,1000
+  supporting,first-principles,haiku,1000
+  adversarial,inversion,haiku,800
+```
+
+**Interpolate into Task calls:**
+
+```
+{primary} → "5-whys"
+{supporting} → "first-principles"
+{adversarial} → "inversion"
+{tier} → "haiku"
+{budget} → token value from budget column
+```
+
+### Execution Patterns
+
+**For PARALLEL_TRIANGULATION:**
+
+**Example with concrete values:**
+```
+Task 1 (model-5-whys, haiku):
+  Apply 5-whys model to: "Why is our deployment failing intermittently?"
+  Context: Production system with microservices architecture
+  @constraints: maxTokens: 1000
+
+Task 2 (model-first-principles, haiku):
+  Apply first-principles model to: "Why is our deployment failing intermittently?"
+  Context: Production system with microservices architecture
+  @constraints: maxTokens: 1000
+
+Task 3 (model-inversion, haiku):
+  Apply inversion model to: "Why is our deployment failing intermittently?"
+  Context: Production system with microservices architecture
+  @constraints: maxTokens: 800
+```
+
+**Template form:**
+```
+Task 1 (model-{primary}, {tier}):
+  Apply {primary} model to: "$ARGUMENTS"
+  Context: {any gathered context}
+  @constraints: maxTokens: {budget}
+
+Task 2 (model-{supporting}, {tier}):
+  Apply {supporting} model to: "$ARGUMENTS"
+  Context: {any gathered context}
+  @constraints: maxTokens: {budget}
+
+Task 3 (model-{adversarial}, {tier}):
+  Apply {adversarial} model to: "$ARGUMENTS"
+  Context: {any gathered context}
+  @constraints: maxTokens: {budget}
+```
+
+All three execute in parallel (single message with 3 Task calls).
+
+**For SERIAL_CHAIN:**
+Execute sequentially, passing output forward.
+
+**For ADVERSARIAL_PAIR:**
+Run primary + adversarial in parallel (2 Task calls in single message).
+</phase_4_parallel_model_execution>
 
 <phase_5_synthesis>
-## Step 5: Synthesize Insights
+## Step 5: Synthesize Results
 
-After executing model(s), provide synthesis:
+Launch synthesizer agent:
 
 ```
-## Synthesis
-
-**Key Insight:** [Single most important finding from the analysis]
-
-**Recommended Action:** [Specific, concrete next step]
-
-**Confidence Level:** [HIGH | MEDIUM | LOW]
-- Reasoning: [Why this confidence level]
-
-**What This Analysis Reveals:**
-- [Bullet 1]
-- [Bullet 2]
-
-**What This Analysis Doesn't Cover:**
-- [Limitation - when to use different approach]
-
-**If You Want to Go Deeper:**
-- Consider also applying: [Other relevant model] for [what it would add]
+Task (think-synthesizer, sonnet):
+  Synthesize outputs:
+  - Model 1 output: {output}
+  - Model 2 output: {output}
+  - Model 3 output: {output}
+  Apply voting rules for conflicts
+  @constraints: maxTokens: 1500
 ```
+
+Receive SynthesizedInsight with:
+- Unified key insight
+- Recommended action
+- Aggregate confidence
+- Minority views
 </phase_5_synthesis>
 
-<process>
-1. **Analyze Problem** (Phase 1): Read $ARGUMENTS, classify problem type and signals
-2. **Confirm with User** (Phase 2): Use AskUserQuestion to verify classification and get focus preferences
-3. **Select Approach** (Phase 3): Map confirmed type + focus to optimal model(s) using SKILL.md matrix
-4. **Execute Models** (Phase 4): Read reference file, apply model with full rigor
-5. **Synthesize** (Phase 5): Distill key insight, recommended action, and confidence
-</process>
+<phase_6_validation>
+## Step 6: Validation (For High-Stakes)
+
+**Trigger validation when:**
+- User selected "Deep" depth
+- emotionalLoading == HIGH
+- type == RISK
+- confidence < 0.7
+
+```
+Task (think-validator, opus):
+  Validate synthesis: {synthesis output}
+  Check for blind spots, edge cases, counter-evidence
+  @constraints: maxTokens: 2000
+```
+
+Receive ValidationResult with:
+- Challenges to assumptions
+- Edge cases
+- Robustness score
+- Final recommendation
+</phase_6_validation>
+
+<phase_7_output>
+## Step 7: Present Results
+
+```markdown
+## Analysis Complete
+
+**Problem:** {restated problem}
+**Classification:** {type} (confidence: {%})
+**Models Applied:** {list}
+
+---
+
+### Key Insight
+{unified insight from synthesis}
+
+### Recommended Action
+{specific next step}
+
+### Confidence: {HIGH|MEDIUM|LOW} ({%})
+{reasoning for confidence level}
+
+---
+
+### What This Analysis Reveals
+- {bullet 1}
+- {bullet 2}
+
+### Minority Views (if any)
+- {model}: {different perspective}
+
+### Validation Notes (if validated)
+- Robustness: {score}
+- Cautions: {any conditionals}
+
+---
+
+### Performance Metrics
+- Agents used: {count}
+- Parallel batches: {count}
+- Total tokens: ~{estimate}
+- Model distribution: {haiku}h / {sonnet}s / {opus}o
+```
+</phase_7_output>
 
 <success_criteria>
-- Problem clearly restated and classified
-- User confirms problem type and focus areas BEFORE analysis proceeds
-- Selected model(s) match confirmed problem type and focus
-- Reference file read for each selected model
-- Each model executed with complete framework (no abbreviated analysis)
-- Synthesis provides single actionable insight
-- Confidence level stated with reasoning
-- Limitations acknowledged
+- Classification voted with 3 parallel agents
+- User confirmed type and depth
+- Models executed in parallel where possible
+- Synthesis applied voting for conflicts
+- Validation triggered for high-stakes
+- Output includes performance metrics
 </success_criteria>

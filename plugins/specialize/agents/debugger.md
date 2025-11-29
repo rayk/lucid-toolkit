@@ -3,6 +3,7 @@ name: debugger
 description: Expert debugging specialist using systematic root-cause analysis, defense-in-depth validation, and parallel investigation patterns. Use when facing bugs, test failures, unexpected behavior, or any issue requiring methodical diagnosis rather than guessing at fixes.
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
+color: red
 ---
 
 <role>

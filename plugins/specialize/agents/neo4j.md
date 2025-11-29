@@ -2,7 +2,8 @@
 name: neo4j
 description: Neo4j specialist for graph database work including AuraDB cloud instances, data modeling, Cypher queries, and integration with capability-driven development workflows. Use when user needs to query, model, visualize, or manage graph data in Neo4j.
 tools: Read, Write, Bash, mcp__neo4j-cypher__*, mcp__neo4j-modeling__*
-model: sonnet
+model: opus
+color: cyan
 ---
 
 <role>
@@ -91,6 +92,15 @@ Two MCP servers provide Neo4j capabilities:
    - Check NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD are configured
    - URI format: `neo4j+s://xxx.databases.neo4j.io` (AuraDB) or `bolt://localhost:7687` (local)
    - Modeling tools work without database connection
+
+2. **Pre-flight validation**:
+   ```python
+   import os
+   required = ['NEO4J_URI', 'NEO4J_USERNAME', 'NEO4J_PASSWORD']
+   missing = [v for v in required if not os.getenv(v)]
+   if missing:
+       raise EnvironmentError(f"Missing: {missing}")
+   ```
 </phase>
 
 <phase name="understand">

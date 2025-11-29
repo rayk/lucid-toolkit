@@ -46,7 +46,7 @@ If context appears mostly fresh (start of session, minimal prior content), proce
 Use Task tool with subagent_type=general-purpose:
 
 ```
-@type: FocusAction
+@type: Action
 @task: Focus on outcome matching "$ARGUMENTS"
 
 Steps:
@@ -69,19 +69,29 @@ Steps:
    - Update lastActivityAt timestamp
    - Update summary.currentFocusedOutcome
 
-4. Return ONLY this JSON (no other output):
-{
-  "success": true|false,
-  "outcomePath": "outcomes/2-in-progress/XXX-outcome-name",
-  "outcomeLabel": "XXX-outcome-name",
-  "warning": "optional warning message if blocked or not ready"
-}
+4. Return TOON format (no other output):
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+name: focus
+object: XXX-outcome-name
+result: outcomes/2-in-progress/XXX-outcome-name
+```
+
+If blocked or warning:
+```toon
+@type: Action
+actionStatus: FailedActionStatus
+name: focus
+object: XXX-outcome-name
+error: Cannot focus blocked outcome
+```
 
 @constraints: maxTokens: 1500, model: haiku
 ```
 
-If subagent returns `success: false` or includes a warning about blocked state:
-- Present the warning to user
+If subagent returns `actionStatus: FailedActionStatus` or includes an error:
+- Present the error to user
 - Use AskUserQuestion to ask if they want to unblock first
 - Stop here if user declines
 
@@ -89,7 +99,7 @@ If subagent returns `success: false` or includes a warning about blocked state:
 
 **This step MUST execute in main context, not subagent.**
 
-Using the `outcomePath` returned by subagent:
+Parse the TOON `result` field to get the outcome path:
 
 ```
 Read: {outcomePath}/outcome_track.json

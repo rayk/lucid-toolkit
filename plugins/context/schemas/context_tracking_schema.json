@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Context Tracking",
-  "description": "Schema for tracking context window usage and conservation metrics during Claude Code sessions",
+  "title": "Current Session",
+  "description": "Schema for tracking context window usage and conservation metrics for the active Claude Code session. Stored at .lucid/current_session.json and updated in real-time during the session.",
   "schemaVersion": "1.0.0",
   "type": "object",
   "required": ["sessionId", "startTime", "status", "metrics"],

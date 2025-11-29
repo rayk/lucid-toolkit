@@ -44,10 +44,12 @@ Use manual checkpoints when:
    ```
 
 4. **Update Session Record**:
-   - Add checkpoint event to session
+   - Load `.lucid/current_session.json`
+   - Add checkpoint event to metrics.checkpoints array
    - Update statistics
-   - Save accomplishments and next steps
+   - Save accomplishments and next steps in checkpoint
    - Record checkpoint timestamp
+   - Write updated session back to file
 
 5. **Display Confirmation**:
    ```
@@ -89,11 +91,54 @@ Example:
 - Confirmation displayed
 </success_criteria>
 
-<output>
-Displayed to user:
+<output_format>
+**Default Output** (Markdown):
 - Checkpoint timestamp
 - Accomplishments captured
 - Key decisions (if provided)
 - Next steps (if provided)
 - Statistics since last checkpoint
-</output>
+
+**TOON Format** (for machine consumption):
+Add `output_format: toon` to command metadata when consumed by subagents or for session persistence.
+
+```toon
+@type: CreateAction
+name: checkpoint
+actionStatus: CompletedActionStatus
+endTime: 2025-01-15T11:45:00Z
+x-checkpointId: chk-abc123
+
+accomplishments[2]: Implemented JWT refresh,Added session tests
+decisions[1]: Using RS256 for token signing
+nextSteps[2]: Add integration tests,Update API docs
+
+delta{metric,value}:
+filesModified,3
+tasksCompleted,5
+tasksFailed,0
+tokensConsumed,12000
+
+state:
+branch: feature/auth
+commitSha: def5678
+focusedOutcomes[1]: 005-authentication
+uncommittedChanges: true
+```
+
+**With Auto-Generated Accomplishments:**
+If no accomplishments provided:
+```toon
+accomplishments[1]: Modified 3 files, completed 5 tasks, made 2 commits on authentication-system outcome
+```
+
+**When to use TOON:**
+- Subagent checkpoint creation
+- Session state persistence for crash recovery
+- Cross-session data continuity
+
+**Keep markdown for:**
+- Human-facing checkpoint confirmations
+- Interactive prompts for decisions and next steps
+- Verbose checkpoint summaries
+</output_format>

@@ -209,11 +209,216 @@ Resolution: Refactor design to break cycle.
 
 Generate execution prompt with:
 
-1. **Dependency Analysis** - Categorized list
+1. **Dependency Analysis** - Categorized list (external, pre-existing, created)
 2. **Validation Results** - Pass/fail for each check
-3. **Execution Estimates** - Tokens, duration, model distribution
+3. **Execution Estimates** - Tokens, duration, model distribution by phase
 4. **Exit Criteria** - Explicit and implicit
 5. **Complete Execution Prompt** - If all validations pass
+
+</overview>
+
+<output_format>
+
+All structured output from this skill uses TOON (Token-Optimized Object Notation) for maximum efficiency. Use these templates for each output type:
+
+## 1. Dependency Analysis
+
+Use for categorizing and validating dependencies before execution begins.
+
+```toon
+@type: ItemList
+name: dependencies
+
+external[N]{name,version,actionStatus}:
+pytest,8.0.0,CompletedActionStatus
+pydantic,2.5.0,FailedActionStatus
+
+preExisting[N]{name,path,actionStatus}:
+BaseService,src/base.py,CompletedActionStatus
+AuthHandler,src/auth.py,FailedActionStatus
+
+created[N]{name,x-phase,x-requiredBy}:
+UserService,phase_3_core,phase_4_features
+DataLoader,phase_2_foundation,phase_3_core
+```
+
+**Fields**:
+- `external` - Third-party libraries with version and installation status
+- `preExisting` - Internal dependencies that MUST exist before execution
+- `created` - Internal dependencies that will be created during execution
+- `x-phase` - The phase that creates this dependency
+- `x-requiredBy` - The phase(s) that depend on this component
+
+**ActionStatus Values**:
+- `CompletedActionStatus` - Dependency verified/available
+- `FailedActionStatus` - Dependency missing or incompatible
+- `PotentialActionStatus` - Not yet created (for `created` array)
+
+## 2. Phase Status Tracking
+
+Use for real-time execution progress tracking across all phases.
+
+```toon
+@type: Action
+name: execution-progress
+actionStatus: ActiveActionStatus
+x-currentPhase: phase_3_core
+
+phase[9]{name,actionStatus,x-model,x-timeout,x-tokens}:
+phase_0_setup,CompletedActionStatus,orchestrator,2m,1000
+phase_1_scaffolding,CompletedActionStatus,haiku,3m,5000
+phase_2_foundation,CompletedActionStatus,sonnet,15m,20000
+phase_3_core,ActiveActionStatus,sonnet,20m,30000
+phase_4_features,PotentialActionStatus,sonnet,15m,25000
+phase_5_integration,PotentialActionStatus,sonnet,5m,5000
+phase_6_verification,PotentialActionStatus,orchestrator,5m,8000
+phase_7_debug,PotentialActionStatus,opus,10m,-
+phase_8_crosscheck,PotentialActionStatus,sonnet+opus,30m,15000
+```
+
+**Fields**:
+- `x-currentPhase` - The phase currently executing
+- `name` - Phase identifier (phase_N_name)
+- `actionStatus` - Phase completion state
+- `x-model` - Claude model assigned (haiku/sonnet/opus/orchestrator)
+- `x-timeout` - Maximum duration for this phase
+- `x-tokens` - Estimated token consumption (- if unknown)
+
+**Phase ActionStatus Values**:
+- `PotentialActionStatus` - Not yet started
+- `ActiveActionStatus` - Currently executing
+- `CompletedActionStatus` - Successfully completed
+- `FailedActionStatus` - Failed (triggers phase_7_debug)
+
+## 3. Model Usage Report
+
+Use for cost tracking and optimization analysis after execution completes.
+
+```toon
+@type: ItemList
+name: model-usage
+
+model[3]{name,x-inputTokens,x-outputTokens,x-calls,x-costUSD}:
+haiku,5000,2000,3,0.0038
+sonnet,80000,25000,15,0.615
+opus,15000,5000,2,0.60
+```
+
+**Fields**:
+- `name` - Model identifier (haiku/sonnet/opus)
+- `x-inputTokens` - Total input tokens consumed
+- `x-outputTokens` - Total output tokens generated
+- `x-calls` - Number of API calls made
+- `x-costUSD` - Total cost in USD
+
+**Cost Formulas** (as of 2025):
+- Haiku: ($0.25 input + $1.25 output) per 1M tokens
+- Sonnet: ($3 input + $15 output) per 1M tokens
+- Opus: ($15 input + $75 output) per 1M tokens
+
+## 4. Cross-Check Results
+
+Use for reporting final validation results across all quality checks.
+
+```toon
+@type: Action
+name: cross-check-results
+actionStatus: FailedActionStatus
+x-passed: 5
+x-failed: 2
+x-skipped: 1
+
+check[8]{name,actionStatus,x-detail}:
+lint,CompletedActionStatus,-
+coverage,CompletedActionStatus,85%
+style,FailedActionStatus,3 errors
+architecture,CompletedActionStatus,-
+requirements,CompletedActionStatus,-
+acceptance,PotentialActionStatus,skipped
+documentation,FailedActionStatus,5 missing
+custom,CompletedActionStatus,-
+```
+
+**Fields**:
+- `x-passed` - Count of successful checks
+- `x-failed` - Count of failed checks
+- `x-skipped` - Count of skipped checks
+- `check[N]` - Individual check results
+- `x-detail` - Additional context (percentage, error count, reason)
+
+**Check ActionStatus Values**:
+- `CompletedActionStatus` - Check passed
+- `FailedActionStatus` - Check failed (blocks completion)
+- `PotentialActionStatus` - Check skipped (with reason in x-detail)
+
+**Standard Checks**:
+1. `lint` - Linter validation
+2. `coverage` - Test coverage percentage (80% minimum)
+3. `style` - Code style compliance
+4. `architecture` - Architecture pattern compliance
+5. `requirements` - Requirements verification
+6. `acceptance` - Acceptance criteria validation
+7. `documentation` - Documentation completeness
+8. `custom` - Design-specific exit criteria
+
+## 5. Checkpoint Format
+
+Use for saving execution state for recovery/resumption.
+
+```toon
+@type: Action
+name: checkpoint
+x-version: 1.0
+x-system: auth-service
+x-lastCompleted: phase_3_core
+x-nextPhase: phase_4_features
+
+completed[4]{name,endTime}:
+phase_0_setup,2025-11-29T10:00:00Z
+phase_1_scaffolding,2025-11-29T10:03:00Z
+phase_2_foundation,2025-11-29T10:18:00Z
+phase_3_core,2025-11-29T10:38:00Z
+
+pending[5]: phase_4_features,phase_5_integration,phase_6_verification,phase_7_debug,phase_8_crosscheck
+```
+
+**Fields**:
+- `x-version` - Checkpoint format version (1.0)
+- `x-system` - System/module being implemented
+- `x-lastCompleted` - Most recently completed phase
+- `x-nextPhase` - Next phase to execute on resume
+- `completed[N]` - Completed phases with timestamps
+- `pending[N]` - Remaining phases (inline array)
+
+**Usage**:
+- Save after each phase completion
+- Load on crash recovery
+- Use for parallel execution coordination
+
+## Integration with Payload Store
+
+For large execution outputs (>500 tokens), combine TOON with the payload-store skill:
+
+```toon
+@stored: shared/payloads/plan-exec/20251129-auth-service.md
+
+summary{metric,value}:
+totalPhases,9
+completed,4
+failed,0
+tokensUsed,56000
+costUSD,0.625
+
+result: Execution checkpoint saved after phase_3_core completion
+confidence: High
+tokens_stored: 4500
+```
+
+This allows the main context to receive a compact summary while preserving full execution details externally.
+
+</output_format>
+
+<templates>
 
 ## Templates
 

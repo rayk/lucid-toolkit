@@ -21,7 +21,8 @@
     "conserve",
     "checkpoint",
     "payload-store",
-    "get-claude-logs"
+    "get-claude-logs",
+    "toon-schema"
   ],
   "scripts": [
     "status_line.py",
@@ -34,7 +35,8 @@
     "token-budgets.md"
   ],
   "schemas": [
-    "context_tracking_schema.json"
+    "context_tracking_schema.json",
+    "sessions_summary_schema.json"
   ],
   "sharedLibraries": [
     "../../shared/cli-commons"

@@ -93,7 +93,8 @@ outcomes/{N-classification}/
    - Confirm integration validation criteria
 
 5. **Validate decomposition integrity**:
-   - Sum of child `parentContribution` values = 100%
+   - Sum of child `parentContribution` values = 100% (tolerance: 0.01%)
+   - If validation fails, show error: "Child parentContribution must sum to 100%. Current: [40, 35, 20] = 95%"
    - All observable effects assigned to exactly one child OR parent's integration validation
    - No orphaned scope items
    - Token budgets distributed reasonably
@@ -141,7 +142,8 @@ Before executing decomposition:
 - [ ] Parent outcome exists and is type "atomic"
 - [ ] Proposed children cover all scope.included items
 - [ ] All observable effects assigned to children or integration validation
-- [ ] Child parentContribution values sum to 100%
+- [ ] Child parentContribution values sum to 100% (tolerance: 0.01%)
+- [ ] If sum validation fails, display: "Child parentContribution must sum to 100%. Current contributions: [{values}] = {total}%"
 - [ ] Child names follow pattern `^[a-z0-9]+(-[a-z0-9]+){0,4}$`
 - [ ] Child directory labels follow pattern `^[0-9]+\.[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}$`
 - [ ] User has approved the decomposition plan
@@ -196,6 +198,31 @@ Files created (per child, NESTED under parent):
 Cross-references:
 - `capabilities/.../capability_track.json` - only parent in builtByOutcomes (children tracked via parent)
 </output>
+
+<output_format>
+## TOON Format (Subagent Returns)
+
+For decomposition operations:
+
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: 010-security-vulnerabilities
+result: Decomposed into 3 child outcomes
+
+children[3]{@id,x-contribution,actionStatus}:
+010.1-sql-injection,33,PotentialActionStatus
+010.2-xss-prevention,33,PotentialActionStatus
+010.3-auth-bypass,34,PotentialActionStatus
+```
+
+**Fields:**
+- `@type`: CreateAction (child outcomes created)
+- `actionStatus`: CompletedActionStatus if successful
+- `@id`: parent outcome directory label
+- `result`: Summary of decomposition
+- `children[N]`: Tabular array with @id (child label), x-contribution (parentContribution %), actionStatus
+</output_format>
 
 <success_criteria>
 - Parent outcome converted to type "parent" with children array populated

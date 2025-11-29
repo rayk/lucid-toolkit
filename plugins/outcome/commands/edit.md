@@ -144,6 +144,52 @@ Files modified:
 - `outcomes/{state}/{outcome-id}/outcome-statement.md` - Updated human-readable doc
 </output>
 
+<output_format>
+## TOON Format (Subagent Returns)
+
+For outcome edit operations:
+
+```toon
+@type: UpdateAction
+actionStatus: CompletedActionStatus
+@id: 001-jwt-authentication
+result: Updated description field
+
+filesUpdated[2]: outcome_track.json,outcome-statement.md
+field: description
+oldValue: Implement JWT authentication
+newValue: Implement JWT authentication with refresh token support
+```
+
+**For effects:verify:**
+```toon
+@type: UpdateAction
+actionStatus: CompletedActionStatus
+@id: 001-jwt-authentication
+result: Verified 2 observable effects
+
+verified[2]{position,effect}:
+1,Users can authenticate with valid credentials
+2,Invalid tokens are rejected with 401 status
+
+evidence[2]{type,reference}:
+test-results,tests/auth_test.py::test_valid_auth
+test-results,tests/auth_test.py::test_invalid_token
+```
+
+**Fields:**
+- `@type`: UpdateAction (field modification)
+- `actionStatus`: CompletedActionStatus if successful
+- `@id`: outcome directory label
+- `result`: Summary of what was edited
+- `filesUpdated[N]`: Inline array of files modified
+- `field`: Field that was edited
+- `oldValue`: Previous value (optional)
+- `newValue`: New value (optional)
+- `verified[N]`: Tabular array of verified effects (for effects:verify)
+- `evidence[N]`: Tabular array of evidence (for effects:verify)
+</output_format>
+
 <success_criteria>
 - Requested field(s) updated correctly
 - Schema validation passes

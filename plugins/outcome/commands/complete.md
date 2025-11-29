@@ -54,17 +54,44 @@ Session: !`jq -r '.activeSessions | sort_by(.startedAt) | last | .sessionId' sta
 </process>
 
 <output_format>
+## Standard Output (Human-Readable)
+
 On success:
 ```
 Outcome Completed: [outcome_name]
 
 Label: [outcome_label]
 Capability: [primary_capability]
-Maturity Contribution: +[maturity_contribution]%
-New Capability Maturity: [new_capability_maturity]%
+Maturity: [old]% → [new]% (+[contribution]%)
 
-Outcome moved to: outcomes/4-completed/[label]/
+Moved to: outcomes/4-completed/[label]/
 ```
+
+## TOON Format (Machine-Readable)
+
+For subagent returns and structured data exchange:
+
+```toon
+@type: UpdateAction
+actionStatus: CompletedActionStatus
+@id: 005-authentication
+result: Outcome completed, capability maturity updated
+
+transition:
+fromStatus: ActiveActionStatus
+toStatus: CompletedActionStatus
+
+maturityUpdate{capability,from,to,delta}:
+authentication-system,45,55,+10
+```
+
+**Fields:**
+- `@type`: UpdateAction (state transition)
+- `actionStatus`: CompletedActionStatus
+- `@id`: outcome directory label
+- `result`: Summary message
+- `transition`: Single state change (fromStatus, toStatus)
+- `maturityUpdate`: Single-row tabular with capability, from, to, delta
 </output_format>
 
 <warnings>

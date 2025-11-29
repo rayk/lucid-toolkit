@@ -10,7 +10,7 @@ Run comprehensive context reconciliation to:
 
 <process>
 1. **Scan Active Sessions**
-   - Load `status/context_summary.json`
+   - Load `status/sessions_summary.json`
    - For each active session, verify transcript exists
    - Calculate actual token usage from transcript
 
@@ -50,7 +50,7 @@ Changes Applied:
 - session-def456: Marked as zombie (36h inactive)
 - session-ghi789: Archived (transcript missing)
 
-Summary updated: status/context_summary.json
+Summary updated: status/sessions_summary.json
 ```
 </output_format>
 

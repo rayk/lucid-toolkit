@@ -8,6 +8,9 @@
     "claudeCode": ">=1.0.0",
     "python": ">=3.11"
   },
+  "externalDependencies": {
+    "skills": ["context:payload-store"]
+  },
   "commands": [
     "planner:generate",
     "planner:analyze",
@@ -21,6 +24,9 @@
     "execution_result_schema.json",
     "audit_trail_schema.json",
     "checkpoint_schema.json"
+  ],
+  "templates": [
+    "design-document-template.md"
   ],
   "sharedLibraries": [
     "../../shared/cli-commons"

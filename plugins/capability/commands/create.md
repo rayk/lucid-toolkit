@@ -7,14 +7,14 @@ argument-hint: [capability-name or description]
 Produce a complete capability statement that complies with the workspace schema and template requirements.
 
 This command guides you through creating a comprehensive capability definition that:
-- Maps to 1-3 core business values from the 28-value framework
+- Maps to 1-3 core business values from the 34-value framework
 - Follows the capability statement template structure
 - Validates against capability_track_schema.json requirements
 - Captures strategic context, maturity milestones, and measurement criteria
 </objective>
 
 <context>
-Template reference: @templates/defination/capability-statement-template.md
+Template reference: @templates/capability-statement-template.md
 Schema validation: @schemas/capability_track_schema.json
 Requirements guide: @research/capability/capability-requirements.md
 Example reference: @research/capability/capability-example-complete.md
@@ -45,7 +45,7 @@ About capabilities: @research/capability/about-capability.md
    - Validate selected actor IDs exist in the registry
 
 4. **Map Core Business Values** (REQUIRED):
-   - Present the 28 core values framework
+   - Present the 34 core values framework
    - User selects 1-3 primary values this capability delivers
    - For each value:
      - Contribution percentage (must sum to ≤100%)
@@ -82,14 +82,27 @@ About capabilities: @research/capability/about-capability.md
 9. **Map Dependencies**:
    - **Prerequisites**: Capabilities that MUST exist before this can progress (with minimum maturity)
    - **Enables**: Capabilities that are UNLOCKED by this capability
+   - **Validate for Circular Dependencies**: Before saving, detect cycles in prerequisite chains
+     - For each prerequisite P specified for new capability C:
+       - Load P's capability_track.json
+       - Recursively trace P's prerequisites
+       - If C is encountered in the chain, report cycle with full path
+       - Algorithm: Use depth-first search with path tracking
+       - Example cycle: "auth-system → user-management → role-based-access → auth-system"
+     - Show clear error: "Circular dependency detected: [path]"
+     - Prevent creation until cycle is resolved
 
 10. **Define Composition** (based on type):
     - **For Atomic**: List required outcomes with maturity contribution percentages
-    - **For Composed**: List sub-capabilities with weights (must sum to 100%)
+    - **For Composed**: List sub-capabilities with weights (must sum to 1.0 / 100%)
+      - Validate weights sum to 1.0 with tolerance of 0.001
+      - If validation fails, show error with all weights and total
+      - Example error: "Composition weights must sum to 1.0. Current weights: [0.25, 0.35, 0.20, 0.15] = 0.95"
 
 11. **Generate Complete Statement**:
     - Populate template with all gathered information
     - Populate actors array in capability_track.json
+    - **Validate no circular dependencies exist** (Step 9)
     - Validate against schema requirements
     - Check quality indicators (no placeholders, quantified values, measurable criteria)
     - Save to `capabilities/[capability-id]/capability-statement.md`
@@ -108,6 +121,7 @@ About capabilities: @research/capability/about-capability.md
 - Measurement section includes specific metrics with target values
 - Scope includes both inclusions AND exclusions
 - Dependencies clearly documented (if any)
+- **No circular dependencies detected in prerequisite chain**
 - Composition section matches capability type (atomic vs composed)
 - Quality checklist at end shows all items verified
 - Document validates against capability_track_schema.json structure
@@ -130,14 +144,45 @@ Before completing, verify:
 - [ ] All maturity milestones (30/60/80/100%) defined with concrete deliverables
 - [ ] Measurement criteria include quantified metrics (numbers, percentages, thresholds)
 - [ ] Scope includes both included AND excluded items
+- [ ] **No circular dependencies exist in prerequisite chain**
 - [ ] Composition section matches type (atomic=outcomes, composed=sub-capabilities)
+- [ ] **For composed capabilities: composedOf weights sum to 1.0 (tolerance: 0.001)**
 - [ ] No "TBD", "TODO", or placeholder text in completed sections
 - [ ] Quality checklist at template end shows verification
 - [ ] Document structure matches template exactly
 </verification>
 
-<28_core_values_reference>
-When gathering core values mapping, present these 28 values organized by category:
+<output_format>
+When returning capability creation results to the main conversation or as a subagent response, use TOON format:
+
+**Capability Creation Result:**
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: authentication-system
+result: Created capability with initial maturity 0%
+
+filesCreated[2]: capability_track.json,capability-statement.md
+crossRefsUpdated[1]: capability_summary.json
+```
+
+**Format Details:**
+- `@type: CreateAction` - Artifact creation action
+- `@id` - The capability ID that was created
+- `result` - Human-readable summary of what was created
+- `filesCreated[]` - Inline array of files created (no paths, just filenames)
+- `crossRefsUpdated[]` - Inline array of summary/index files updated
+- `actionStatus: CompletedActionStatus` - Always completed for successful creation
+
+**Usage:**
+- Use TOON when this command is invoked by a subagent
+- Allows calling agent to parse results efficiently
+- Provides structured confirmation of filesystem changes
+- Keep detailed verification output in markdown for human users
+</output_format>
+
+<34_core_values_reference>
+When gathering core values mapping, present these 34 values organized by category:
 
 **Technical Quality** (4):
 - Dependability, Performance, Security, Maintainability
@@ -156,7 +201,7 @@ When gathering core values mapping, present these 28 values organized by categor
 - Responsiveness, Predictability, Control & Autonomy, Peace of Mind
 - Accessibility
 
-**Operational** (3):
+**Operational** (5):
 - Flexibility, Resilience, Observability, Cost Optimization, Data Quality
 
 **Learning & Growth** (2):

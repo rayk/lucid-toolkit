@@ -66,6 +66,33 @@ Schema validation: @../../shared/workspaces/workspaces_schema.json
 - Confirmation displayed
 </success_criteria>
 
+<output_format>
+## TOON Format (for machine consumption)
+
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+@id: workspace/{workspace-id}
+name: unsubscribe
+object: {workspace-name}
+result: Unsubscribed from {workspace-name}
+
+instanceId: {generated-id}
+remainingSubscriptions[N]: {workspace-1},{workspace-2}
+filesUpdated[1]: workspaces.json
+x-workspacePreserved: true
+```
+
+**Use TOON when:**
+- Returning unsubscription results to subagents
+- Automated workspace leaving workflows
+- Token efficiency is critical
+
+**Use markdown when:**
+- Final user-facing output with remaining subscriptions
+- Interactive unsubscription confirmation
+</output_format>
+
 <output>
 Updated file:
 - `shared/workspaces/workspaces.json` - Updated with subscriber removed

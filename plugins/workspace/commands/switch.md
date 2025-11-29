@@ -66,6 +66,34 @@ Workspace file: @workspace.json
 - User can navigate to other projects easily
 </success_criteria>
 
+<output_format>
+## TOON Format (for machine consumption)
+
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+@id: project/{project-name}
+name: switch-context
+object: {project-name}
+x-type: {library|service|application|tool|docs}
+x-role: {primary|supporting|shared}
+path: {absolute-path}
+result: Context switched to {project-name}
+
+dependencies[N]: {dep1},{dep2}
+dependents[N]: {dependent1}
+```
+
+**Use TOON when:**
+- Returning context switch results to subagents
+- Automated navigation workflows
+- Token efficiency is critical
+
+**Use markdown when:**
+- Final user-facing output with navigation help
+- Interactive project selection
+</output_format>
+
 <output>
 Displayed to user:
 - Confirmation of project switch

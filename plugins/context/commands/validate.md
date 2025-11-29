@@ -10,7 +10,7 @@ Run comprehensive context validation to check for:
 
 <process>
 1. **Load Context Summary**
-   - Read `status/context_summary.json`
+   - Read `status/sessions_summary.json`
    - Count active sessions
 
 2. **Validate Each Session**
@@ -73,3 +73,55 @@ To preview changes without applying:
 - Issues categorized by severity
 - Actionable recommendations provided
 </success_criteria>
+
+<output_format>
+**Default Output** (Markdown):
+- Issue listing with descriptions
+- Severity categorization
+- File paths and timestamps
+- Remediation recommendations
+
+**TOON Format** (for machine consumption):
+Add `output_format: toon` to command metadata when consumed by automation or health monitoring.
+
+```toon
+@type: Action
+name: context-validation
+actionStatus: FailedActionStatus
+x-activeSessions: 5
+x-issuesFound: 3
+x-criticalIssues: 1
+x-highIssues: 1
+x-mediumIssues: 1
+
+errors[1]{sessionId,severity,issue,age|tab}:
+session-abc123	CRITICAL	MISSING TRANSCRIPT	24h
+
+warnings[2]{sessionId,severity,issue,age|tab}:
+session-def456	HIGH	ZOMBIE SESSION	36h
+session-ghi789	MEDIUM	STALE SESSION	14h
+
+recommendations[2]: Run /context:update to clean up,Use /context:update --strict for aggressive cleanup
+```
+
+**With All Healthy Sessions:**
+```toon
+@type: Action
+name: context-validation
+actionStatus: CompletedActionStatus
+x-activeSessions: 3
+x-issuesFound: 0
+
+result: All sessions healthy, no action required
+```
+
+**When to use TOON:**
+- Health monitoring automation
+- Session cleanup scripts
+- Subagent health checks
+
+**Keep markdown for:**
+- Human-facing validation reports
+- Detailed issue explanations
+- Interactive remediation guidance
+</output_format>

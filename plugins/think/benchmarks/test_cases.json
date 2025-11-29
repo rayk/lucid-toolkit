@@ -1,0 +1,99 @@
+{
+  "version": "1.0",
+  "description": "Standardized test cases for think plugin benchmarking",
+  "test_cases": {
+    "diagnosis": [
+      {
+        "id": "diag-001",
+        "problem": "Production errors spike at 3am daily. Logs show database connection timeouts but no other errors.",
+        "expected_primary_type": "DIAGNOSIS",
+        "expected_models": ["5-whys", "first-principles"],
+        "complexity": "medium",
+        "expected_confidence_min": 0.7
+      },
+      {
+        "id": "diag-002",
+        "problem": "Users report slow page loads but server metrics show low CPU and memory. The issue started last week.",
+        "expected_primary_type": "DIAGNOSIS",
+        "expected_models": ["5-whys", "occams-razor"],
+        "complexity": "high",
+        "expected_confidence_min": 0.6
+      },
+      {
+        "id": "diag-003",
+        "problem": "Why do 40% of users abandon the checkout flow at the payment step?",
+        "expected_primary_type": "DIAGNOSIS",
+        "expected_models": ["5-whys", "first-principles"],
+        "complexity": "medium",
+        "expected_confidence_min": 0.65
+      }
+    ],
+    "decision": [
+      {
+        "id": "dec-001",
+        "problem": "Should we migrate from PostgreSQL to MongoDB for our e-commerce platform? We have 5 engineers and 6 months runway.",
+        "expected_primary_type": "DECISION",
+        "expected_models": ["opportunity-cost", "second-order", "10-10-10"],
+        "complexity": "high",
+        "expected_confidence_min": 0.6
+      },
+      {
+        "id": "dec-002",
+        "problem": "Should we build our own authentication system or use Auth0? Security is critical for our fintech product.",
+        "expected_primary_type": "DECISION",
+        "expected_models": ["opportunity-cost", "inversion", "10-10-10"],
+        "complexity": "high",
+        "expected_confidence_min": 0.65
+      }
+    ],
+    "prioritization": [
+      {
+        "id": "pri-001",
+        "problem": "We have 15 feature requests from customers and 3 engineers with 8 weeks until our next release. What should we build first?",
+        "expected_primary_type": "PRIORITIZATION",
+        "expected_models": ["pareto", "eisenhower", "one-thing"],
+        "complexity": "medium",
+        "expected_confidence_min": 0.7
+      },
+      {
+        "id": "pri-002",
+        "problem": "I'm overwhelmed with tasks at work and home. How do I figure out what actually matters?",
+        "expected_primary_type": "PRIORITIZATION",
+        "expected_models": ["eisenhower", "one-thing", "pareto"],
+        "complexity": "medium",
+        "expected_confidence_min": 0.7
+      }
+    ],
+    "risk": [
+      {
+        "id": "risk-001",
+        "problem": "We're launching a new payment system next month. What could go wrong and how do we prevent it?",
+        "expected_primary_type": "RISK",
+        "expected_models": ["inversion", "second-order"],
+        "complexity": "high",
+        "expected_confidence_min": 0.6
+      }
+    ],
+    "strategy": [
+      {
+        "id": "strat-001",
+        "problem": "Our main competitor just raised $50M. How should we position ourselves in the market?",
+        "expected_primary_type": "STRATEGY",
+        "expected_models": ["swot", "inversion", "second-order"],
+        "complexity": "high",
+        "expected_confidence_min": 0.55
+      }
+    ]
+  },
+  "benchmark_protocol": {
+    "runs_per_test": 3,
+    "warmup_runs": 1,
+    "timeout_ms": 300000,
+    "success_criteria": {
+      "classification_accuracy": 0.9,
+      "model_selection_accuracy": 0.8,
+      "confidence_threshold_met": 0.85,
+      "output_format_valid": 1.0
+    }
+  }
+}

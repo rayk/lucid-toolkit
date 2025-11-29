@@ -81,6 +81,33 @@ Workspace file: @workspace.json
 - Dependency relationships shown (verbose mode)
 </success_criteria>
 
+<output_format>
+## TOON Format (for machine consumption)
+
+```toon
+@type: ItemList
+@id: workspace/{workspace-id}
+name: {workspace-name}
+x-type: {monorepo|multi-repo|hybrid}
+numberOfItems: {count}
+
+itemListElement[N]{name,@type,x-role,path|tab}:
+project-1	service	primary	./path/to/project-1
+project-2	library	supporting	./path/to/project-2
+project-3	application	primary	./path/to/project-3
+```
+
+**Use TOON when:**
+- Returning project list to subagents
+- Providing data for cross-plugin consumption
+- Token efficiency is critical
+
+**Use markdown when:**
+- Final user-facing output
+- Verbose mode with detailed descriptions
+- Interactive selection required
+</output_format>
+
 <output>
 Displayed to user:
 - Workspace name and type
@@ -88,3 +115,4 @@ Displayed to user:
 - Dependency graph (if verbose)
 - Any warnings about missing projects
 </output>
+

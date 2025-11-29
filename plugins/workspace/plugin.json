@@ -24,7 +24,8 @@
   "settings": "settings.json",
   "schemas": [
     "workspace_schema.json",
-    "project_map_schema.json"
+    "project_map_schema.json",
+    "actor_summary_schema.json"
   ],
   "sharedLibraries": [
     "../../shared/cli-commons"

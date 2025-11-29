@@ -68,7 +68,30 @@ Runs both schema and reference validation.
 </process>
 
 <output_format>
-## Schema Validation Results
+## TOON Format (for machine consumption)
+
+```toon
+@type: Action
+name: workspace-validation
+actionStatus: {CompletedActionStatus|FailedActionStatus}
+
+schemaResults[N]{file,actionStatus,error}:
+workspaces.json,CompletedActionStatus,-
+project_map.json,CompletedActionStatus,-
+capability_track.json,FailedActionStatus,missing purpose
+
+brokenRefs[N]{file,line,ref}:
+commands/create.md,15,@templates/missing.md
+skills/analyze/SKILL.md,42,@research/nonexistent.md
+```
+
+**Use TOON when:**
+- Returning validation results to subagents
+- Integrating with CI/CD pipelines
+- Automated fix workflows
+- Token efficiency is critical
+
+## Markdown Schema Validation Results
 ```
 Schema Validation:
 ✓ workspaces.json - valid
@@ -82,7 +105,7 @@ Errors: 1
   - Invalid maturity value: must be 0-100
 ```
 
-## Reference Validation Results
+## Markdown Reference Validation Results
 ```
 Reference Validation:
 Checked 24 files
@@ -141,3 +164,4 @@ Recommendations:
 - Actionable recommendations provided
 - Exit code reflects validation status (0=pass, 1=errors)
 </success_criteria>
+

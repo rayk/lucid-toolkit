@@ -44,9 +44,15 @@ Schemas: @schemas/workspace_schema.json, @schemas/project_map_schema.json
 - Check outcome → capability references
 - Validate composed capability relationships
 - Verify composed weights sum to 1.0
+- **Detect circular dependencies in capability prerequisites**:
+  - For each capability, trace prerequisite chains recursively
+  - Algorithm: Depth-first search with path tracking
+  - If capability appears in its own prerequisite chain, report cycle
+  - Show full cycle path: "A → B → C → A"
+  - Report as HIGH severity issue
 - Detect broken references (entity doesn't exist)
 - Detect stale references (entity moved state)
-- **Fix**: Remove broken references, update paths
+- **Fix**: Remove broken references, update paths (circular dependencies require manual resolution)
 
 ### Phase 4: Index Validation & Rebuild
 - Validate and rebuild indexByType (atomic/composed)
@@ -94,7 +100,39 @@ Schemas: @schemas/workspace_schema.json, @schemas/project_map_schema.json
 </options>
 
 <output_format>
-## Default Output
+## TOON Format (for machine consumption)
+
+```toon
+@type: Action
+@id: health-check/{ISO-date}
+name: workspace-health
+actionStatus: {CompletedActionStatus|FailedActionStatus}
+x-fixes: {number-applied}
+x-capabilities: {count}
+x-avgMaturity: {0-100}
+
+phases[8]{position,name,actionStatus,x-duration,x-issues}:
+1,Capability sync,CompletedActionStatus,12,-
+2,Outcome sync,CompletedActionStatus,8,-
+3,Cross-refs,FailedActionStatus,15,2
+4,Indexes,CompletedActionStatus,5,-
+5,Temporal health,CompletedActionStatus,3,-
+6,Temp cleanup,CompletedActionStatus,2,-
+7,Git health,CompletedActionStatus,8,-
+8,Report,CompletedActionStatus,1,-
+
+issues[N]{x-severity,description}:
+HIGH,Circular: auth-system -> user-management -> auth-system
+MEDIUM,Stale index for deprecated capability
+```
+
+**Use TOON when:**
+- Returning health status to subagents or orchestrators
+- Providing data for automated remediation
+- Integrating with monitoring systems
+- Token efficiency is critical
+
+## Default Markdown Output
 ```
 /workspace:health: [HEALTHY|ISSUES] | Fixes: N | Cap: N (M%) | Out: Q/I/C | Proj: N
 
@@ -105,12 +143,14 @@ Phase Results:
 ✓ Phase 4: Indexes (5ms)
 ...
 
-Issues Found: 2 (0 critical, 1 high, 1 medium)
+Issues Found: 3 (0 critical, 2 high, 1 medium)
+- HIGH: Circular dependency detected: auth-system → user-management → role-based-access → auth-system
 - HIGH: Broken reference in outcome 005-auth
 - MEDIUM: Stale index entry for deprecated capability
 
 Recommendations:
-- Run with --fix to repair automatically
+- Circular dependencies require manual resolution (remove one prerequisite link)
+- Run with --fix to repair other issues automatically
 ```
 
 ## Verbose Output

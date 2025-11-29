@@ -8,7 +8,9 @@
           {
             "type": "command",
             "command": "python3 hooks/pre-commit-validation.py",
-            "condition": "toolInput.command matches 'git commit'"
+            "condition": "toolInput.command matches 'git commit'",
+            "order": 1,
+            "description": "Validate workspace configuration integrity before commits (blocking)"
           }
         ]
       }

@@ -17,8 +17,8 @@ This command displays:
 
 <process>
 1. **Load Session Data**:
-   - Read context tracking file from workspace
-   - Parse active sessions and recent history
+   - Read `.lucid/current_session.json` for active session
+   - Read `status/sessions_summary.json` for history
    - Calculate current session duration
 
 2. **Display Current Session**:
@@ -88,19 +88,63 @@ This command displays:
 </process>
 
 <output_format>
-**Default Output**:
+**Default Output** (Markdown):
 - Session summary (ID, duration, branch)
 - Key statistics (files, tasks, tokens)
 - Context health indicator
 - Active outcomes
 - Warnings
 
-**Verbose Output** (--verbose):
+**Verbose Output** (--verbose, Markdown):
 - Full session details
 - Complete statistics table
 - Recent history (last 3 sessions)
 - All focused outcomes with details
 - Tool usage breakdown
+
+**TOON Format** (for machine consumption):
+Add `output_format: toon` to command metadata when consumed by subagents or for data exchange.
+
+```toon
+@type: Action
+@id: session/sess-xyz123
+name: current-session
+actionStatus: ActiveActionStatus
+startTime: 2025-01-15T10:30:00Z
+x-duration: 45min
+x-source: startup
+x-branch: feature/auth
+x-commitSha: abc1234
+x-permission: default
+
+stats{metric,value}:
+eventsLogged,23
+filesModified,5
+tasksCompleted,8
+tasksFailed,1
+gitCommits,2
+tokensConsumed,45000
+subagentsUsed,4
+
+health:
+usage: 45000
+limit: 100000
+percent: 45
+status: HEALTHY
+
+focusedOutcomes[1]{@id,tasksCompleted,currentTask|tab}:
+005-authentication	3	Implement token refresh
+```
+
+**When to use TOON:**
+- Subagent return values showing session state
+- Cross-plugin data exchange requiring session info
+- Status displays consumed by automation
+
+**Keep markdown for:**
+- Human-facing terminal output
+- Verbose explanatory text
+- Last session summary narratives
 </output_format>
 
 <success_criteria>

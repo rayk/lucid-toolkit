@@ -14,7 +14,8 @@ This command:
 </objective>
 
 <context>
-Workspace file: @workspace.json
+Workspace registry: @../../shared/workspaces/workspaces.json
+Project config: @.lucid/workspace.json (if local mode)
 Schema validation: @schemas/workspace_schema.json
 </context>
 
@@ -70,6 +71,34 @@ Schema validation: @schemas/workspace_schema.json
 - Dependencies correctly mapped
 - Schema validation passes
 </success_criteria>
+
+<output_format>
+## TOON Format (for machine consumption)
+
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: project/{project-name}
+name: {project-name}
+x-type: {library|service|application|tool|docs}
+x-role: {primary|supporting|shared}
+path: {relative-path}
+result: Project added to workspace
+
+dependenciesDiscovered[N]: {dep1},{dep2}
+dependentsDiscovered[N]: {dependent1}
+filesUpdated[1]: workspace.json
+```
+
+**Use TOON when:**
+- Returning project addition results to subagents
+- Automated project onboarding workflows
+- Token efficiency is critical
+
+**Use markdown when:**
+- Final user-facing output with detailed setup info
+- Interactive project discovery process
+</output_format>
 
 <output>
 Updated file:

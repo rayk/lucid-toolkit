@@ -60,3 +60,33 @@ Before completing, verify:
 - Cross-reference integrity maintained
 - No orphaned references remain
 </success_criteria>
+
+<output_format>
+When returning capability deletion results to the main conversation or as a subagent response, use TOON format:
+
+**Capability Deletion Result:**
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+@id: deprecated-feature
+result: Deleted capability and cleaned up references
+
+filesRemoved[2]: capability_track.json,capability-statement.md
+crossRefsUpdated[3]: capability_summary.json,outcome_1.json,outcome_2.json
+```
+
+**Format Details:**
+- `@type: Action` - General action (deletion is not a specialized schema.org type)
+- `@id` - The capability ID that was deleted
+- `result` - Human-readable summary of deletion operation
+- `filesRemoved[]` - Inline array of files deleted (no paths, just filenames)
+- `crossRefsUpdated[]` - Inline array of all files updated to remove references
+- `actionStatus: CompletedActionStatus` - Always completed for successful deletion
+
+**Usage:**
+- Use TOON when this command is invoked by a subagent
+- Allows calling agent to verify cleanup completion
+- Provides structured audit trail of filesystem changes
+- crossRefsUpdated count helps verify complete cleanup
+- Keep detailed verification output in markdown for human users
+</output_format>

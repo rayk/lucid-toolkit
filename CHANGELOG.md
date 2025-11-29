@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-11-29
+
+### Added
+- **prompt-writer skill** - Expert guidance for writing effective prompts
+- **TOON parser** - Structured output format parser in lucid-cli-commons
+- **New specialized agents** - flutter-coder, flutter-env, python-coder, python-env
+- **think:debate and think:swarm commands** - Advanced reasoning workflows
+- **Session summary schema** - Structured session tracking
+
+### Changed
+- All plugin configurations updated with enhanced settings
+- Context plugin hooks improved for better session tracking
+- Status line script enhanced for richer feedback
+- Outcome and capability schemas refined
+
+### Documentation
+- Added TOON implementation guides and quick start
+- Schema compatibility documentation
+- Hook documentation improvements
+
 ## [1.1.0] - 2025-11-28
 
 ### Added

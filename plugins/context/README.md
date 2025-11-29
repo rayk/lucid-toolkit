@@ -194,12 +194,40 @@ Works seamlessly with other Lucid Toolkit plugins:
 | **outcome** | Sessions linked to outcome progress |
 | **think** | Mental models enhance delegation decisions |
 
+## Path Structure
+
+The context plugin uses a two-tier tracking system following workspace conventions:
+
+| File Path | Purpose | Scope | Updated By |
+|-----------|---------|-------|------------|
+| `.lucid/current_session.json` | Active session state | Per-session | Hooks, commands |
+| `status/sessions_summary.json` | All sessions index | Cross-session | Hooks, reconciliation |
+
+**Current Session** (`.lucid/current_session.json`):
+- Real-time tracking of the active session
+- Updated throughout the session lifecycle
+- Contains full metrics, checkpoints, and violations
+- Preserved after session end for archival/recovery
+
+**Sessions Summary** (`status/sessions_summary.json`):
+- Central index of all sessions (active, completed, stale)
+- Used for cross-session analysis and work resumption
+- Enables zombie session detection
+- Follows workspace `status/` pattern (like `capability_summary.json`, `outcome_summary.json`)
+
 ## Schema
 
-Session data conforms to `/schemas/context_tracking_schema.json` including:
-- Session metadata (ID, timestamps, status)
-- Metrics (tool calls, delegations, checkpoints, tokens saved)
-- Violations (protocol violations with severity levels)
+Session tracking data conforms to two schemas:
+
+- **`context_tracking_schema.json`** - Current session structure (`.lucid/current_session.json`)
+  - Session metadata (ID, timestamps, status)
+  - Metrics (tool calls, delegations, checkpoints, tokens saved)
+  - Violations (protocol violations with severity levels)
+
+- **`sessions_summary_schema.json`** - Sessions summary structure (`status/sessions_summary.json`)
+  - activeSessions[] - Currently running sessions
+  - completedSessions[] - Finalized sessions with metrics
+  - staleSessions[] - Detected zombie/interrupted sessions
 
 ## File Structure
 
@@ -224,8 +252,11 @@ plugins/context/
 │   ├── operation-counting.md
 │   └── token-budgets.md
 ├── hooks/                       # Lifecycle hooks
+│   ├── context_start.py         # Initialize session tracking
+│   └── context_end.py           # Finalize and archive session
 └── schemas/
-    └── context_tracking_schema.json
+    ├── context_tracking_schema.json    # Current session schema
+    └── sessions_summary_schema.json    # Sessions index schema
 ```
 
 ## Quick Reference

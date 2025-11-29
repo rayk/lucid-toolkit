@@ -1,8 +1,8 @@
 {
   "name": "think",
-  "displayName": "Thinking Tools",
-  "description": "Structured analysis using mental models",
-  "version": "1.0.0",
+  "displayName": "Thinking Tools v2.0",
+  "description": "Parallel multi-agent problem solving with 12 mental models, voting, adversarial analysis, and performance measurement",
+  "version": "2.0.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0"
@@ -10,14 +10,38 @@
   "commands": [
     "think:consider",
     "think:assess",
-    "think:reflect"
+    "think:reflect",
+    "think:debate",
+    "think:swarm"
   ],
   "skills": [
     "consider"
+  ],
+  "agents": [
+    "models/5-whys",
+    "models/10-10-10",
+    "models/eisenhower",
+    "models/first-principles",
+    "models/inversion",
+    "models/occams-razor",
+    "models/one-thing",
+    "models/opportunity-cost",
+    "models/pareto",
+    "models/second-order",
+    "models/swot",
+    "models/via-negativa",
+    "orchestrators/classifier",
+    "orchestrators/orchestrator",
+    "orchestrators/synthesizer",
+    "orchestrators/validator"
   ],
   "templates": [
     "mental-models.md",
     "assessment-framework.md"
   ],
-  "sharedLibraries": []
+  "benchmarks": {
+    "harness": "benchmarks/harness.py",
+    "testCases": "benchmarks/test_cases.json",
+    "runner": "benchmarks/run_benchmarks.md"
+  }
 }

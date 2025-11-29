@@ -122,11 +122,64 @@ This command:
 - Actionable guidance provided
 </success_criteria>
 
-<output>
-Displayed to user:
+<output_format>
+**Default Output** (Markdown):
 - Current token status with visual bar
-- Consumption breakdown
+- Consumption breakdown table
 - Delegation thresholds
 - Recommendations
 - Forecast (if requested)
-</output>
+
+**TOON Format** (for machine consumption):
+Add `output_format: toon` to command metadata when consumed by subagents or for delegation decisions.
+
+```toon
+@type: Action
+name: budget-status
+actionStatus: ActiveActionStatus
+
+summary:
+current: 45000
+limit: 100000
+available: 55000
+percent: 45
+status: HEALTHY
+
+breakdown[4]{category,tokens,percent}:
+systemPrompt,8000,18
+conversation,22000,49
+toolResults,12000,27
+currentMessage,3000,6
+
+thresholds:
+direct_ops_max: 2
+delegate_at_ops: 3
+warning_threshold: 60
+critical_threshold: 80
+
+headroom:
+file_reads_remaining: 5
+multi_file_ops_remaining: 2
+delegated_tasks_safe: 10
+```
+
+**With Forecast** (--forecast N):
+```toon
+forecast:
+planned_operations: 3
+estimated_tokens: 23000
+projected_usage: 68000
+projected_percent: 68
+recommendation: Delegate 2+ file reads to subagent
+```
+
+**When to use TOON:**
+- Delegation decision automation
+- Budget monitoring in scripts
+- Subagent budget allocation
+
+**Keep markdown for:**
+- Human-facing budget displays
+- Detailed recommendations with explanation
+- Visual progress bars
+</output_format>

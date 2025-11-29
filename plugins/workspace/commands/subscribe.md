@@ -83,6 +83,34 @@ Schema validation: @../../shared/workspaces/workspaces_schema.json
 - Confirmation displayed with workspace overview
 </success_criteria>
 
+<output_format>
+## TOON Format (for machine consumption)
+
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: workspace/{workspace-id}
+name: subscribe
+object: {workspace-name}
+x-projects: {count}
+x-accessLevel: {read|write|admin}
+result: Subscribed to {workspace-name}
+
+instanceId: {generated-id}
+subscribedAt: {ISO-datetime}
+filesUpdated[1]: workspaces.json
+```
+
+**Use TOON when:**
+- Returning subscription results to subagents
+- Automated workspace joining workflows
+- Token efficiency is critical
+
+**Use markdown when:**
+- Final user-facing output with workspace overview
+- Interactive subscription process
+</output_format>
+
 <output>
 Updated file:
 - `shared/workspaces/workspaces.json` - Updated with new subscriber

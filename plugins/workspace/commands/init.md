@@ -17,6 +17,7 @@ This command creates:
 Shared registry: @../../shared/workspaces/workspaces.json
 Schema validation: @../../shared/workspaces/workspaces_schema.json
 Local schema: @schemas/workspace_schema.json
+Actor summary schema: @schemas/actor_summary_schema.json
 </context>
 
 <process>
@@ -61,6 +62,21 @@ Local schema: @schemas/workspace_schema.json
    - Create subdirectory: `shared/workspaces/{workspace-id}/outcomes/in-progress/`
    - Create subdirectory: `shared/workspaces/{workspace-id}/outcomes/completed/`
    - Create subdirectory: `shared/workspaces/{workspace-id}/status/`
+   - Create initial tracking file: `shared/workspaces/{workspace-id}/status/actor_summary.json`:
+     ```json
+     {
+       "version": "1.0.0",
+       "actors": [],
+       "indexByType": {},
+       "indexByDomain": {},
+       "summary": {
+         "totalActors": 0,
+         "actorsByType": {},
+         "actorsByDomain": {},
+         "lastUpdated": "<ISO 8601 timestamp>"
+       }
+     }
+     ```
 
 7. **Register in Shared Registry**:
    - Create workspace entry in `shared/workspaces/workspaces.json`:
@@ -104,6 +120,33 @@ Local schema: @schemas/workspace_schema.json
 - Document validates against workspaces_schema.json
 </success_criteria>
 
+<output_format>
+## TOON Format (for machine consumption)
+
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: workspace/{workspace-id}
+name: {workspace-name}
+x-type: {monorepo|multi-repo|hybrid}
+x-projects: {count}
+result: Workspace initialized at shared/workspaces/{workspace-id}/
+
+directoriesCreated[7]: capabilities/,outcomes/,outcomes/queued/,outcomes/in-progress/,outcomes/completed/,status/,{workspace-id}/
+filesCreated[1]: status/actor_summary.json
+filesUpdated[1]: workspaces.json
+```
+
+**Use TOON when:**
+- Returning initialization results to subagents
+- Automated workspace setup workflows
+- Token efficiency is critical
+
+**Use markdown when:**
+- Final user-facing output with detailed setup info
+- Interactive initialization process
+</output_format>
+
 <output>
 Directories created:
 - `shared/workspaces/{workspace-id}/`
@@ -113,6 +156,9 @@ Directories created:
 - `shared/workspaces/{workspace-id}/outcomes/in-progress/`
 - `shared/workspaces/{workspace-id}/outcomes/completed/`
 - `shared/workspaces/{workspace-id}/status/`
+
+Files created:
+- `shared/workspaces/{workspace-id}/status/actor_summary.json` - Empty actor registry
 
 Files updated:
 - `shared/workspaces/workspaces.json` - New workspace added to registry
@@ -133,6 +179,7 @@ Before completing, verify:
 - [ ] Workspace home directory created
 - [ ] All subdirectories created (capabilities, outcomes, status)
 - [ ] Outcomes subdirectories created (queued, in-progress, completed)
+- [ ] Actor summary file created at `status/actor_summary.json` with empty registry structure
 - [ ] All intended projects are registered with absolute paths
 - [ ] Current project added as admin subscriber
 - [ ] Project paths are correct and accessible

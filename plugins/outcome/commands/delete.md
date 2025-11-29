@@ -101,3 +101,31 @@ Before completing, verify:
 - No orphaned references remain
 - If completed outcome deleted, affected capability maturity recalculated
 </success_criteria>
+
+<output_format>
+## TOON Format (Subagent Returns)
+
+For outcome deletion:
+
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+@id: 001-jwt-authentication
+result: Deleted outcome and cleaned up references
+
+filesRemoved[4]: outcome_track.json,outcome-statement.md,reports/,evidence/
+crossRefsUpdated[3]: capability_track.json,outcome_summary.json,capability_summary.json
+x-maturityRecalculated: true
+x-affectedCapabilities: 2
+```
+
+**Fields:**
+- `@type`: Action (deletion operation)
+- `actionStatus`: CompletedActionStatus if successful
+- `@id`: outcome directory label that was deleted
+- `result`: Summary message
+- `filesRemoved[N]`: Inline array of files/directories removed
+- `crossRefsUpdated[N]`: Inline array of tracking files updated
+- `x-maturityRecalculated`: true if capability maturity was recalculated (deleted completed outcome)
+- `x-affectedCapabilities`: Count of capabilities that were updated
+</output_format>

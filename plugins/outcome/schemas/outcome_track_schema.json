@@ -41,7 +41,7 @@
         "directoryLabel": {
           "type": "string",
           "description": "Full directory name in format [number]-[outcome-name] or [number].[child]-[outcome-name] for hierarchical outcomes (e.g., 001-authentication-provider, 010.1-sql-injection)",
-          "pattern": "^[0-9]+(\\.[0-9]+)?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+          "pattern": "^[0-9]+(\\.[0-9])?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
         },
         "type": {
           "type": "string",
@@ -225,7 +225,7 @@
           "items": {
             "type": "string",
             "description": "Directory label of outcome this depends on",
-            "pattern": "^[0-9]+(\\.[0-9]+)?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+            "pattern": "^[0-9]+(\\.[0-9])?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
           },
           "default": []
         },
@@ -235,7 +235,7 @@
           "items": {
             "type": "string",
             "description": "Directory label of outcome this enables",
-            "pattern": "^[0-9]+(\\.[0-9]+)?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+            "pattern": "^[0-9]+(\\.[0-9])?-[a-z0-9]+(-[a-z0-9]+){0,4}$"
           },
           "default": []
         },
@@ -256,7 +256,7 @@
           "description": "For parent outcomes: directory labels of child outcomes. Children are NESTED under parent directory physically.",
           "items": {
             "type": "string",
-            "pattern": "^[0-9]+\\.[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}$"
+            "pattern": "^[0-9]+\\.[0-9]-[a-z0-9]+(-[a-z0-9]+){0,4}$"
           },
           "default": []
         },

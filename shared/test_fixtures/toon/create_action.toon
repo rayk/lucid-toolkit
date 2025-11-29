@@ -1,0 +1,7 @@
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: 005-test-outcome
+result: Created test outcome
+
+filesCreated[2]: outcome_track.json,outcome-statement.md
+crossRefsUpdated[2]: capability_track.json,outcome_summary.json

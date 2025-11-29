@@ -50,6 +50,8 @@ Focused: !`jq -r '.activeSessions | sort_by(.startedAt) | last | .focusedOutcome
 </success_criteria>
 
 <output_format>
+## Standard Output (Human-Readable)
+
 On success:
 ```
 Defocused outcomes: [list of outcome labels]
@@ -62,4 +64,24 @@ If no focus:
 ```
 No outcomes currently focused for this session.
 ```
+
+## TOON Format (Subagent Returns)
+
+For defocus operations:
+
+```toon
+@type: Action
+actionStatus: CompletedActionStatus
+name: defocus
+result: Defocused 2 outcomes
+
+defocused[2]: 001-jwt-auth,002-session-mgmt
+```
+
+**Fields:**
+- `@type`: Action (general operation)
+- `actionStatus`: CompletedActionStatus if successful
+- `name`: defocus
+- `result`: Summary message
+- `defocused[N]`: Inline array of outcome labels that were defocused
 </output_format>

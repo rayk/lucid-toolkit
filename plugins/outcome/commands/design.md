@@ -361,6 +361,51 @@ Example invocations:
 - Alignment fixes applied
 </output>
 
+<output_format>
+## TOON Format (Subagent Returns)
+
+For design document creation/update:
+
+**CREATE mode:**
+```toon
+@type: CreateAction
+actionStatus: CompletedActionStatus
+@id: 001-jwt-authentication
+result: Created design documents v1.0.0
+
+filesCreated[2]: solution-design.md,implementation-design.md
+x-profile: REST API / Web Service
+x-alignmentStatus: clean
+```
+
+**UPDATE mode:**
+```toon
+@type: UpdateAction
+actionStatus: CompletedActionStatus
+@id: 001-jwt-authentication
+result: Updated design documents to v1.1.0
+
+filesUpdated[2]: solution-design.md,implementation-design.md
+preservedSections[3]: Architecture,Public Interface,Dependencies
+updatedSections[2]: Technical Overview,Module Structure
+x-alignmentIssues: 2
+x-alignmentFixed: 2
+```
+
+**Fields:**
+- `@type`: CreateAction (new) or UpdateAction (update)
+- `actionStatus`: CompletedActionStatus if successful
+- `@id`: outcome directory label
+- `result`: Summary with version
+- `filesCreated[N]` or `filesUpdated[N]`: Inline array of design files
+- `preservedSections[N]`: Sections with manual edits kept (UPDATE only)
+- `updatedSections[N]`: Sections modified (UPDATE only)
+- `x-profile`: Detected domain profile
+- `x-alignmentStatus`: clean or issues-found
+- `x-alignmentIssues`: Count of misalignments found
+- `x-alignmentFixed`: Count of fixes applied
+</output_format>
+
 <verification>
 Before completing, verify:
 - [ ] Checked for existing design/ directory

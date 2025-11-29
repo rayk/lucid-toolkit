@@ -1,0 +1,11 @@
+@type: UpdateAction
+actionStatus: CompletedActionStatus
+name: move-outcomes
+result: Moved 2 outcomes to in-progress
+
+transitions[2]{@id,fromStatus,toStatus}:
+001-jwt-auth,PotentialActionStatus,ActiveActionStatus
+002-session-mgmt,PotentialActionStatus,ActiveActionStatus
+
+maturity[1]{capability,from,to,delta}:
+authentication-system,45,47,+2

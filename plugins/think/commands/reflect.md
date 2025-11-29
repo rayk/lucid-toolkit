@@ -22,11 +22,13 @@ User-specified issue: $ARGUMENTS
    - Extract relevant protocol rules from CLAUDE.md
    - Check if debug logs needed (only if user reports errors)
 
-2. **Root cause analysis** (ultrathink):
-   - Identify which specific protocol rule was violated
-   - Trace the cognitive pattern that led to violation
-   - Find root cause (momentum, specificity trap, compound request, uncertainty)
-   - Connect to known failure modes in CLAUDE.md delegation_examples
+2. **Root cause analysis** (general-purpose opus):
+   Launch analytical agent:
+
+   Task (general-purpose, opus):
+     Analyze protocol violation from step 1 context.
+     Output: rule violated, cognitive pattern, root cause category.
+     @constraints: maxTokens: 2500
 
 3. **Present findings** to user:
    - What happened (concise description)
@@ -39,14 +41,14 @@ User-specified issue: $ARGUMENTS
    - If user says "partially" or "no" → incorporate feedback, return to step 2
 
 5. **Research solutions** (parallel agents):
-   - claude-code-guide agent: Search official docs for relevant patterns (2000 tokens)
-   - sonnet agent: Search skills/ and commands/ for existing patterns (1500 tokens)
-   - haiku agent: Search CLAUDE.md for similar solutions (1000 tokens)
+   Task 1 (general-purpose, sonnet): Search docs for similar violations (2000 tokens)
+   Task 2 (general-purpose, sonnet): Search skills/ for patterns (1500 tokens)
+   Task 3 (general-purpose, haiku): Search CLAUDE.md (1000 tokens)
 
-6. **Design solution** (ultrathink):
-   - Apply criteria: robust, sustainable, long-term, evidence-based
-   - Consider: protocol modifications, new commands/skills, checkpoints, examples
-   - Present approach, components, implementation plan, evidence, trade-offs
+6. **Design solution** (general-purpose opus):
+   Task (general-purpose, opus):
+     Design robust solution from research findings.
+     @constraints: maxTokens: 3000
 
 7. **Confirm implementation** (AskUserQuestion):
    - "Should I implement this solution?"
@@ -76,6 +78,29 @@ Files potentially created/modified:
 - `commands/*.md` - New or updated commands
 - `skills/*/SKILL.md` - New or updated skills
 </output>
+
+<output_format>
+## Reflection Findings Output Format
+
+For step 3 (presenting findings), use TOON structured format:
+
+```toon
+@type: AssessAction
+name: reflection-findings
+actionStatus: CompletedActionStatus
+
+finding:
+incident: [concise description of what happened]
+protocolViolated: [specific protocol rule from CLAUDE.md]
+rootCause: [underlying cognitive pattern that led to violation]
+failurePattern: [named pattern if applicable: Specificity Trap, Momentum, Compound Request, etc.]
+
+x-conversationTurn: [approximate turn number where violation occurred]
+x-toolsUsed: [number of tool calls involved]
+```
+
+**Note:** Keep all root cause analysis reasoning, solution research, design rationale, and implementation details as markdown prose. Only use TOON for the structured reflection findings presentation.
+</output_format>
 
 <success_criteria>
 - Protocol violation clearly identified with specific rule reference
