@@ -1,12 +1,38 @@
 ---
 name: payload-store
-description: Store large subagent outputs externally, returning compact summary + path. Use when output exceeds 500 tokens, contains reference material, or caller specifies storage path.
-tools: Write, Read
+description: MANDATORY storage protocol for large subagent outputs. ALWAYS use when output exceeds 500 tokens, contains reference material, or caller specifies storage path. Triggers on research results, MCP tool output, documentation, comprehensive analysis, or any output that may need re-access.
+allowed-tools:
+  - Write
+  - Read
 ---
 
-<purpose>
-Prevent context bloat by storing verbose outputs externally while preserving accessibility. The skill decides storage location unless an explicit path is provided.
-</purpose>
+<objective>
+Prevent context bloat by storing verbose outputs externally while preserving accessibility. Returns compact TOON summary with `@stored` path reference so main context stays lean while full content remains accessible.
+
+**This is not optional.** Any subagent output exceeding 500 tokens MUST use this protocol.
+</objective>
+
+<quick_start>
+**When output exceeds 500 tokens:**
+
+1. **Write payload** to `shared/payloads/{session-id}/{timestamp}-{topic-slug}.md`
+2. **Update manifest** at `shared/payloads/{session-id}/manifest.json`
+3. **Return TOON summary** with `@stored` path:
+
+```toon
+@stored: shared/payloads/sess-abc/20251128-topic.md
+
+summary[N]{aspect,finding}:
+  aspect1,finding1
+  aspect2,finding2
+
+keyFindings: One sentence synthesis
+confidence: High
+tokens_stored: 4500
+```
+
+**For explicit paths:** Skip manifest, use exact path provided.
+</quick_start>
 
 <triggers>
 Store output externally when ANY apply:
@@ -296,11 +322,20 @@ If file already exists at path:
 </error_handling>
 
 <success_criteria>
-Successful payload storage delivers:
-- Full payload saved to resolved path
-- Manifest updated (if default location)
-- TOON summary under 300 tokens
-- Clear `@stored` path reference
-- Accurate token count
-- Appropriate confidence assessment
+**Verify successful storage:**
+
+- File exists at reported `@stored` path (use Read to confirm)
+- Manifest contains new entry with matching ID (for default paths)
+- Returned summary is under 300 tokens
+- `keyFindings` synthesizes core insights in 1-2 sentences (no commas)
+- `tokens_stored` count matches actual stored content
+- Path is absolute from repository root
+
+**Anti-success indicators (storage failure):**
+
+- Full output returned inline instead of stored
+- Summary exceeds 300 tokens
+- Missing `@stored` path in return
+- Manifest not updated for default storage location
+- Path uses relative instead of absolute reference
 </success_criteria>

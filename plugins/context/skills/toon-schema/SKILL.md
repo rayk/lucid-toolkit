@@ -1,20 +1,20 @@
 ---
 name: toon-schema
-description: Token-efficient output using TOON format with schema.org vocabulary. Use when returning structured data to minimize context consumption.
+description: MANDATORY token-efficient output format. ALWAYS use TOON with schema.org types when returning structured data (lists, status, results, summaries). Triggers on ANY structured output to minimize context consumption. Provides 40-60% token savings vs JSON.
 ---
 
-<overview>
+<objective>
 TOON (Token-Oriented Object Notation) with schema.org types provides 40-60% token savings for structured data.
 
-**When to use:** Returning structured data (lists, status, results) where token efficiency matters.
+**This is not optional.** All structured output (lists, status reports, search results, summaries) MUST use TOON format.
 
 **Key insight:** Claude already knows TOON syntax and schema.org types from training data. This skill provides conventions for consistent usage across lucid-toolkit.
 
 **Full reference:** See `references/toon-schema-org.md` for complete patterns and examples.
-</overview>
+</objective>
 
-<toon_basics>
-## TOON Syntax
+<quick_start>
+**Basic TOON syntax:**
 
 ```toon
 # Objects - key: value with indentation
@@ -30,17 +30,20 @@ tags[3]: admin,ops,dev
 items[2]{name,status,count}:
   widget-a,active,5
   widget-b,pending,3
-
-# Tab delimiter for efficiency
-items[2]{name,status|tab}:
-  widget-a	active
-  widget-b	pending
 ```
-</toon_basics>
+
+**Always declare `@type`** for semantic meaning:
+```toon
+@type: ItemList
+name: results
+itemListElement[3]{name,status}:
+  item-a,active
+  item-b,pending
+  item-c,completed
+```
+</quick_start>
 
 <schema_org_types>
-## Schema.org Types
-
 Use `@type` to declare semantic type. LLMs recognize these without explanation.
 
 | Type | Use For |
@@ -52,7 +55,8 @@ Use `@type` to declare semantic type. LLMs recognize these without explanation.
 | `Project` | Project containers |
 | `Intangible` | Capabilities, abstract concepts |
 
-## Status Values (ActionStatusType)
+<status_values>
+ActionStatusType values:
 
 | Status | Meaning |
 |--------|---------|
@@ -60,10 +64,11 @@ Use `@type` to declare semantic type. LLMs recognize these without explanation.
 | `ActiveActionStatus` | In progress |
 | `CompletedActionStatus` | Finished successfully |
 | `FailedActionStatus` | Did not succeed |
+</status_values>
 </schema_org_types>
 
 <lucid_extensions>
-## Lucid Extensions (x- prefix)
+Extensions with `x-` prefix for domain-specific properties:
 
 | Extension | Purpose |
 |-----------|---------|
@@ -74,8 +79,7 @@ Use `@type` to declare semantic type. LLMs recognize these without explanation.
 </lucid_extensions>
 
 <examples>
-## Example: Outcome Status
-
+<example_outcome_status>
 ```toon
 @type: CreateAction
 @id: outcome/005-authentication
@@ -88,9 +92,9 @@ step[3]{name,actionStatus}:
 01-B-session.md,ActiveActionStatus
 02-tests.md,PotentialActionStatus
 ```
+</example_outcome_status>
 
-## Example: Capability List
-
+<example_capability_list>
 ```toon
 @type: ItemList
 name: capabilities
@@ -100,9 +104,9 @@ authentication-system,47,80,ActiveActionStatus
 tenant-isolation,35,90,ActiveActionStatus
 admin-portal,100,80,CompletedActionStatus
 ```
+</example_capability_list>
 
-## Example: Action Result
-
+<example_action_result>
 ```toon
 @type: Action
 name: outcome-completion
@@ -112,19 +116,40 @@ x-capabilityId: authentication-system
 x-contribution: 25
 x-newMaturity: 72
 ```
+</example_action_result>
 </examples>
 
-<usage>
-## When to Apply
+<when_to_use>
+<apply_when>
+- **Subagent returns** - Compact summaries back to main context
+- **Status displays** - Lists of outcomes, capabilities, tasks
+- **Action results** - Completion summaries, state transitions
+- **Validation reports** - Structured error/success lists
+- **Search results** - File matches, grep output, findings
+</apply_when>
 
-1. **Subagent returns** - Compact summaries back to main context
-2. **Status displays** - Lists of outcomes, capabilities, tasks
-3. **Action results** - Completion summaries, state transitions
-4. **Validation reports** - Structured error/success lists
-
-## When NOT to Apply
-
+<do_not_apply>
 - Human-facing final output (use markdown)
 - Small single-value responses
 - Narrative explanations
-</usage>
+</do_not_apply>
+</when_to_use>
+
+<success_criteria>
+**TOON output is correct when:**
+
+- Uses schema.org `@type` declaration at top
+- Follows TOON syntax (proper quoting, comma delimiters)
+- Tabular arrays use header declarations `{field,field}`
+- ActionStatusType values correctly mapped
+- Token count reduced by 40-60% vs equivalent JSON
+- Structure is parseable and semantically clear
+
+**Anti-success indicators (format failure):**
+
+- JSON used instead of TOON for uniform data
+- Missing `@type` declaration
+- Tabular array without header declaration
+- Wrong ActionStatusType value
+- Verbose structure that could be more compact
+</success_criteria>

@@ -1,12 +1,33 @@
 ---
 name: delegate
-description: Systematic delegation decisions to preserve main context window. Use before executing any operation that may require 3+ tool calls, when location is unknown, or when scope is uncertain.
+description: MANDATORY pre-response protocol for ALL task execution. Use BEFORE every tool call to classify operations and delegate appropriately. Triggers on any user request, task planning, code changes, file operations, or when starting work. This is NOT optional - apply the 4-step protocol before EVERY response.
 ---
 
-<skill_definition>
-<purpose>Systematic delegation decisions to preserve main context window</purpose>
-<trigger>Before executing any operation that may require 3+ tool calls</trigger>
-</skill_definition>
+<objective>
+Apply the mandatory 4-step pre-response protocol before ANY task execution. This skill protects the main context window by systematically classifying operations and delegating multi-step work to subagents.
+
+**This is not optional.** Every response that involves tool usage MUST run the protocol first.
+</objective>
+
+<quick_start>
+**Before your first tool call, ALWAYS:**
+
+1. **Count operations** - How many tool calls will this need?
+2. **Check certainty** - Do you know the exact file paths? Write "?" if uncertain
+3. **Match agent** - Check specialized agents FIRST (debugger, flutter-*, python-*, neo4j, research)
+4. **Apply rule** - 3+ ops OR "?" = delegate; 1-2 ops with certainty = direct
+
+**Output checkpoint before first tool:**
+```
+[N ops → direct|delegate(agent)]: rationale
+```
+
+**Quick reference:**
+- `[1 op → direct]: Reading known file`
+- `[3 ops → delegate(specialize:debugger)]: Bug diagnosis`
+- `[? ops → delegate(specialize:research)]: Need verified sources`
+- `[4 ops → delegate(Explore)]: Find where X is defined`
+</quick_start>
 
 <core_principle>
 **Count operations before classifying. Delegate by default.**
@@ -15,24 +36,24 @@ If a request requires 3 or more tool calls, delegate to a subagent with an appro
 </core_principle>
 
 <pre_response_protocol>
-## The 4-Step Pre-Response Protocol (MANDATORY)
-
-### STEP 0: TRANSITION CHECK
+<step_0_transition_check>
 Detect if moving from research to action:
 - Research: WebSearch, WebFetch, exploratory Read
 - Action: Write, Edit, Bash for git
 
 If transitioning → Output `[MODE: research → action]`
+</step_0_transition_check>
 
-### STEP 1: DECOMPOSE COMPOUND REQUESTS
+<step_1_decompose>
 Split requests containing:
 - "AND" connectors
 - "then" sequences
 - Multiple action verbs
 
 Count each component separately.
+</step_1_decompose>
 
-### STEP 2: COUNT OPERATIONS
+<step_2_count_operations>
 | Pattern | Minimum Operations |
 |---------|-------------------|
 | Find where X is | Grep/Glob + Read = 2+ |
@@ -41,24 +62,26 @@ Count each component separately.
 | File in context | 0 ops to read |
 
 **Uncertainty Rule**: Cannot state count with certainty? Write "?" → "?" ALWAYS means delegate
+</step_2_count_operations>
 
-### STEP 3: VERIFY SIMPLICITY (only if count < 3)
-ALL must be true:
+<step_3_verify_simplicity>
+Only if count < 3, ALL must be true:
 - [ ] Single known file path
 - [ ] Operation count certain (not estimated)
 - [ ] No exploration/search component
 - [ ] Output size <500 tokens
+</step_3_verify_simplicity>
 
-### STEP 4: VISIBLE CHECKPOINT
+<step_4_checkpoint>
 Before FIRST tool call, output:
 ```
 [N ops → direct|delegate]: rationale
 ```
+</step_4_checkpoint>
 </pre_response_protocol>
 
 <delegation_rules>
-## Delegate If ANY Apply
-
+<delegate_when_any_apply>
 - Location unknown (need to find where)
 - Open-ended question
 - Multiple files/directories to check
@@ -66,18 +89,17 @@ Before FIRST tool call, output:
 - 3+ tool calls
 - MCP tools or external operations
 - Unpredictable result size
+</delegate_when_any_apply>
 
-## Direct Execution ONLY When ALL Apply
-
+<direct_when_all_apply>
 - Reading specific known file path
 - Operation count exactly 1-2 with certainty
 - No exploration/search component
 - Single known location
+</direct_when_all_apply>
 </delegation_rules>
 
 <token_budgets>
-## Token Budget Guidelines
-
 | Operation Type | Budget | Model | Storage |
 |----------------|--------|-------|---------|
 | File search, pattern matching | 1500 | haiku | inline |
@@ -92,17 +114,16 @@ Before FIRST tool call, output:
 </token_budgets>
 
 <store_and_summarize>
-## Store-and-Summarize Pattern
+For tasks that generate large outputs (research, documentation, analysis).
 
-For tasks that generate large outputs (research, documentation, analysis):
-
-**Use when:**
+<use_when>
 - Research requiring comprehensive results
 - MCP tools returning page content
 - Documentation gathering
 - Any task where full context may be needed later
+</use_when>
 
-**Delegation template:**
+<delegation_template>
 ```
 Task({agent}, {model}):
   "{task description}
@@ -115,7 +136,7 @@ Task({agent}, {model}):
    @constraints: summary_only: true"
 ```
 
-**With explicit path:**
+With explicit path:
 ```
 Task(research, opus):
   "Research authentication best practices.
@@ -123,8 +144,9 @@ Task(research, opus):
    Store full report to: docs/research/auth-practices.md
    Return TOON summary with @stored path"
 ```
+</delegation_template>
 
-**Main agent receives:**
+<main_agent_receives>
 ```toon
 @stored: shared/payloads/sess-abc/20251128-auth-practices.md
 
@@ -139,16 +161,15 @@ confidence: High
 tokens_stored: 3500
 ```
 
-**Main agent can:**
+Main agent can:
 - Use summary for immediate response
 - Read full payload: `Read(shared/payloads/sess-abc/...)`
 - Pass path to follow-up subagents
+</main_agent_receives>
 </store_and_summarize>
 
 <specificity_trap>
-## The Specificity Trap (Critical Anti-Pattern)
-
-**Problem**: Specific user input creates FALSE confidence.
+**Critical Anti-Pattern:** Specific user input creates FALSE confidence.
 
 When user provides exact error messages, variable names, or paths:
 - You know WHAT to search for
@@ -165,8 +186,6 @@ Reality: Grep + Read + Edit = 3+ ops → DELEGATE
 </specificity_trap>
 
 <checkpoint_examples>
-## Visible Checkpoint Examples
-
 ```
 [1 op → direct]: Reading known file path
 [2 ops → direct]: Grep + Read, single known file
@@ -177,22 +196,73 @@ Reality: Grep + Read + Edit = 3+ ops → DELEGATE
 ```
 </checkpoint_examples>
 
+<agent_selection>
+**PRIORITY ORDER: Specialized agents FIRST, then built-in agents.**
+
+When delegating, check specialized agents before falling back to general-purpose:
+
+<specialized_agents>
+| Agent | Use When | Triggers |
+|-------|----------|----------|
+| `specialize:debugger` | Bugs, test failures, unexpected behavior | "bug", "failing test", "not working", "error", diagnosis |
+| `specialize:flutter-coder` | Flutter/Dart code generation | Flutter, Riverpod, fpdart, widget, provider, Dart |
+| `specialize:flutter-env` | Flutter environment issues | build fails, signing, emulator, CI, Flutter doctor |
+| `specialize:neo4j` | Graph database work | Neo4j, Cypher, graph, AuraDB, nodes, relationships |
+| `specialize:python-coder` | Python code generation | Python, FastAPI, Pydantic, uv, ruff, generate Python |
+| `specialize:python-env` | Python environment issues | uv/pip fails, pyright, Docker, GCP, Jupyter kernel |
+| `specialize:research` | Verified research, fact-checking | research, documentation, verify, authoritative sources |
+</specialized_agents>
+
+<builtin_agents>
+Use only when no specialized agent matches:
+
+| Agent | Use When |
+|-------|----------|
+| `Explore` | Codebase exploration, find files, understand structure |
+| `general-purpose` | Multi-step tasks without domain specialization |
+</builtin_agents>
+
+<agent_checkpoint>
+Include agent selection in your checkpoint:
+```
+[3 ops → delegate(specialize:debugger)]: Test failure diagnosis
+[? ops → delegate(specialize:research)]: Need authoritative sources
+[4 ops → delegate(Explore)]: Find authentication handlers
+```
+</agent_checkpoint>
+</agent_selection>
+
 <model_selection>
-## Model Selection Guide
+<haiku>
+**1500-2000 tokens** - File search, pattern matching, yes/no validation, simple lookups, high-volume parallel calls
+</haiku>
 
-### Haiku (1500-2000 tokens)
-- File search and pattern matching
-- Yes/no validation
-- Simple lookups
-- High-volume parallel calls
+<sonnet>
+**2000-2500 tokens** - Code analysis, flow tracing, multi-file fixes with commits, architecture decisions
+</sonnet>
 
-### Sonnet (2000-2500 tokens)
-- Code analysis and flow tracing
-- Multi-file fixes with commits
-- Architecture decisions
-
-### Opus (3000+ tokens)
-- Strategic synthesis
-- Complex reasoning
-- Novel architecture proposals
+<opus>
+**3000+ tokens** - Strategic synthesis, complex reasoning, novel architecture proposals
+</opus>
 </model_selection>
+
+<success_criteria>
+**Protocol applied correctly when:**
+
+- Visible checkpoint `[N ops → ...]` appears before first tool call
+- Operation count reflects reality (not underestimated)
+- "?" used when location or scope is uncertain
+- Specialized agent used when domain matches (debugger, flutter-*, python-*, neo4j, research)
+- Built-in agents used only when no specialized agent fits
+- Delegation used for 3+ operations OR uncertain scope
+- Direct execution only when ALL simplicity criteria met
+- Research → action transitions explicitly marked
+
+**Anti-success indicators (protocol failure):**
+
+- Tool calls without preceding checkpoint
+- Using general-purpose agent when specialized agent exists for the domain
+- Guessing file locations instead of delegating search
+- Multiple sequential tool calls that could have been one delegation
+- Context exhaustion mid-task due to undelegated work
+</success_criteria>

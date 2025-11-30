@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.8] - 2025-11-30
+
+### Changed
+- **context plugin skills** - Migrated all skills to pure XML structure with mandatory invocation patterns
+  - `delegate` - Added specialized agent prioritization (specialize:* agents before built-in), proactive description triggers on ALL task execution
+  - `conserve` - Converted to pure XML, added success criteria, mandatory description for ALL output generation
+  - `payload-store` - Fixed YAML frontmatter (`tools` → `allowed-tools`), added objective/quick_start/success_criteria
+  - `toon-schema` - Full migration from hybrid markdown/XML to pure XML structure
+- **context plugin** bumped to v1.3.0
+
 ## [2.0.7] - 2025-11-29
 
 ### Added
