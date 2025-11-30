@@ -277,3 +277,46 @@ status{metric,value,threshold}:
 - Sequential calls that could have been parallel
 - Large outputs returned inline instead of stored externally
 </success_criteria>
+
+<self_audit>
+## Post-Response Audit
+
+After completing tool operations, verify protocol compliance:
+
+### Checkpoint Verification
+1. Did response begin with checkpoint?
+   - YES → Protocol followed
+   - NO → Log violation, apply checkpoint to next response
+
+2. Did operation count match reality?
+   - Within ±1 → Acceptable
+   - Off by 2+ → Improve estimation next time
+
+3. Was delegation appropriate?
+   - Direct execution exhausted >500 tokens → Should have delegated
+   - Delegation used for 1-op task → Acceptable (false positive OK)
+
+### Recovery Actions
+**If you realize mid-response that you skipped the checkpoint:**
+
+Output it immediately before continuing:
+```
+[Late checkpoint: N ops → should have delegated]: Fixing inline
+```
+
+**If you completed a response without checkpoint:**
+
+Acknowledge in next response:
+```
+[Note: Previous response missing checkpoint - correcting]
+[N ops → direct|delegate]: Current task rationale
+```
+
+### Violation Patterns to Self-Monitor
+- Multiple consecutive responses without checkpoints
+- "Simple" tasks that consumed >500 context tokens
+- Sequential tool calls that could have been parallel
+- Using general-purpose agent when specialized agent exists
+
+**Recovery is always better than pretending compliance.**
+</self_audit>

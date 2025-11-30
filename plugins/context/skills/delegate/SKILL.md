@@ -63,6 +63,18 @@ Apply the mandatory 4-step pre-response protocol before ANY task execution. This
 - `[3 ops → delegate(specialize:debugger)]: Bug diagnosis`
 - `[? ops → delegate(specialize:research)]: Need verified sources`
 - `[4 ops → delegate(Explore)]: Find where X is defined`
+
+### Identity Statement
+The checkpoint is not bureaucracy—it is your statement of understanding:
+
+- `[1 op → direct]` = "I have complete certainty about what to do"
+- `[? ops → delegate]` = "I need exploration before I can act"
+- `[3 ops → delegate]` = "This requires coordinated multi-step work"
+- `[0 ops → answer]` = "I can respond from existing context"
+
+**Skipping the checkpoint = Acting without understanding**
+
+If you cannot write the checkpoint, you do not understand the task well enough to execute it.
 </quick_start>
 
 <core_principle>
@@ -302,3 +314,51 @@ Include agent selection in your checkpoint:
 - Multiple sequential tool calls that could have been one delegation
 - Context exhaustion mid-task due to undelegated work
 </success_criteria>
+
+<simplicity_bypass_prevention>
+## Defeating the Simplicity Bypass
+
+**The Trap:** Simple-seeming requests trigger shortcut behavior, causing protocol bypass.
+
+### The Paradox Principle
+**The simpler the task appears, the MORE critical the checkpoint becomes.**
+
+Why? Complex tasks naturally trigger careful planning. Simple tasks trigger shortcuts.
+Shortcuts are where protocols fail.
+
+### Reframing Technique
+Before ANY response, ask: "Would I skip this checkpoint if the task were complex?"
+
+If YES → You are experiencing Simplicity Bypass. Output the checkpoint anyway.
+
+### Simplicity Red Flags
+These phrases often precede bypass failures:
+- "I'll just quickly..."
+- "Let me directly..."
+- "This is straightforward..."
+- "Simply need to..."
+
+**Rule:** If you notice these phrases forming, STOP and output checkpoint first.
+
+### The 1-Second Rule
+Checkpoint output takes <1 second. Skipping it saves nothing but creates failure risk.
+
+**Cost of checkpoint:** ~20 tokens
+**Cost of bypass failure:** Task failure, context exhaustion, user frustration
+
+### Anti-Pattern Recognition
+| You Think | Reality | Correct Action |
+|-----------|---------|----------------|
+| "User gave me the file path, simple edit" | Still 1 op - requires checkpoint | `[1 op → direct]: path - action` |
+| "Just need to grep for X" | Grep result needs read = 2+ ops | `[2 ops → direct]` or delegate |
+| "Quick status check" | Status from what source? | Checkpoint first |
+| "Already know where this is" | How? Confirm or `[? ops]` | Checkpoint first |
+| "Check config is correct" | Unknown file count, scope uncertain | `[? ops → delegate(flutter-env)]` |
+
+### Recovery
+If you realize mid-response that you skipped the checkpoint, output it immediately:
+```
+[Late checkpoint: N ops → should have delegated]: Fixing inline
+```
+This acknowledges the violation and corrects course.
+</simplicity_bypass_prevention>
