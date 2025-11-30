@@ -3,6 +3,55 @@ name: conserve
 description: MANDATORY context conservation protocol. ALWAYS apply these techniques - use TOON format for structured output, delegate external data operations, and coordinate subagents efficiently. Triggers on ANY output generation, file listings, search results, status reports, MCP operations, or subagent coordination.
 ---
 
+<when_invoked>
+**This skill activates AUTOMATICALLY when:**
+
+- Generating ANY structured output (file lists, tables, search results, status)
+- Returning results from Glob, Grep, or file searches
+- Producing output with 3+ similar items
+- Orchestrating subagent operations
+- Any operation producing >200 tokens of uniform data
+
+**Apply TOON format and conservation techniques without prompting.**
+
+<correct_flow>
+User: "what files are in the auth directory?"
+
+CORRECT:
+1. Execute Glob/Read to get file list
+2. Apply @skills conserve for output
+3. Return:
+```toon
+files[5]{path,purpose}:
+  src/auth/login.ts,User authentication
+  src/auth/session.ts,Session management
+  src/auth/token.ts,JWT utilities
+  src/auth/middleware.ts,Auth middleware
+  src/auth/types.ts,Type definitions
+```
+</correct_flow>
+
+<incorrect_flow>
+INCORRECT (what NOT to do):
+1. Execute Glob/Read
+2. Return verbose output:
+   "I found 5 files in the auth directory:
+    - src/auth/login.ts - This file handles user authentication...
+    - src/auth/session.ts - This manages sessions...
+    ..." ← WRONG: Verbose, wastes context
+</incorrect_flow>
+
+<recognition_triggers>
+Apply this skill when producing:
+- File listings from Glob results
+- Search matches from Grep
+- Step-by-step summaries
+- Status or progress reports
+- Any list of 3+ items with uniform structure
+- Results from MCP tools or web fetches
+</recognition_triggers>
+</when_invoked>
+
 <objective>
 Apply context conservation techniques to EVERY response. The main context window is precious - preserve it for strategic decisions, complex reasoning, and high-level coordination by using efficient output formats and proper delegation.
 

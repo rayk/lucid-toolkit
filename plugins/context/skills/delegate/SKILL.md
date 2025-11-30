@@ -3,6 +3,42 @@ name: delegate
 description: MANDATORY pre-response protocol for ALL task execution. Use BEFORE every tool call to classify operations and delegate appropriately. Triggers on any user request, task planning, code changes, file operations, or when starting work. This is NOT optional - apply the 4-step protocol before EVERY response.
 ---
 
+<when_invoked>
+**This skill activates AUTOMATICALLY when:**
+
+- You receive ANY user request requiring tool usage
+- You are about to make ANY tool call (Read, Grep, Edit, Bash, Glob, Task, etc.)
+- Response planning involves 3+ potential operations
+- Location or scope of work is uncertain
+
+**Invoke BEFORE your first tool call - this is non-negotiable.**
+
+<correct_flow>
+User: "check this flutter melos project is correctly configured"
+
+CORRECT:
+1. Invoke @skills delegate
+2. Output: `[? ops → delegate(specialize:flutter-env)]: Flutter monorepo config validation - unknown file count`
+3. Task(specialize:flutter-env): "Validate melos.yaml, pubspec.yaml files, check package structure..."
+</correct_flow>
+
+<incorrect_flow>
+INCORRECT (what NOT to do):
+1. Read melos.yaml ← WRONG: Should invoke delegate skill first
+2. Glob packages/**/*.yaml ← WRONG: Direct exploration without checkpoint
+3. Read pubspec.yaml ← WRONG: Multiple tool calls without delegation
+</incorrect_flow>
+
+<recognition_triggers>
+Recognize these patterns and invoke this skill:
+- "check", "validate", "verify" + configuration/setup
+- "fix", "debug", "investigate" + any issue
+- "find", "search", "where is"
+- Any request mentioning frameworks: Flutter, Python, Neo4j
+- Any request with uncertain scope or location
+</recognition_triggers>
+</when_invoked>
+
 <objective>
 Apply the mandatory 4-step pre-response protocol before ANY task execution. This skill protects the main context window by systematically classifying operations and delegating multi-step work to subagents.
 
