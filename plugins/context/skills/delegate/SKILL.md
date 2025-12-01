@@ -16,10 +16,10 @@ description: MANDATORY pre-response protocol for ALL task execution. Use BEFORE 
 <correct_flow>
 User: "check this flutter melos project is correctly configured"
 
-CORRECT:
-1. Invoke @skills delegate
-2. Output: `[? ops → delegate(specialize:flutter-env)]: Flutter monorepo config validation - unknown file count`
-3. Task(specialize:flutter-env): "Validate melos.yaml, pubspec.yaml files, check package structure..."
+CORRECT (skill activates automatically via context recognition):
+1. Recognize: Config validation = unknown file count = uncertain scope
+2. Output checkpoint: `[? ops → delegate(specialize:flutter-env)]: Flutter monorepo config validation - unknown file count`
+3. Delegate: Task(specialize:flutter-env): "Validate melos.yaml, pubspec.yaml files, check package structure..."
 </correct_flow>
 
 <incorrect_flow>

@@ -17,10 +17,10 @@ description: MANDATORY context conservation protocol. ALWAYS apply these techniq
 <correct_flow>
 User: "what files are in the auth directory?"
 
-CORRECT:
+CORRECT (skill activates automatically when generating structured output):
 1. Execute Glob/Read to get file list
-2. Apply @skills conserve for output
-3. Return:
+2. Recognize: File list = structured output = use TOON format
+3. Return efficiently:
 ```toon
 files[5]{path,purpose}:
   src/auth/login.ts,User authentication
@@ -183,7 +183,7 @@ confidence: High|Medium|Low
 tokens_stored: 4500
 ```
 
-See `@skills/payload-store` for full protocol details.
+See the payload-store skill for full protocol details.
 </return_format>
 </payload_store_protocol>
 
