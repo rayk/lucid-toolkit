@@ -108,13 +108,17 @@ No cross-dependencies between feature modules.
 
 ### Phase 5: Integration
 
-**Model**: sonnet
+**Model**: haiku (mechanical) + sonnet (verification)
 **Timeout**: 5 minutes
 **Prerequisites**: Phase 4 complete
 
-1. Update `__init__.py` exports
-2. Verify cross-module imports
-3. Run full test suite
+**Subtask 5a - Export Updates (haiku)**:
+- Update `__init__.py` exports
+- Generate re-export statements
+
+**Subtask 5b - Verification (sonnet)**:
+- Verify cross-module imports
+- Run full test suite
 
 ### Phase 6: Verification
 
@@ -136,12 +140,25 @@ Deep analysis of persistent failures.
 
 ### Phase 8: Cross-Check & Report
 
-**Model**: sonnet (parallel) + opus (analysis)
+**Model**: haiku (mechanical checks) + sonnet (reasoning checks) + opus (analysis)
 **Timeout**: 30 minutes
 
-1. Spawn 8 parallel cross-check agents
-2. Collect all results
-3. Fix failures (max 3 attempts each)
+**Subtask 8a - Mechanical Checks (haiku, parallel)**:
+- Lint check - execute linter, collect output
+- Coverage check - run coverage tool, extract percentage
+- Style check - run style checker, collect violations
+
+**Subtask 8b - Reasoning Checks (sonnet, parallel)**:
+- Architecture check - verify patterns used correctly
+- Requirements check - trace requirements to implementation
+- Acceptance check - validate acceptance criteria
+- Documentation check - verify completeness
+- Custom check - design-specific criteria
+
+**Subtask 8c - Analysis & Fixes (sonnet/opus)**:
+1. Collect all check results
+2. Fix failures (sonnet, max 3 attempts each)
+3. Escalate persistent failures to opus
 4. Generate implementation_report.md
 5. Generate execution_result.json
 6. Git commit (if all pass)

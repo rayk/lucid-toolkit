@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-12-01
+
+### Changed
+- **plan plugin** - Expanded Haiku model usage for cost efficiency
+  - Phase 5 (Integration): Split into haiku (export updates) + sonnet (verification)
+  - Phase 8 (Cross-Check): Split into haiku (mechanical checks: lint, coverage, style) + sonnet (reasoning checks) + opus (analysis)
+  - Updated Principle 3 with detailed Haiku use cases and subtask splitting guidance
+- **plan plugin** bumped to v1.1.0
+
 ## [2.1.0] - 2025-12-01
 
 ### Fixed

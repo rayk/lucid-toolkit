@@ -91,9 +91,25 @@ All code documented for **LLM consumption first, human readability second**:
 | Standard Implementation | sonnet | Good balance |
 | Complex Reasoning | opus | Full reasoning power |
 
-**HAIKU**: Creating stubs, directory structures, boilerplate
-**SONNET**: Writing tests, implementation, standard refactoring
-**OPUS**: Debugging, architectural decisions, complex refactoring
+**HAIKU** (prioritize for cost savings):
+- Creating stubs, directory structures, boilerplate
+- Updating export files (`__init__.py`, `index.ts`)
+- Running command-based checks (lint, coverage, style)
+- Generating re-export statements
+- Any task that follows a template without decisions
+
+**SONNET**:
+- Writing tests and implementation (TDD cycles)
+- Standard refactoring with code understanding
+- Reasoning-based checks (architecture, requirements, documentation)
+- Cross-module verification requiring import resolution
+
+**OPUS**:
+- Debugging persistent failures
+- Architectural decisions
+- Complex refactoring requiring deep analysis
+
+**Subtask Splitting**: Within phases, split mechanical subtasks to Haiku. Example: Phase 5 Integration splits export updates (haiku) from verification (sonnet).
 
 ### Principle 4: Dependency Validation
 

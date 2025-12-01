@@ -123,10 +123,10 @@ Generated execution prompts follow a 9-phase structure:
 | 2: Foundation | sonnet | Types, errors, config (TDD) |
 | 3: Core | sonnet | Main service class (TDD) |
 | 4: Features | sonnet | Feature modules (parallel TDD) |
-| 5: Integration | sonnet | Exports, cross-module verification |
+| 5: Integration | haiku+sonnet | Exports (haiku), verification (sonnet) |
 | 6: Verification | - | Type checker, full test suite |
 | 7: Debug | opus | Deep analysis (if needed) |
-| 8: Cross-Check | sonnet+opus | 8 parallel checks, reporting |
+| 8: Cross-Check | haiku+sonnet+opus | Mechanical checks (haiku), reasoning checks (sonnet), analysis (opus) |
 
 ## Model Cost Guidance
 

@@ -2,7 +2,7 @@
   "name": "plan",
   "displayName": "Planner",
   "description": "TDD execution prompt generator with cost-efficient model delegation",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0",
