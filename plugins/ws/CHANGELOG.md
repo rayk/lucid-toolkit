@@ -5,6 +5,25 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2025-12-02
+
+### Changed
+
+- Centralized TOON schema access to toon-specialist only
+- `toon-specialist.md`: Added `<architecture>` section with TOON access control table
+- `toon-specialist.md`: Added constraint preventing schema paths in instance files
+- `capability-checker.md`: Added Task tool for delegating TOON data retrieval
+- `capability-checker.md`: Removed direct schema file references
+- `cap/create.md`: Reference schemas by name, delegate to toon-specialist
+- `cap/list.md`: Delegate .toon file writes to toon-specialist instead of direct writes
+- `enviro.md`: Removed all explicit schema paths, reference by name only
+
+### Architecture
+
+Access control now enforced:
+- Any command/agent: Read instance .toon files, use TOON in messages
+- toon-specialist ONLY: Read *-schema.toon files, write .toon files, know schema locations
+
 ## [0.4.0] - 2025-12-02
 
 ### Added
