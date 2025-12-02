@@ -65,6 +65,14 @@
       "version": "1.0.0",
       "category": "development",
       "tags": ["subagents", "mcp", "neo4j", "specialist"]
+    },
+    {
+      "name": "ws",
+      "source": "./plugins/ws",
+      "description": "Capability-based workspace management with environment snapshots",
+      "version": "0.1.0",
+      "category": "workflow",
+      "tags": ["workspace", "environment", "capability-driven"]
     }
   ]
 }
