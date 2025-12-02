@@ -2,7 +2,7 @@
   "name": "ws",
   "displayName": "Workspace",
   "description": "Capability-based software development workspace management. Consolidates workspace, capability, outcome, and plan functionality into a unified plugin.",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "author": "lucid-toolkit",
   "dependencies": {
     "claudeCode": ">=1.0.0",

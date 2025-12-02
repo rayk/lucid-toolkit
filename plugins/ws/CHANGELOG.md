@@ -5,6 +5,22 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2025-12-02
+
+### Performance
+
+- Optimized `/ws:enviro` scanner prompts for parallel execution
+- Reduced scanner prompt size by ~75% (verbose → compact TOON templates)
+- Added explicit "Return ONLY this TOON - no prose" constraints to prevent context pollution
+- Changed Phase 4 scanners from JSON to compact TOON format
+- Added execution summary table showing parallel launch requirements
+- Added "Parallel Launch Instruction" reminders after scanner definitions
+- Simplified toon-specialist invocations (verbatim pass-through, no reformatting)
+
+### Fixed
+
+- Ensured all 4 Phase 2 scanners launch in parallel (was only launching 3)
+
 ## [0.4.1] - 2025-12-02
 
 ### Changed
