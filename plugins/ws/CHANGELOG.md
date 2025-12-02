@@ -5,6 +5,39 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-12-02
+
+### Added
+
+- `/cap:create` command for guided capability creation with validation workflow
+- `/cap:list` command with automatic index sync via parallel subagents
+- Placeholder commands: `/cap:delete`, `/cap:edit`, `/cap:merge`, `/cap:split`
+- TOON schema files for workspace data structures:
+  - `workspace-info-schema.toon` - main workspace snapshot structure
+  - `capabilities-info-schema.toon` - capabilities index structure
+  - `outcomes-info-schema.toon` - outcomes index structure
+  - `execution-info-schema.toon` - execution tracking structure
+  - `core-values-schema.toon` - 34-value framework reference data
+  - `actor-registry-schema.toon` - actor definitions reference data
+- Output templates for generated documents:
+  - `capability-statement-template.md`
+  - `outcome-statement-template.md`
+  - `execution-plan-template.md`
+  - `execution-completion-template.md`
+- `capability-checker` subagent for validation workflows
+- Python hooks (`session_start.py`, `focus_tracker.py`)
+- `capability_track_schema.json` for JSON schema validation
+- `workspace_info` Python package with CLI and hook support
+
+### Changed
+
+- `/ws:enviro` now generates related data files (capabilities-info, outcomes-info, execution-info)
+- Added Phase 4 to `/ws:enviro` for checking and generating missing related data files
+- All TOON instance files now stored in `.claude/` directory
+- Schema files organized in `plugins/ws/templates/data/`
+- Output templates organized in `plugins/ws/templates/outputs/`
+- REPORT, MIGRATE, and REPAIR modes now check and regenerate missing related files
+
 ## [0.2.2] - 2025-12-02
 
 ### Changed
