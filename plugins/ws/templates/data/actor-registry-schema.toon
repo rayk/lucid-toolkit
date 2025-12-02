@@ -1,0 +1,114 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# SCHEMA: actor-registry.toon
+# ═══════════════════════════════════════════════════════════════════════════
+# Actor Registry Reference - defines actors by domain and relationship types.
+# Used for capability-actor involvement mapping.
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# SCHEMA METADATA
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# $schema: plugins/ws/templates/data/actor-registry-schema.toon
+# $instance: (none - this is reference data, schema IS the instance)
+# $type: reference-data
+# $version: 0.2.2
+#
+# Used by: capabilities-info-schema.toon (actor relationships)
+#          capability_track.json (actors field)
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# TYPE NOTATION
+#   →const           Fixed value, copy exactly as shown
+#   →string          Text value
+#   →array<string>   Comma-separated list of actor identifiers
+#   →enum[Name]      One of the values in ENUMS section
+#
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ─── METADATA ──────────────────────────────────────────────────────────────
+
+@context: https://schema.org                    # →const
+@type: ItemList                                 # →const
+name: Actor Registry by Domain                  # →const
+
+# ─── OWNERSHIP & GOVERNANCE ────────────────────────────────────────────────
+
+domain{name,actors|section}: Ownership & Governance  # →const section header
+actors[7]: lot-owner,owners-corporation,strata-committee,office-bearer,resident-tenant,tenant-representative,voluntary-worker  # →array<string>
+
+# ─── EXTERNAL SERVICE & PROFESSIONAL ───────────────────────────────────────
+
+domain{name,actors|section}: External Service & Professional  # →const section header
+actors[11]: building-manager,strata-manager,property-developer,insurer,insurance-broker,lawyer,building-consultant,quantity-surveyor,auditor,valuer,tradesperson  # →array<string>
+
+# ─── REGULATORY & ADJUDICATIVE ─────────────────────────────────────────────
+
+domain{name,actors|section}: Regulatory & Adjudicative  # →const section header
+actors[8]: ncat,vcat,qcat,bccm-office,nsw-fair-trading,consumer-affairs-victoria,local-council,whs-regulator  # →array<string>
+
+# ─── INDUSTRY & NON-GOVERNMENT ─────────────────────────────────────────────
+
+domain{name,actors|section}: Industry & Non-Government  # →const section header
+actors[1]: standards-australia  # →array<string>
+
+# ─── RELATIONSHIP TYPES ────────────────────────────────────────────────────
+
+# →array<RelationshipType> - defines how actors relate to capabilities
+relationshipTypes{type,description|tab}:
+requires	Actor needs this capability to perform their role
+provides	Actor delivers or implements this capability
+consumes	Actor uses output from this capability
+enables	Actor makes this capability possible
+governs	Actor regulates or oversees this capability
+
+# ─── CRITICALITY LEVELS ────────────────────────────────────────────────────
+
+# →array<CriticalityLevel> - importance of capability to actor
+criticalityLevels{level,description|tab}:
+essential	Critical to actor's core role - cannot function without
+important	Significant value but actor can work around if unavailable
+optional	Nice to have - enhances but not required
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ENUMS
+# ═══════════════════════════════════════════════════════════════════════════
+
+# RelationshipType:
+#   requires  - Actor needs this capability
+#   provides  - Actor delivers this capability
+#   consumes  - Actor uses this capability
+#   enables   - Actor makes this capability possible
+#   governs   - Actor regulates/oversees this capability
+
+# CriticalityLevel:
+#   essential  - Critical to actor's role
+#   important  - Significant but not critical
+#   optional   - Nice to have
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# USAGE RULES
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# When mapping actors to capabilities:
+#
+# 1. Each capability MUST identify 1+ actors
+# 2. For each actor specify:
+#    - relationshipType (from enum above)
+#    - criticality (essential/important/optional)
+#    - description (how actor relates to capability)
+# 3. Load full actor details from status/actor_summary.json
+#
+# Example capability actor mapping:
+#   actors:
+#     - actor: lot-owner
+#       relationshipType: requires
+#       criticality: essential
+#       description: "Primary user of authentication for portal access"
+#     - actor: strata-manager
+#       relationshipType: provides
+#       criticality: important
+#       description: "Manages user accounts and access permissions"
+#
+# ═══════════════════════════════════════════════════════════════════════════

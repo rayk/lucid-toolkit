@@ -1,0 +1,101 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# SCHEMA: core-values.toon
+# ═══════════════════════════════════════════════════════════════════════════
+# Core Business Values Framework - reference data for capability creation.
+# Use when mapping capabilities to business values.
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# SCHEMA METADATA
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# $schema: plugins/ws/templates/data/core-values-schema.toon
+# $instance: (none - this is reference data, schema IS the instance)
+# $type: reference-data
+# $version: 0.2.2
+#
+# Used by: capabilities-info-schema.toon (coreValues.coverage mapping)
+#          capability_track.json (coreValues field)
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# TYPE NOTATION
+#   →const           Fixed value, copy exactly as shown
+#   →string          Text value
+#   →int             Integer number
+#   →array<string>   Comma-separated list of values
+#
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ─── METADATA ──────────────────────────────────────────────────────────────
+
+@context: https://schema.org                    # →const
+@type: DefinedTermSet                           # →const
+name: Core Business Values Framework            # →const
+numberOfItems: 34                               # →int (total value count)
+
+# ─── TECHNICAL QUALITY (4 values) ──────────────────────────────────────────
+
+category{name,values|section}: Technical Quality  # →const section header
+values[4]: Dependability,Performance,Security,Maintainability  # →array<string>
+
+# ─── BUSINESS & STRATEGIC (4 values) ───────────────────────────────────────
+
+category{name,values|section}: Business & Strategic  # →const section header
+values[4]: Efficiency,Scalability,Time-to-Market,User Experience (UX)  # →array<string>
+
+# ─── COMMUNICATION & PROCESS (3 values) ────────────────────────────────────
+
+category{name,values|section}: Communication & Process  # →const section header
+values[3]: Transparency,Interoperability,Compliance  # →array<string>
+
+# ─── REVENUE & MARKET (3 values) ───────────────────────────────────────────
+
+category{name,values|section}: Revenue & Market  # →const section header
+values[3]: Revenue Enablement,Market Differentiation,Customer Acquisition  # →array<string>
+
+# ─── USER & STAKEHOLDER (9 values) ─────────────────────────────────────────
+
+category{name,values|section}: User & Stakeholder  # →const section header
+values[9]: Convenience,Personalization,Trust & Confidence,Empowerment,Responsiveness,Predictability,Control & Autonomy,Peace of Mind,Accessibility  # →array<string>
+
+# ─── OPERATIONAL (5 values) ────────────────────────────────────────────────
+
+category{name,values|section}: Operational  # →const section header
+values[5]: Flexibility,Resilience,Observability,Cost Optimization,Data Quality  # →array<string>
+
+# ─── LEARNING & GROWTH (2 values) ──────────────────────────────────────────
+
+category{name,values|section}: Learning & Growth  # →const section header
+values[2]: Learnability,Discovery  # →array<string>
+
+# ─── SOCIAL & ENVIRONMENTAL (4 values) ─────────────────────────────────────
+
+category{name,values|section}: Social & Environmental  # →const section header
+values[4]: Fairness & Equity,Community & Connection,Sustainability,Privacy  # →array<string>
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# USAGE RULES
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# When mapping capabilities to core values:
+#
+# 1. Select 1-3 PRIMARY values with contribution % and rationale
+# 2. Optionally add 0-2 SECONDARY values with rationale
+# 3. Total contribution across all values must sum to ≤100%
+# 4. Each value should align with the capability's purpose
+# 5. Reference values exactly as spelled above (case-sensitive)
+#
+# Example capability value mapping:
+#   coreValues:
+#     primary:
+#       - value: Security
+#         contribution: 40%
+#         rationale: "Core authentication protects user data"
+#       - value: Trust & Confidence
+#         contribution: 30%
+#         rationale: "Reliable auth builds user trust"
+#     secondary:
+#       - value: Compliance
+#         rationale: "Meets regulatory auth requirements"
+#
+# ═══════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,7 @@
+{
+  "session_id": "sess-abc123def456",
+  "transcript_path": "/tmp/claude/transcripts/sess-abc123def456.json",
+  "cwd": "/Users/dev/my-workspace",
+  "hook_event_name": "SessionStart",
+  "permission_mode": "bypassPermissions"
+}

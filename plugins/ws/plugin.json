@@ -8,11 +8,23 @@
     "claudeCode": ">=1.0.0",
     "python": ">=3.10"
   },
-  "commands": ["ws:version", "ws:report", "ws:enviro"],
+  "commands": ["ws:version", "ws:report", "ws:enviro", "cap:create", "cap:list"],
   "skills": [],
-  "hooks": [],
-  "schemas": [],
-  "templates": ["workspace-info.toon"],
+  "agents": ["capability-checker"],
+  "hooks": {
+    "SessionStart": ["python3 hooks/session_start.py"],
+    "PostToolUse": ["python3 hooks/focus_tracker.py"]
+  },
+  "schemas": ["capability_track_schema.json"],
+  "templates": [
+    "data/workspace-info-schema.toon",
+    "data/capabilities-info-schema.toon",
+    "data/outcomes-info-schema.toon",
+    "data/execution-info-schema.toon",
+    "data/core-values-schema.toon",
+    "data/actor-registry-schema.toon",
+    "outputs/capability-statement-template.md"
+  ],
   "sharedLibraries": [
     "../../shared/cli-commons"
   ]

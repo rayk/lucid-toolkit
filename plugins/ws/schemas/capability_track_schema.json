@@ -1,0 +1,750 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Realize Capability Tracking",
+  "description": "Tracks strategic capabilities - WHAT the system can DO (not HOW). Each capability maps to 1-3 core business values from the 28-value framework. Maturity (0-100%) is auto-calculated from completed outcomes for atomic capabilities, or from sub-capability maturity for composed capabilities.",
+  "schemaVersion": "2.0.0",
+  "type": "object",
+  "required": ["folderName", "name", "description", "purpose", "type", "currentMaturity", "targetMaturity", "outcomes", "coreValues"],
+
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 100,
+      "description": "Human-readable capability name derived from folder name (title-cased kebab-case). This is what users see. Must match the folder name when converted to kebab-case. Domain-first ordering: domain noun before action/qualifier.",
+      "examples": ["Lifecycle Rapid", "Authentication System", "Legislation Validation"]
+    },
+
+    "folderName": {
+      "type": "string",
+      "description": "Directory name for this capability (kebab-case, domain-first). This is the user-visible identifier. Auto-derived from description during creation. Pattern: {domain-noun}-{qualifier/action}",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "examples": ["lifecycle-rapid", "authentication-system", "legislation-validation"]
+    },
+
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "description": "What this capability enables the system to DO. Describes the ability/function, not the implementation. The business value delivered is captured in the coreValues mapping.",
+      "examples": ["Secure user authentication with session management and audit logging", "Multi-tenant data isolation and access control", "Automated compliance monitoring and reporting"]
+    },
+
+    "purpose": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Why this capability matters strategically. Explains the business rationale and strategic importance in 1-2 sentences.",
+      "examples": ["Provides foundational security for all user interactions, enabling trust and compliance", "Enables scalable multi-customer deployment reducing infrastructure costs per customer"]
+    },
+
+    "scope": {
+      "type": "object",
+      "description": "Defines what is and is not part of this capability's responsibility. Helps prevent scope creep and clarifies boundaries.",
+      "properties": {
+        "included": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "What IS this capability responsible for",
+          "examples": [["User login/logout", "Session management", "Password policies"]]
+        },
+        "excluded": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "What is NOT this capability's responsibility (explicitly out of scope)",
+          "examples": [["Authorization/permissions", "API key management", "OAuth provider integration"]]
+        }
+      },
+      "default": {"included": [], "excluded": []}
+    },
+
+    "domain": {
+      "type": "string",
+      "description": "Capability domain/category for organization",
+      "examples": ["Data Security & Privacy", "Business Logic", "Product Lifecycle", "API & Integration"]
+    },
+
+    "type": {
+      "type": "string",
+      "enum": ["atomic", "composed"],
+      "description": "Atomic = built directly from outcomes. Composed = built from sub-capabilities (maturity auto-calculated from children)."
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["active", "deprecated", "merged"],
+      "default": "active",
+      "description": "Lifecycle status of the capability"
+    },
+
+    "documentStatus": {
+      "type": "object",
+      "description": "Metadata about the capability definition document completeness",
+      "default": {},
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["draft", "incomplete", "complete"],
+          "description": "Documentation maturity state",
+          "default": "draft"
+        },
+        "percentComplete": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentage of required documentation fields completed"
+        },
+        "missingElements": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of required fields/sections not yet defined",
+          "default": []
+        }
+      }
+    },
+
+    "currentMaturity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "COMPUTED/READ-ONLY: Current maturity percentage (0-100). For atomic capabilities, sum of contributionPercent from builtByOutcomes. For composed capabilities, weighted average from composedOf sub-capabilities.",
+      "default": 0
+    },
+
+    "targetMaturity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Strategic target maturity (typically 70-100% for production capabilities)",
+      "default": 80
+    },
+
+    "coreValues": {
+      "type": "object",
+      "description": "REQUIRED: Reference to core business values this capability delivers. Full value definitions, rationale, and quantification are in capability-overview.md or business-value.md.",
+      "required": ["primary"],
+      "properties": {
+        "primary": {
+          "type": "array",
+          "description": "Primary values this capability delivers (1-3 value IDs from 28-value framework)",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "enum": [
+              "Dependability", "Performance", "Security", "Maintainability",
+              "Efficiency", "Scalability", "Time-to-Market", "User Experience (UX)",
+              "Transparency", "Interoperability", "Compliance",
+              "Revenue Enablement", "Market Differentiation", "Customer Acquisition",
+              "Convenience", "Personalization", "Trust & Confidence", "Empowerment",
+              "Responsiveness", "Predictability", "Control & Autonomy", "Peace of Mind",
+              "Accessibility", "Flexibility", "Resilience",
+              "Observability", "Cost Optimization", "Data Quality",
+              "Learnability", "Discovery",
+              "Fairness & Equity", "Community & Connection", "Sustainability", "Privacy"
+            ]
+          },
+          "examples": [["Security", "Compliance"], ["Revenue Enablement", "Scalability", "Security"]]
+        },
+        "secondary": {
+          "type": "array",
+          "description": "Secondary/supporting values (0-2 value IDs)",
+          "maxItems": 2,
+          "items": {
+            "type": "string",
+            "enum": [
+              "Dependability", "Performance", "Security", "Maintainability",
+              "Efficiency", "Scalability", "Time-to-Market", "User Experience (UX)",
+              "Transparency", "Interoperability", "Compliance",
+              "Revenue Enablement", "Market Differentiation", "Customer Acquisition",
+              "Convenience", "Personalization", "Trust & Confidence", "Empowerment",
+              "Responsiveness", "Predictability", "Control & Autonomy", "Peace of Mind",
+              "Accessibility", "Flexibility", "Resilience",
+              "Observability", "Cost Optimization", "Data Quality",
+              "Learnability", "Discovery",
+              "Fairness & Equity", "Community & Connection", "Sustainability", "Privacy"
+            ]
+          },
+          "default": [],
+          "examples": [["Revenue Enablement"], []]
+        },
+        "documentPath": {
+          "type": "string",
+          "description": "Path to detailed business value documentation (rationale, quantification, contribution %). Typically embedded in capability-statement.md or separate business-value.md file",
+          "pattern": "^capabilities/[a-z0-9]+(-[a-z0-9]+)*/.*\\.md$",
+          "examples": ["capabilities/authentication-system/capability-statement.md", "capabilities/authentication-system/business-value.md"]
+        }
+      }
+    },
+
+    "documentationPath": {
+      "type": "string",
+      "description": "Path to primary capability documentation containing strategic context, scope, milestones, and detailed rationale. Typically 'capabilities/{id}/capability-statement.md'",
+      "pattern": "^capabilities/[a-z0-9]+(-[a-z0-9]+)*/.*\\.md$",
+      "examples": ["capabilities/authentication-system/capability-statement.md", "capabilities/legislation-validation/capability-statement.md"]
+    },
+
+    "relationships": {
+      "type": "object",
+      "description": "Capability-to-capability relationships (embedded in file)",
+      "default": {},
+      "properties": {
+        "prerequisites": {
+          "type": "array",
+          "description": "Capabilities required before this can progress",
+          "items": {
+            "type": "object",
+            "required": ["folderName", "minimumMaturity"],
+            "properties": {
+              "folderName": {
+                "type": "string",
+                "description": "Capability folder name (domain-first kebab-case, e.g., 'authentication-system')",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "minimumMaturity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Minimum maturity of prerequisite capability needed"
+              },
+              "rationale": {
+                "type": "string",
+                "description": "Why this prerequisite is needed"
+              }
+            }
+          },
+          "default": []
+        },
+
+        "enables": {
+          "type": "array",
+          "description": "Higher-level capabilities this contributes to or unlocks",
+          "items": {
+            "type": "object",
+            "required": ["folderName"],
+            "properties": {
+              "folderName": {
+                "type": "string",
+                "description": "Capability folder name (domain-first kebab-case)",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "unlocksAtMaturity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Maturity threshold at which this enables the target capability"
+              },
+              "description": {
+                "type": "string",
+                "description": "How this capability enables the target"
+              }
+            }
+          },
+          "default": []
+        },
+
+        "composedOf": {
+          "type": "array",
+          "description": "Sub-capabilities that build this capability (REQUIRED for type=composed). Maturity auto-calculated as weighted sum.",
+          "items": {
+            "type": "object",
+            "required": ["folderName", "weight"],
+            "properties": {
+              "folderName": {
+                "type": "string",
+                "description": "Sub-capability folder name (domain-first kebab-case)",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Weight in compositional maturity calculation (should sum to 1.0 across all sub-capabilities)"
+              }
+            }
+          },
+          "default": []
+        },
+
+        "parentFolderName": {
+          "type": ["string", "null"],
+          "description": "Parent capability folder name if this is a sub-capability",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        }
+      }
+    },
+
+    "outcomes": {
+      "type": "object",
+      "description": "REQUIRED: Outcome relationships that build capability maturity. Maturity is auto-calculated from these relationships.",
+      "required": ["requiredOutcomes", "builtByOutcomes"],
+      "properties": {
+        "requiredOutcomes": {
+          "type": "array",
+          "description": "Outcomes that MUST be completed to build this capability (build plan). For atomic capabilities only.",
+          "items": {
+            "type": "object",
+            "required": ["outcomeTrackingFile", "contributionPercent"],
+            "properties": {
+              "outcomeTrackingFile": {
+                "type": "string",
+                "description": "Path to outcome_track.json file relative to workspace root (e.g., 'outcomes/queued/001-authentication-provider/outcome_track.json'). Update path when outcome moves between states.",
+                "pattern": "^outcomes/(queued|in-progress|completed)/[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}/outcome_track\\.json$"
+              },
+              "contributionPercent": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Expected maturity contribution from this outcome (should sum to targetMaturity)"
+              },
+              "rationale": {
+                "type": "string",
+                "description": "Why this outcome is required"
+              }
+            }
+          },
+          "default": []
+        },
+
+        "builtByOutcomes": {
+          "type": "array",
+          "description": "Outcomes that have COMPLETED and contributed to maturity (actual progress). Sum of contributionPercent = currentMaturity for atomic capabilities.",
+          "items": {
+            "type": "object",
+            "required": ["outcomeTrackingFile", "contributionPercent", "completedDate"],
+            "properties": {
+              "outcomeTrackingFile": {
+                "type": "string",
+                "description": "Path to completed outcome_track.json file (typically in outcomes/completed/)",
+                "pattern": "^outcomes/(queued|in-progress|completed)/[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}/outcome_track\\.json$"
+              },
+              "contributionPercent": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Actual maturity increase from this outcome"
+              },
+              "completedDate": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 datetime when outcome was completed"
+              }
+            }
+          },
+          "default": []
+        },
+
+        "enablesOutcomes": {
+          "type": "array",
+          "description": "Outcomes that require this capability at specific maturity (gates/prerequisites)",
+          "items": {
+            "type": "object",
+            "required": ["outcomeTrackingFile", "requiredMaturity"],
+            "properties": {
+              "outcomeTrackingFile": {
+                "type": "string",
+                "description": "Path to outcome_track.json file that depends on this capability",
+                "pattern": "^outcomes/(queued|in-progress|completed)/[0-9]+-[a-z0-9]+(-[a-z0-9]+){0,4}/outcome_track\\.json$"
+              },
+              "requiredMaturity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Capability maturity required to unblock this outcome"
+              }
+            }
+          },
+          "default": []
+        }
+      }
+    },
+
+    "actors": {
+      "type": "array",
+      "description": "References to actors that relate to this capability (who requires, provides, consumes, enables, or governs this capability)",
+      "items": {
+        "type": "object",
+        "required": ["actorId", "relationshipType"],
+        "properties": {
+          "actorId": {
+            "type": "string",
+            "description": "Actor identifier (directory label format, e.g., 'lot-owner', 'strata-manager', 'ncat')",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "relationshipType": {
+            "type": "string",
+            "enum": ["requires", "provides", "consumes", "enables", "governs"],
+            "description": "Nature of relationship: requires = actor needs this capability, provides = actor delivers this capability, consumes = actor uses this capability, enables = actor makes this capability possible, governs = actor regulates/oversees this capability"
+          },
+          "criticality": {
+            "type": "string",
+            "enum": ["essential", "important", "optional"],
+            "description": "How critical this capability is to the actor's role",
+            "default": "important"
+          },
+          "description": {
+            "type": "string",
+            "description": "Explanation of how the actor relates to this capability"
+          },
+          "addedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this actor reference was added"
+          }
+        }
+      },
+      "default": []
+    },
+
+    "evidence": {
+      "type": "object",
+      "description": "Supporting evidence for capability maturity. Detailed evidence (commits, files, tests) tracked in outcome executionLog.",
+      "properties": {
+        "documentation": {
+          "type": "array",
+          "description": "Key documentation artifacts for this capability",
+          "items": {
+            "type": "object",
+            "required": ["path", "docType"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Relative path to documentation file"
+              },
+              "docType": {
+                "type": "string",
+                "enum": ["api", "architecture", "user-guide", "runbook", "audit", "milestones"],
+                "description": "Type of documentation (milestones doc contains maturity definitions moved from schema)"
+              }
+            }
+          },
+          "default": []
+        },
+
+        "productionMetrics": {
+          "type": "object",
+          "description": "Production usage evidence (if applicable)",
+          "properties": {
+            "isLive": {
+              "type": "boolean",
+              "description": "Is this capability deployed to production?"
+            },
+            "deployedDate": {
+              "type": ["string", "null"],
+              "format": "date-time",
+              "description": "When capability was first deployed to production"
+            },
+            "usageMetrics": {
+              "type": "object",
+              "additionalProperties": true,
+              "description": "Custom metrics proving production maturity (e.g., request volume, user adoption)"
+            }
+          }
+        }
+      }
+    },
+
+    "consolidation": {
+      "type": "object",
+      "description": "Tracking for merged/consolidated/deprecated capabilities",
+      "properties": {
+        "mergedFrom": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "description": "Original capability folder names that were merged into this one",
+          "default": []
+        },
+        "mergeDate": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "mergeReason": {
+          "type": "string",
+          "description": "Why these capabilities were consolidated"
+        },
+        "replacedByFolderName": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "For deprecated capabilities - folder name of capability that replaced this"
+        },
+        "deprecationDate": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "deprecationReason": {
+          "type": "string"
+        }
+      }
+    },
+
+    "metadata": {
+      "type": "object", "description": "Operational metadata including hierarchical folder structure specification",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this capability was created"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this capability was last updated"
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "User or system that created this capability"
+        },
+        "version": {
+          "type": "string",
+          "description": "Semantic version of capability definition",
+          "default": "1.0.0"
+        },
+        "tags": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Searchable tags for organization and filtering",
+          "default": []
+        },
+        "directoryPath": {
+          "type": "string",
+          "description": "Full path to capability directory in workspace. For root capabilities: 'capabilities/{folderName}/'. For child capabilities: 'capabilities/{parent-folder}/{child-folder-name}/'. Examples: 'capabilities/authentication-system/', 'capabilities/legislation-validation/discovery/'",
+          "pattern": "^capabilities/([a-z0-9]+(-[a-z0-9]+)*/)*$"
+        },
+        "childFolderName": {
+          "type": "string",
+          "description": "For child capabilities ONLY: the differentiator folder name (WITHOUT parent prefix). Must match the last segment of directoryPath. Examples: 'discovery' (NOT 'legislation-validation-discovery'), 'authentication' (NOT 'identity-authentication'). Root capabilities should omit this field.",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "hierarchyLevel": {
+          "type": "integer",
+          "description": "Depth in capability hierarchy tree. 0 = root capability (no parent), 1 = direct child of root, 2 = grandchild, etc. Auto-calculated from parentFolderName chain.",
+          "minimum": 0,
+          "default": 0
+        }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "if": {
+        "properties": {"type": {"const": "composed"}}
+      },
+      "then": {
+        "required": ["relationships"],
+        "properties": {
+          "relationships": {
+            "required": ["composedOf"]
+          }
+        },
+        "description": "Composed capabilities MUST define composedOf sub-capabilities. Maturity auto-calculated from children."
+      }
+    },
+    {
+      "if": {
+        "properties": {"type": {"const": "atomic"}}
+      },
+      "then": {
+        "required": ["outcomes"],
+        "properties": {
+          "outcomes": {
+            "required": ["requiredOutcomes", "builtByOutcomes"]
+          }
+        },
+        "description": "Atomic capabilities MUST define outcome relationships. Maturity auto-calculated from builtByOutcomes."
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "deprecated"}}
+      },
+      "then": {
+        "required": ["consolidation"],
+        "properties": {
+          "consolidation": {
+            "required": ["replacedByFolderName", "deprecationDate", "deprecationReason"]
+          }
+        }
+      }
+    }
+  ],
+
+  "examples": [
+    {
+      "folderName": "authentication-system",
+      "name": "Authentication System",
+      "description": "Authenticate users securely with session management, rate limiting, and comprehensive audit logging",
+      "purpose": "Provides foundational security for all user interactions, enabling trust and regulatory compliance",
+      "scope": {
+        "included": ["User login/logout", "Session management", "Password policies", "Rate limiting"],
+        "excluded": ["Authorization/permissions", "API key management", "OAuth provider integration"]
+      },
+      "domain": "Data Security & Privacy",
+      "type": "atomic",
+      "status": "active",
+      "currentMaturity": 47,
+      "targetMaturity": 80,
+      "coreValues": {
+        "primary": ["Security", "Compliance"],
+        "secondary": ["Revenue Enablement"],
+        "documentPath": "capabilities/authentication-system/capability-statement.md"
+      },
+      "documentationPath": "capabilities/authentication-system/capability-statement.md",
+      "outcomes": {
+        "requiredOutcomes": [
+          {
+            "outcomeTrackingFile": "outcomes/queued/001-basic-authentication/outcome_track.json",
+            "contributionPercent": 30,
+            "rationale": "Foundational auth system"
+          },
+          {
+            "outcomeTrackingFile": "outcomes/queued/002-session-management/outcome_track.json",
+            "contributionPercent": 20,
+            "rationale": "Secure session handling"
+          }
+        ],
+        "builtByOutcomes": [
+          {
+            "outcomeTrackingFile": "outcomes/completed/001-basic-authentication/outcome_track.json",
+            "contributionPercent": 30,
+            "completedDate": "2025-01-10T00:00:00Z"
+          },
+          {
+            "outcomeTrackingFile": "outcomes/completed/002-session-management/outcome_track.json",
+            "contributionPercent": 17,
+            "completedDate": "2025-02-15T00:00:00Z"
+          }
+        ],
+        "enablesOutcomes": [
+          {
+            "outcomeTrackingFile": "outcomes/queued/010-multi-tenant-isolation/outcome_track.json",
+            "requiredMaturity": 70
+          }
+        ]
+      },
+      "actors": [
+        {
+          "actorId": "lot-owner",
+          "relationshipType": "requires",
+          "criticality": "essential",
+          "description": "Lot owners require secure authentication to access their portal"
+        }
+      ],
+      "metadata": {
+        "created": "2025-01-01T00:00:00Z",
+        "updated": "2025-02-15T14:30:00Z",
+        "directoryPath": "capabilities/authentication-system/",
+        "hierarchyLevel": 0
+      }
+    },
+    {
+      "folderName": "platform-saas-multitenant",
+      "name": "Platform Saas Multitenant",
+      "description": "Support multiple customers on a single platform instance with complete tenant isolation, billing, and administration",
+      "purpose": "Enables scalable multi-customer deployment reducing infrastructure costs per customer while maintaining isolation",
+      "scope": {
+        "included": ["Tenant isolation", "Per-tenant billing", "Admin portal", "Tenant provisioning"],
+        "excluded": ["Customer-facing features", "Industry-specific functionality"]
+      },
+      "domain": "Product Lifecycle",
+      "type": "composed",
+      "status": "active",
+      "currentMaturity": 35,
+      "targetMaturity": 90,
+      "coreValues": {
+        "primary": ["Revenue Enablement", "Scalability"],
+        "secondary": ["Security"],
+        "documentPath": "capabilities/platform-saas-multitenant/capability-statement.md"
+      },
+      "relationships": {
+        "composedOf": [
+          {
+            "folderName": "authentication-system",
+            "weight": 0.25
+          },
+          {
+            "folderName": "isolation-tenant",
+            "weight": 0.35
+          },
+          {
+            "folderName": "billing-system",
+            "weight": 0.20
+          },
+          {
+            "folderName": "portal-admin",
+            "weight": 0.20
+          }
+        ]
+      },
+      "outcomes": {
+        "requiredOutcomes": [],
+        "builtByOutcomes": [],
+        "enablesOutcomes": [
+          {
+            "outcomeTrackingFile": "outcomes/queued/050-enterprise-tier-launch/outcome_track.json",
+            "requiredMaturity": 80
+          }
+        ]
+      },
+      "metadata": {
+        "created": "2025-01-15T00:00:00Z",
+        "updated": "2025-02-15T14:30:00Z",
+        "directoryPath": "capabilities/platform-saas-multitenant/",
+        "hierarchyLevel": 0
+      }
+    },
+    {
+      "folderName": "discovery",
+      "name": "Legislation Discovery",
+      "description": "Discover and locate relevant legislation from authoritative sources for a given regulatory domain",
+      "purpose": "Foundation for compliance automation - must identify applicable legislation before it can be validated",
+      "scope": {
+        "included": ["Source identification", "Legislation search", "Source cataloging"],
+        "excluded": ["Legislation parsing", "Compliance validation", "Rule extraction"]
+      },
+      "domain": "Data Quality",
+      "type": "atomic",
+      "status": "active",
+      "currentMaturity": 0,
+      "targetMaturity": 80,
+      "coreValues": {
+        "primary": ["Data Quality", "Compliance"],
+        "documentPath": "capabilities/legislation-validation/discovery/capability-statement.md"
+      },
+      "relationships": {
+        "parentFolderName": "legislation-validation",
+        "enables": [
+          {
+            "folderName": "ingestion",
+            "unlocksAtMaturity": 50,
+            "description": "Must discover legislation before it can be ingested"
+          }
+        ]
+      },
+      "outcomes": {
+        "requiredOutcomes": [
+          {
+            "outcomeTrackingFile": "outcomes/queued/020-source-catalog/outcome_track.json",
+            "contributionPercent": 40,
+            "rationale": "Foundation for discovering legislation sources"
+          },
+          {
+            "outcomeTrackingFile": "outcomes/queued/021-search-integration/outcome_track.json",
+            "contributionPercent": 40,
+            "rationale": "Ability to search and query legislation sources"
+          }
+        ],
+        "builtByOutcomes": [],
+        "enablesOutcomes": []
+      },
+      "metadata": {
+        "created": "2025-01-20T00:00:00Z",
+        "updated": "2025-01-20T00:00:00Z",
+        "directoryPath": "capabilities/legislation-validation/discovery/",
+        "childFolderName": "discovery",
+        "hierarchyLevel": 1
+      }
+    }
+  ]
+}
