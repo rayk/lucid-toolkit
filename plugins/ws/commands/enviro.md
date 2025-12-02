@@ -52,6 +52,18 @@ IMPORTANT: Immediately notify user that scanning is starting, then delegate.
 </execution_model>
 
 <process>
+## Execution Summary
+
+| Phase | Action | Parallelism |
+|-------|--------|-------------|
+| 1 | State detection | Main context (1-2 reads) |
+| 2 | Workspace scanning | **4 Explore agents IN PARALLEL** |
+| 3 | Produce workspace-info.toon | 1 toon-specialist |
+| 4 | Related data scanning | **Up to 3 Explore agents IN PARALLEL** |
+| 4b | Produce related .toon files | 1 toon-specialist |
+
+**CRITICAL**: Phases 2 and 4a MUST launch all subagents in a SINGLE message with multiple Task calls.
+
 ## Phase 1: Quick State Detection (Main Context)
 
 Notify user immediately:
@@ -73,158 +85,114 @@ Check state with minimal reads:
 
 ## Phase 2: Delegate Workspace Scanning (Parallel Subagents)
 
-For SETUP state, launch these subagents IN PARALLEL using a single message with multiple Task tool calls:
+For SETUP state, launch ALL 4 subagents IN PARALLEL in a SINGLE message with 4 Task tool calls.
 
-### Subagent 1: Standard Directories Scanner
+**CRITICAL**: Use exactly these prompts. Scanners return ONLY the specified fields - no explanations, no extra data.
+
+### Subagent 1: Directories Scanner
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for standard capability-driven development directories.
+Count files in workspace directories. Return ONLY this TOON - no prose:
 
-Check for these directories at workspace root and report findings:
-- capabilities/ → count **/capability_track.json files
-- outcomes/ → count **/outcome_track.json files, note stage subdirs
-- plans/ → count *.md files
-- executions/ → count session logs
-- research/ → check if exists
-- status/ → check for capability_summary.json, outcome_summary.json
-
-Return TOON format:
-```
 @type: ItemList
-directories{name,exists,itemCount,path|tab}:
-capabilities	true	5	./capabilities
-outcomes	true	12	./outcomes
-...
-```
+directories{name,exists,count|tab}:
+capabilities	{true|false}	{count of **/capability_track.json}
+outcomes	{true|false}	{count of **/outcome_track.json}
+plans	{true|false}	{count of *.md}
+executions	{true|false}	{count of files}
+research	{true|false}	0
+status	{true|false}	0
 """)
 ```
 
-### Subagent 2: Project & Technology Scanner
+### Subagent 2: Projects Scanner
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for projects and technology indicators.
+Find projects by technology markers. Return ONLY this TOON - no prose:
 
-1. Check for project-map.json at root or .claude/
-2. Scan for technology indicators:
-   - package.json → Node.js/TypeScript
-   - pyproject.toml, setup.py → Python
-   - Cargo.toml → Rust
-   - go.mod → Go
-   - pom.xml, build.gradle → Java/Kotlin
-   - pubspec.yaml → Flutter/Dart
-   - *.csproj → .NET
-
-3. Identify .git directories to find project boundaries
-
-Return TOON format:
-```
 @type: ItemList
-hasProjectMap: true|false
-projectMapPath: {path}
+hasProjectMap: {true|false}
+projectMapPath: {path or null}
 
-projects{name,path,technology,gitRoot|tab}:
-{name}	{path}	{tech}	{git-root}
-...
-```
+projects{name,path,tech|tab}:
+{dirname}	{relative-path}	{typescript|python|rust|go|java|flutter|dotnet}
+
+Detection: package.json=typescript, pyproject.toml=python, Cargo.toml=rust, go.mod=go, pom.xml/build.gradle=java, pubspec.yaml=flutter, *.csproj=dotnet
 """)
 ```
 
-### Subagent 3: IDE Configuration Scanner
+### Subagent 3: IDE Scanner
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan for IntelliJ IDEA configuration in .idea/ directory.
+Check .idea/ directory. Return ONLY this TOON - no prose:
 
-If .idea/ exists, extract:
-1. From modules.xml: module names and paths
-2. From misc.xml: SDK name, language level
-3. From vcs.xml: VCS mappings
-4. List *.iml files found
-
-Return TOON format:
-```
+If .idea/ exists:
 @type: SoftwareApplication
 ide.name: IntelliJ IDEA
-ide.configPath: .idea/
-ide.sdkName: {sdk}
-ide.languageLevel: {level}
+ide.sdkName: {from misc.xml or null}
+ide.languageLevel: {from misc.xml or null}
+ide.moduleCount: {count of *.iml files}
 
-ide.modules{name,path,type|tab}:
-{module}	{path}	{type}
-...
-
-ide.vcsRoots{directory,vcs|tab}:
-{dir}	Git
-...
-```
-
-If no .idea/ directory, return:
-```
+If no .idea/:
 @type: SoftwareApplication
 ide.name: none
-```
 """)
 ```
 
-### Subagent 4: Git & Workspace Metadata
+### Subagent 4: Git Metadata Scanner
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Gather git and workspace metadata.
+Get git metadata. Return ONLY this TOON - no prose:
 
-Execute and report:
-1. git rev-parse --short HEAD
-2. git remote get-url origin
-3. git log -1 --format=%cI (commit timestamp)
-4. basename of workspace directory
-
-Return TOON format:
-```
 @type: Project
-workspace.name: {directory-name}
-workspace.codeRepository: {remote-url}
-workspace.version: {commit-hash}
-workspace.dateModified: {commit-timestamp}
-```
+workspace.name: {basename of cwd}
+workspace.codeRepository: {git remote get-url origin, or null}
+workspace.version: {git rev-parse --short HEAD, or null}
+workspace.dateModified: {git log -1 --format=%cI, or null}
 """)
 ```
+
+**Parallel Launch Instruction**: Send ONE message containing 4 Task tool calls simultaneously.
 
 ## Phase 3: Produce workspace-info.toon (via toon-specialist)
 
-After all Phase 2 subagents complete:
+After all Phase 2 subagents complete, pass their TOON outputs directly to toon-specialist.
 
 ### Step 1: Ensure .claude/ directory exists
 ```bash
 mkdir -p .claude
 ```
 
-### Step 2: Collect scanner results
-Gather structured data from all Phase 2 scanners:
-- Directories data (from Scanner 1)
-- Projects & technology data (from Scanner 2)
-- IDE configuration data (from Scanner 3)
-- Git & workspace metadata (from Scanner 4)
+### Step 2: Invoke toon-specialist with scanner outputs
+Pass the raw TOON from all 4 scanners. Do NOT reformat - toon-specialist handles parsing.
 
-### Step 3: Invoke toon-specialist to produce workspace-info.toon
 ```
-Task(subagent_type="toon-specialist", model="sonnet", prompt="""
+Task(subagent_type="toon-specialist", prompt="""
 @type: CreateAction
-name: produce-workspace-info
-
+name: produce
 object.schema: workspace-info-schema.toon
 object.output: .claude/workspace-info.toon
-object.data:
-  workspace: {from Scanner 4 - name, repository, version, dateModified}
-  projects: {from Scanner 2 - project list with technologies}
-  directories: {from Scanner 1 - capabilities, outcomes, plans counts}
-  ide: {from Scanner 3 - IDE configuration}
-  focus: null
-  lastSession: null
 
-Produce .claude/workspace-info.toon following the schema.
-Return production report in TOON format.
+# Scanner 1 output (directories):
+{paste Scanner 1 TOON verbatim}
+
+# Scanner 2 output (projects):
+{paste Scanner 2 TOON verbatim}
+
+# Scanner 3 output (IDE):
+{paste Scanner 3 TOON verbatim}
+
+# Scanner 4 output (git):
+{paste Scanner 4 TOON verbatim}
+
+# Defaults:
+focus.name: null
+focus.actionStatus: PotentialActionStatus
+lastSession.id: null
 """)
 ```
 
-### Step 4: Proceed to Phase 4
+### Step 3: Proceed to Phase 4
 After workspace-info.toon is confirmed written, check related data files.
 
 ## Phase 4: Check and Generate Related Data Files
@@ -240,135 +208,84 @@ After workspace-info.toon is established (SETUP, MIGRATE, REPAIR, or HEALTHY sta
 
 ### Step 2: Launch SCANNER subagents for MISSING files (Phase 4a)
 
-For each missing file, launch an Explore subagent IN PARALLEL to gather data.
-These are READ-ONLY scanners that return structured JSON data.
+Launch ALL needed scanners IN PARALLEL in a SINGLE message. Scanners return compact TOON only.
 
 #### Scanner: Capabilities Data (if capabilities-info.toon missing)
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for capabilities data. Return structured JSON (not TOON).
+Read all capabilities/**/capability_track.json. Return ONLY this TOON - no prose:
 
-1. Find all capability_track.json files in capabilities/
-2. For each capability, extract:
-   - identifier, name, description
-   - currentMaturity, targetMaturity
-   - status (active/deprecated/planned)
-   - capabilityType (atomic/composed)
-   - domain (from parent directory name)
-3. Compute summary statistics
+@type: ItemList
+summary.total: {count}
+summary.active: {count where status=active}
+summary.avgMaturity: {average currentMaturity as int}
 
-Return JSON format:
-{
-  "summary": {
-    "totalCapabilities": N,
-    "activeCapabilities": N,
-    "deprecatedCapabilities": N,
-    "atomicCapabilities": N,
-    "composedCapabilities": N,
-    "averageMaturity": N
-  },
-  "maturityDistribution": [
-    {"range": "0-29%", "count": N},
-    {"range": "30-59%", "count": N},
-    {"range": "60-79%", "count": N},
-    {"range": "80-100%", "count": N}
-  ],
-  "capabilities": [
-    {"identifier": "...", "name": "...", "type": "...", "status": "...", "currentMaturity": N, "targetMaturity": N, "domain": "..."},
-    ...
-  ],
-  "domains": [
-    {"domain": "...", "count": N, "avgMaturity": N, "capabilities": ["id1", "id2"]},
-    ...
-  ]
-}
+capabilities{id,name,type,status,maturity,target|tab}:
+{folderName}	{name}	{atomic|composed}	{active|deprecated}	{currentMaturity}	{targetMaturity}
 """)
 ```
 
 #### Scanner: Outcomes Data (if outcomes-info.toon missing)
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for outcomes data. Return structured JSON (not TOON).
+Count outcome_track.json in each outcomes/{stage}/ directory. Return ONLY this TOON - no prose:
 
-1. Scan each stage directory: outcomes/queued/, ready/, in-progress/, blocked/, completed/
-2. For each outcome, find outcome_track.json and extract:
-   - directory, name, stage, priority
-   - capabilityContributions
-   - parentOutcome (for child outcomes like 005.1-*)
-3. Build hierarchy (parent-child relationships)
+@type: ItemList
+summary{stage,count|tab}:
+queued	{count in outcomes/queued/}
+ready	{count in outcomes/ready/}
+in-progress	{count in outcomes/in-progress/}
+blocked	{count in outcomes/blocked/}
+completed	{count in outcomes/completed/}
 
-Return JSON format:
-{
-  "summary": {
-    "totalOutcomes": N,
-    "byStage": {"queued": N, "ready": N, "in-progress": N, "blocked": N, "completed": N}
-  },
-  "outcomes": [
-    {"directory": "...", "name": "...", "stage": "...", "priority": N, "type": "parent|atomic", "capabilityContributions": [...], "children": [...]},
-    ...
-  ],
-  "focus": {"name": "...", "path": "..."} or null
-}
+focus.name: {directory name in in-progress with focus=true, or null}
+focus.path: {path to focused outcome, or null}
 """)
 ```
 
 #### Scanner: Executions Data (if execution-info.toon missing)
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for executions data. Return structured JSON (not TOON).
+Check executions/ directory. Return ONLY this TOON - no prose:
 
-1. Check if executions/ directory exists
-2. If exists, scan for execution logs and extract:
-   - id, name, linked outcome
-   - status (pending/in-progress/completed/failed)
-   - progress percentage
-3. If no executions/ directory, return empty structure
+@type: ItemList
+summary.total: {count of execution files, or 0}
+summary.active: {count where status=in-progress, or 0}
+summary.completed: {count where status=completed, or 0}
 
-Return JSON format:
-{
-  "summary": {
-    "totalExecutions": N,
-    "activeExecutions": N,
-    "completedExecutions": N,
-    "failedExecutions": N
-  },
-  "executions": [
-    {"id": "...", "name": "...", "outcome": "...", "status": "...", "progress": N},
-    ...
-  ],
-  "activeExecution": {...} or null
-}
+activeExecution.id: {id of active execution, or null}
+activeExecution.outcome: {linked outcome, or null}
 """)
 ```
 
+**Parallel Launch Instruction**: Send ONE message containing all needed scanner Task calls.
+
 ### Step 3: Invoke toon-specialist to produce files (Phase 4b)
 
-After scanners return data, invoke toon-specialist to produce valid TOON files.
-Send ALL data in a single request for efficiency:
+After scanners return, pass raw TOON outputs to toon-specialist. Single request for all files:
 
 ```
-Task(subagent_type="toon-specialist", model="sonnet", prompt="""
+Task(subagent_type="toon-specialist", prompt="""
 @type: CreateAction
-name: produce-related-files
+name: produce-related
 
-# Capabilities data (from scanner)
+# File 1: capabilities-info
 capabilities.schema: capabilities-info-schema.toon
 capabilities.output: .claude/capabilities-info.toon
-capabilities.data: {JSON from capabilities scanner}
+capabilities.data:
+{paste Capabilities Scanner TOON verbatim}
 
-# Outcomes data (from scanner)
+# File 2: outcomes-info
 outcomes.schema: outcomes-info-schema.toon
 outcomes.output: .claude/outcomes-info.toon
-outcomes.data: {JSON from outcomes scanner}
+outcomes.data:
+{paste Outcomes Scanner TOON verbatim}
 
-# Executions data (from scanner)
+# File 3: execution-info
 executions.schema: execution-info-schema.toon
 executions.output: .claude/execution-info.toon
-executions.data: {JSON from executions scanner}
-
-Produce all three .toon files following their respective schemas.
-Validate each file before writing.
-Return production report in TOON format.
+executions.data:
+{paste Executions Scanner TOON verbatim}
 """)
 ```
 
@@ -684,19 +601,23 @@ Preserved: {count} sections
 </output_format>
 
 <success_criteria>
-- User notified immediately that scan is starting
-- Scanning delegated to parallel Explore subagents (READ-ONLY)
-- Main context only handles: state detection, orchestration, user prompts, final output
-- **Main context NEVER writes .toon files directly** - all production via toon-specialist
-- **Two-phase pattern for ALL file generation:**
-  - Phase A: Explore agents return structured data (JSON)
-  - Phase B: toon-specialist produces valid .toon files
-- **toon-specialist produces ALL .toon files:**
-  - workspace-info.toon (Phase 3)
-  - capabilities-info.toon, outcomes-info.toon, execution-info.toon (Phase 4)
-- toon-specialist validates all files before writing
-- All files follow their respective schemas (managed by toon-specialist)
+**Parallelism:**
+- Phase 2: ALL 4 scanners launched in ONE message (4 parallel Task calls)
+- Phase 4a: ALL needed scanners launched in ONE message (up to 3 parallel Task calls)
+- Never sequential scanner launches
+
+**Data Flow:**
+- Scanners return ONLY compact TOON - no prose, no explanations
+- Scanner output passed verbatim to toon-specialist - no reformatting in main context
+- Main context only handles: state detection, orchestration, final output
+
+**File Production:**
+- Main context NEVER writes .toon files directly
+- toon-specialist produces ALL .toon files (workspace-info, capabilities-info, outcomes-info, execution-info)
 - All instance files written to .claude/ directory
+
+**Context Conservation:**
 - Minimal main context token usage
-- **No TOON format errors** (toon-specialist ensures consistency)
+- No verbose scanner responses polluting context
+- toon-specialist handles all schema reading and validation
 </success_criteria>
