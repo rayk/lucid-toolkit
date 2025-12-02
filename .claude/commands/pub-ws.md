@@ -19,6 +19,21 @@ Last commit: !`git log -1 --oneline`
 Today: !`date +%Y-%m-%d`
 </context>
 
+<version_file_registry>
+## Files Requiring Version Updates
+
+| File | Field/Location | Update Method |
+|------|----------------|---------------|
+| `plugins/ws/plugin.json` | `"version": "X.Y.Z"` | Source of truth - bump here first |
+| `plugins/ws/CHANGELOG.md` | `## [X.Y.Z] - DATE` | Add new section |
+| `plugins/ws/commands/version.md` | Embedded version display | Regenerate entire content |
+| `plugins/ws/commands/enviro.md` | `object.targetVersion:` | Replace all occurrences |
+| `plugins/ws/commands/enviro.md` | `softwareVersion to X.Y.Z` | Replace all occurrences |
+| `plugins/ws/commands/enviro.md` | `Plugin: ws vX.Y.Z` | Replace all occurrences |
+
+**Note**: Schema files (`templates/data/*.toon`) and Python package (`scripts/`) have SEPARATE version tracks and are NOT updated during plugin releases.
+</version_file_registry>
+
 <process>
 ## Phase 1: Pre-flight Checks
 
@@ -153,31 +168,76 @@ Today: !`date +%Y-%m-%d`
 
 ## Phase 5.6: Sync enviro.md Version
 
-15. **Update `plugins/ws/commands/enviro.md`** with current version:
-    - Find and replace `softwareVersion: X.Y.Z` with new version
-    - Update the migrate_mode version reference as well
-    - This ensures workspace-info.toon files get the correct plugin version
+15. **Update `plugins/ws/commands/enviro.md`** with current version.
+
+    Search and replace ALL occurrences of version strings:
+    ```bash
+    # Find all version references in enviro.md
+    grep -n "0\.[0-9]\+\.[0-9]\+" plugins/ws/commands/enviro.md
+    ```
+
+    **Locations to update (use Edit tool with replace_all where applicable):**
+
+    | Pattern | Context | Action |
+    |---------|---------|--------|
+    | `object.targetVersion: X.Y.Z` | migrate_mode section | Replace with new version |
+    | `softwareVersion to X.Y.Z` | migrate_mode and repair_mode | Replace with new version |
+    | `Plugin: ws vX.Y.Z` | output_format section | Replace with new version |
+
+    **Use these Edit operations:**
+    ```
+    Edit(file_path="plugins/ws/commands/enviro.md",
+         old_string="object.targetVersion: {old}",
+         new_string="object.targetVersion: {new}")
+
+    Edit(file_path="plugins/ws/commands/enviro.md",
+         old_string="softwareVersion to {old}",
+         new_string="softwareVersion to {new}",
+         replace_all=true)
+
+    Edit(file_path="plugins/ws/commands/enviro.md",
+         old_string="Plugin: ws v{old}",
+         new_string="Plugin: ws v{new}")
+    ```
 
 ## Phase 5.7: Pre-Release Verification (MANDATORY)
 
 16. **Verify all version references are in sync** before creating release commit:
     ```bash
-    # Extract versions from all files
-    PLUGIN_VER=$(grep '"version"' plugins/ws/plugin.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-    VERSION_MD_VER=$(grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' plugins/ws/commands/version.md | head -1 | tr -d 'v')
-    ENVIRO_VER=$(grep 'softwareVersion:' plugins/ws/commands/enviro.md | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    # Extract expected version from plugin.json (source of truth)
+    EXPECTED=$(grep '"version"' plugins/ws/plugin.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+    echo "Expected version: $EXPECTED"
+    echo ""
 
-    echo "plugin.json:  $PLUGIN_VER"
-    echo "version.md:   $VERSION_MD_VER"
-    echo "enviro.md:    $ENVIRO_VER"
+    # Check all version-sensitive files
+    echo "=== Checking version.md ==="
+    grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' plugins/ws/commands/version.md | head -3
+
+    echo ""
+    echo "=== Checking enviro.md ==="
+    grep -E "targetVersion|softwareVersion|Plugin: ws v" plugins/ws/commands/enviro.md | grep -oE '[0-9]+\.[0-9]+\.[0-9]+'
+
+    echo ""
+    echo "=== Summary ==="
+    # Count mismatches
+    MISMATCHES=$(grep -r "$EXPECTED" plugins/ws/commands/version.md plugins/ws/commands/enviro.md 2>/dev/null | wc -l)
+    echo "Files with correct version: $MISMATCHES references found"
     ```
 
-    **ABORT if versions don't match.** All three must show the NEW version.
+    **ABORT if ANY version doesn't match $EXPECTED.**
 
-    Common issues:
-    - Forgot to update version.md → Go back to Phase 5.5
-    - Forgot to update enviro.md → Go back to Phase 5.6
-    - Typo in version string → Fix and re-verify
+    | File | Must Show |
+    |------|-----------|
+    | `version.md` line 9 | `v{EXPECTED}` |
+    | `version.md` line 11 | `v{EXPECTED}` |
+    | `enviro.md` targetVersion | `{EXPECTED}` |
+    | `enviro.md` softwareVersion (x2) | `{EXPECTED}` |
+    | `enviro.md` Plugin: ws v | `{EXPECTED}` |
+
+    **If mismatch found:**
+    - version.md wrong → Go back to Phase 5.5
+    - enviro.md wrong → Go back to Phase 5.6
+    - Typo → Fix with Edit tool and re-verify
 
 ## Phase 6: Release Commit
 
@@ -278,6 +338,9 @@ Added {n} entries for v{new-version}
 - All ws plugin changes committed with detailed message
 - Version bumped appropriately in plugin.json
 - CHANGELOG.md updated with categorized changes
+- **version.md regenerated with new version embedded**
+- **enviro.md updated with new version in ALL locations**
+- **Phase 5.7 verification passed - all versions match**
 - Release commit created
 - Successfully pushed to remote
 - Local and remote branches in sync
