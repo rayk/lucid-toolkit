@@ -1,0 +1,19 @@
+{
+  "name": "ws",
+  "displayName": "Workspace",
+  "description": "Capability-based software development workspace management. Consolidates workspace, capability, outcome, and plan functionality into a unified plugin.",
+  "version": "0.1.0",
+  "author": "lucid-toolkit",
+  "dependencies": {
+    "claudeCode": ">=1.0.0",
+    "python": ">=3.10"
+  },
+  "commands": ["ws:version", "ws:report", "ws:enviro"],
+  "skills": [],
+  "hooks": [],
+  "schemas": [],
+  "templates": ["workspace-info.toon"],
+  "sharedLibraries": [
+    "../../shared/cli-commons"
+  ]
+}
