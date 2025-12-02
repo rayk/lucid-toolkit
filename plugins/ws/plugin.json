@@ -2,7 +2,7 @@
   "name": "ws",
   "displayName": "Workspace",
   "description": "Capability-based software development workspace management. Consolidates workspace, capability, outcome, and plan functionality into a unified plugin.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "lucid-toolkit",
   "dependencies": {
     "claudeCode": ">=1.0.0",
@@ -10,7 +10,7 @@
   },
   "commands": ["ws:version", "ws:report", "ws:enviro", "cap:create", "cap:list"],
   "skills": [],
-  "agents": ["capability-checker"],
+  "agents": ["capability-checker", "toon-specialist"],
   "hooks": {
     "SessionStart": ["python3 hooks/session_start.py"],
     "PostToolUse": ["python3 hooks/focus_tracker.py"]

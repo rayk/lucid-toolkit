@@ -5,6 +5,26 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-12-02
+
+### Added
+
+- `toon-specialist` subagent for centralized schema.org/TOON file production
+- Two-phase pattern for file generation: Explore agents return JSON, toon-specialist produces .toon files
+- `plans/toon-specialist-design.md` architecture document
+
+### Changed
+
+- `/ws:enviro` now delegates ALL .toon file production to toon-specialist
+- Phase 3 invokes toon-specialist to produce workspace-info.toon (no direct writes)
+- Phase 4 uses coordinator pattern: scanners return structured data, toon-specialist writes files
+- Phase 6 changed from "Generate Output Files" to "Verify Output Files"
+- Replaced `workspace_info_template` with `schema_reference` (toon-specialist reads schemas directly)
+- `migrate_mode` and `repair_mode` updated to use toon-specialist
+- Removed `Write` from enviro.md allowed-tools (toon-specialist handles all writes)
+- Main context NEVER writes .toon files directly - all production via specialist
+- `toon_parser.py`: support arrays without count prefix, dots in key names
+
 ## [0.3.0] - 2025-12-02
 
 ### Added
