@@ -43,7 +43,7 @@ For SETUP state, launch these subagents IN PARALLEL using a single message with 
 
 ### Subagent 1: Standard Directories Scanner
 ```
-Task(subagent_type="Explore", prompt="""
+Task(subagent_type="Explore", model="haiku", prompt="""
 Scan workspace for standard capability-driven development directories.
 
 Check for these directories at workspace root and report findings:
@@ -67,7 +67,7 @@ outcomes	true	12	./outcomes
 
 ### Subagent 2: Project & Technology Scanner
 ```
-Task(subagent_type="Explore", prompt="""
+Task(subagent_type="Explore", model="haiku", prompt="""
 Scan workspace for projects and technology indicators.
 
 1. Check for project-map.json at root or .claude/
@@ -97,7 +97,7 @@ projects{name,path,technology,gitRoot|tab}:
 
 ### Subagent 3: IDE Configuration Scanner
 ```
-Task(subagent_type="Explore", prompt="""
+Task(subagent_type="Explore", model="haiku", prompt="""
 Scan for IntelliJ IDEA configuration in .idea/ directory.
 
 If .idea/ exists, extract:
@@ -133,7 +133,7 @@ ide.name: none
 
 ### Subagent 4: Git & Workspace Metadata
 ```
-Task(subagent_type="Explore", prompt="""
+Task(subagent_type="Explore", model="haiku", prompt="""
 Gather git and workspace metadata.
 
 Execute and report:
@@ -267,9 +267,9 @@ Last updated: {relative-time}
 </report_mode>
 
 <migrate_mode>
-For MIGRATE state, launch single subagent:
+For MIGRATE state, launch single subagent (haiku sufficient for schema transforms):
 ```
-Task(subagent_type="general-purpose", prompt="""
+Task(subagent_type="general-purpose", model="haiku", prompt="""
 Migrate workspace-info.toon from old version to current.
 
 1. Read existing .claude/workspace-info.toon
@@ -286,9 +286,9 @@ Return summary of changes made.
 </migrate_mode>
 
 <repair_mode>
-For REPAIR state, launch single subagent:
+For REPAIR state, launch single subagent (haiku sufficient for file repairs):
 ```
-Task(subagent_type="general-purpose", prompt="""
+Task(subagent_type="general-purpose", model="haiku", prompt="""
 Repair corrupted workspace-info.toon.
 
 1. Read existing .claude/workspace-info.toon

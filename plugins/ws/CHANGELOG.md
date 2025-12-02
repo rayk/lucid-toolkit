@@ -5,6 +5,13 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-12-02
+
+### Changed
+
+- All subagent tasks in `/ws:enviro` now specify `model="haiku"` for cost efficiency
+- Scanning, migration, and repair tasks don't require sophisticated reasoning
+
 ## [0.2.0] - 2025-12-02
 
 ### Changed
