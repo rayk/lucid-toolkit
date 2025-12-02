@@ -1,6 +1,6 @@
 ---
 description: Idempotent workspace environment setup, repair, migration, and status reporting
-allowed-tools: [Task, Read, Write, AskUserQuestion]
+allowed-tools: [Task, Read, Bash, AskUserQuestion]
 ---
 
 <objective>
@@ -41,9 +41,19 @@ plugins/ws/templates/data/
 </schema_reference>
 
 <execution_model>
-This command uses a coordinator pattern:
+This command uses a coordinator pattern with specialized subagents:
+
 1. **Main context**: State detection, orchestration, user interaction, final output
-2. **Subagents**: All scanning and data gathering (runs in parallel, isolated context)
+2. **Explore subagents**: Scan filesystem, return structured data (READ-ONLY)
+3. **toon-specialist subagent**: Produces valid .toon files from structured data
+
+**Two-Phase Pattern for File Generation:**
+```
+┌─────────────────┐     structured      ┌─────────────────┐
+│  Explore Agent  │ ──── data ────────► │ toon-specialist │
+│  (read-only)    │     (JSON/dict)     │  (writes files) │
+└─────────────────┘                     └─────────────────┘
+```
 
 IMPORTANT: Immediately notify user that scanning is starting, then delegate.
 </execution_model>
@@ -184,13 +194,45 @@ workspace.dateModified: {commit-timestamp}
 """)
 ```
 
-## Phase 3: Merge Results (Main Context)
+## Phase 3: Produce workspace-info.toon (via toon-specialist)
 
-After all subagents complete:
-1. Collect TOON outputs from each subagent
-2. Merge into unified workspace-info.toon structure following the schema
-3. Write .claude/workspace-info.toon
-4. Proceed to Phase 4 to check related data files
+After all Phase 2 subagents complete:
+
+### Step 1: Ensure .claude/ directory exists
+```bash
+mkdir -p .claude
+```
+
+### Step 2: Collect scanner results
+Gather structured data from all Phase 2 scanners:
+- Directories data (from Scanner 1)
+- Projects & technology data (from Scanner 2)
+- IDE configuration data (from Scanner 3)
+- Git & workspace metadata (from Scanner 4)
+
+### Step 3: Invoke toon-specialist to produce workspace-info.toon
+```
+Task(subagent_type="toon-specialist", model="sonnet", prompt="""
+@type: CreateAction
+name: produce-workspace-info
+
+object.schema: workspace-info-schema.toon
+object.output: .claude/workspace-info.toon
+object.data:
+  workspace: {from Scanner 4 - name, repository, version, dateModified}
+  projects: {from Scanner 2 - project list with technologies}
+  directories: {from Scanner 1 - capabilities, outcomes, plans counts}
+  ide: {from Scanner 3 - IDE configuration}
+  focus: null
+  lastSession: null
+
+Produce .claude/workspace-info.toon following the schema.
+Return production report in TOON format.
+""")
+```
+
+### Step 4: Proceed to Phase 4
+After workspace-info.toon is confirmed written, check related data files.
 
 ## Phase 4: Check and Generate Related Data Files
 
@@ -203,17 +245,15 @@ After workspace-info.toon is established (SETUP, MIGRATE, REPAIR, or HEALTHY sta
 .claude/execution-info.toon     → exists? valid?
 ```
 
-### Step 2: Launch parallel subagents for MISSING files
+### Step 2: Launch SCANNER subagents for MISSING files (Phase 4a)
 
-For each missing file, launch a subagent IN PARALLEL. Use a single message with multiple Task tool calls:
+For each missing file, launch an Explore subagent IN PARALLEL to gather data.
+These are READ-ONLY scanners that return structured JSON data.
 
-#### Subagent: Capabilities Scanner (if capabilities-info.toon missing)
+#### Scanner: Capabilities Data (if capabilities-info.toon missing)
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for capabilities and generate capabilities-info.toon.
-
-Schema: plugins/ws/templates/data/capabilities-info-schema.toon
-Output: .claude/capabilities-info.toon
+Scan workspace for capabilities data. Return structured JSON (not TOON).
 
 1. Find all capability_track.json files in capabilities/
 2. For each capability, extract:
@@ -221,82 +261,127 @@ Output: .claude/capabilities-info.toon
    - currentMaturity, targetMaturity
    - status (active/deprecated/planned)
    - capabilityType (atomic/composed)
-3. Compute summary statistics:
-   - totalCapabilities, activeCapabilities, deprecatedCapabilities
-   - atomicCapabilities, composedCapabilities
-   - averageMaturity
-4. Compute maturity distribution (0-29%, 30-59%, 60-79%, 80-100%)
-5. Group by domain
-6. Identify alerts (stale checks, blocked capabilities)
+   - domain (from parent directory name)
+3. Compute summary statistics
 
-Write .claude/capabilities-info.toon following the schema.
-Return summary: {totalCapabilities, averageMaturity, alertCount}
+Return JSON format:
+{
+  "summary": {
+    "totalCapabilities": N,
+    "activeCapabilities": N,
+    "deprecatedCapabilities": N,
+    "atomicCapabilities": N,
+    "composedCapabilities": N,
+    "averageMaturity": N
+  },
+  "maturityDistribution": [
+    {"range": "0-29%", "count": N},
+    {"range": "30-59%", "count": N},
+    {"range": "60-79%", "count": N},
+    {"range": "80-100%", "count": N}
+  ],
+  "capabilities": [
+    {"identifier": "...", "name": "...", "type": "...", "status": "...", "currentMaturity": N, "targetMaturity": N, "domain": "..."},
+    ...
+  ],
+  "domains": [
+    {"domain": "...", "count": N, "avgMaturity": N, "capabilities": ["id1", "id2"]},
+    ...
+  ]
+}
 """)
 ```
 
-#### Subagent: Outcomes Scanner (if outcomes-info.toon missing)
+#### Scanner: Outcomes Data (if outcomes-info.toon missing)
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for outcomes and generate outcomes-info.toon.
+Scan workspace for outcomes data. Return structured JSON (not TOON).
 
-Schema: plugins/ws/templates/data/outcomes-info-schema.toon
-Output: .claude/outcomes-info.toon
-
-1. Scan each stage directory:
-   - outcomes/queued/
-   - outcomes/ready/
-   - outcomes/in-progress/
-   - outcomes/blocked/
-   - outcomes/completed/
+1. Scan each stage directory: outcomes/queued/, ready/, in-progress/, blocked/, completed/
 2. For each outcome, find outcome_track.json and extract:
    - directory, name, stage, priority
    - capabilityContributions
    - parentOutcome (for child outcomes like 005.1-*)
-3. Compute capability contributions aggregate
-4. Build hierarchy (parent-child relationships)
-5. Identify current focus (from in-progress outcomes)
-6. List recent activity (modified in last 7 days)
+3. Build hierarchy (parent-child relationships)
 
-Write .claude/outcomes-info.toon following the schema.
-Return summary: {totalOutcomes, stageDistribution, focusOutcome}
+Return JSON format:
+{
+  "summary": {
+    "totalOutcomes": N,
+    "byStage": {"queued": N, "ready": N, "in-progress": N, "blocked": N, "completed": N}
+  },
+  "outcomes": [
+    {"directory": "...", "name": "...", "stage": "...", "priority": N, "type": "parent|atomic", "capabilityContributions": [...], "children": [...]},
+    ...
+  ],
+  "focus": {"name": "...", "path": "..."} or null
+}
 """)
 ```
 
-#### Subagent: Executions Scanner (if execution-info.toon missing)
+#### Scanner: Executions Data (if execution-info.toon missing)
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Scan workspace for executions and generate execution-info.toon.
+Scan workspace for executions data. Return structured JSON (not TOON).
 
-Schema: plugins/ws/templates/data/execution-info-schema.toon
-Output: .claude/execution-info.toon
-
-1. Scan executions/ directory for execution logs
-2. For each execution, extract:
+1. Check if executions/ directory exists
+2. If exists, scan for execution logs and extract:
    - id, name, linked outcome
    - status (pending/in-progress/completed/failed)
    - progress percentage
-   - phase information
-3. Identify active execution (if any)
-4. Compute cost tracking if available
-5. List recent completions
-6. List failures requiring attention
+3. If no executions/ directory, return empty structure
 
-Write .claude/execution-info.toon following the schema.
-If no executions/ directory or empty, create minimal file with zero counts.
-Return summary: {totalExecutions, activeExecutions, failedExecutions}
+Return JSON format:
+{
+  "summary": {
+    "totalExecutions": N,
+    "activeExecutions": N,
+    "completedExecutions": N,
+    "failedExecutions": N
+  },
+  "executions": [
+    {"id": "...", "name": "...", "outcome": "...", "status": "...", "progress": N},
+    ...
+  ],
+  "activeExecution": {...} or null
+}
 """)
 ```
 
-### Step 3: Ensure .claude/ directory exists
+### Step 3: Invoke toon-specialist to produce files (Phase 4b)
 
-Before subagents write files, ensure `.claude/` directory exists:
-```bash
-mkdir -p .claude
+After scanners return data, invoke toon-specialist to produce valid TOON files.
+Send ALL data in a single request for efficiency:
+
+```
+Task(subagent_type="toon-specialist", model="sonnet", prompt="""
+@type: CreateAction
+name: produce-related-files
+
+# Capabilities data (from scanner)
+capabilities.schema: capabilities-info-schema.toon
+capabilities.output: .claude/capabilities-info.toon
+capabilities.data: {JSON from capabilities scanner}
+
+# Outcomes data (from scanner)
+outcomes.schema: outcomes-info-schema.toon
+outcomes.output: .claude/outcomes-info.toon
+outcomes.data: {JSON from outcomes scanner}
+
+# Executions data (from scanner)
+executions.schema: execution-info-schema.toon
+executions.output: .claude/execution-info.toon
+executions.data: {JSON from executions scanner}
+
+Produce all three .toon files following their respective schemas.
+Validate each file before writing.
+Return production report in TOON format.
+""")
 ```
 
 ### Step 4: Update workspace-info.toon related paths
 
-After related files are generated, update workspace-info.toon to reflect actual paths:
+After toon-specialist confirms files are written, update workspace-info.toon:
 - If file generated: set path (e.g., `.claude/capabilities-info.toon`)
 - If file empty/not applicable: set to `null`
 
@@ -326,107 +411,32 @@ Repository: {remote-url}
 Proceed with workspace initialization? [Y/n]
 ```
 
-## Phase 6: Generate Output Files
+## Phase 6: Verify Output Files
 
-Write all files to `.claude/` directory following their respective schemas:
-- `.claude/workspace-info.toon` → workspace-info-schema.toon
-- `.claude/capabilities-info.toon` → capabilities-info-schema.toon (if generated)
-- `.claude/outcomes-info.toon` → outcomes-info-schema.toon (if generated)
-- `.claude/execution-info.toon` → execution-info-schema.toon (if generated)
+Confirm all .toon files were produced by toon-specialist:
+- `.claude/workspace-info.toon` - must exist
+- `.claude/capabilities-info.toon` - exists if capabilities/ directory found
+- `.claude/outcomes-info.toon` - exists if outcomes/ directory found
+- `.claude/execution-info.toon` - exists if executions/ directory found
 
-All schemas are located in: `plugins/ws/templates/data/`
+All files were produced by toon-specialist following schemas in: `plugins/ws/templates/data/`
+
+If any expected file is missing, report the error from toon-specialist.
 </process>
 
-<workspace_info_template>
-Generate output following workspace-info-schema.toon structure:
+<schema_reference>
+**toon-specialist** produces all .toon files using these schemas:
 
-```toon
-# Workspace Environment Snapshot
-# Schema: plugins/ws/templates/data/workspace-info-schema.toon
-# Instance: .claude/workspace-info.toon
-# Generated by /ws:enviro - DO NOT EDIT MANUALLY
+| File | Schema |
+|------|--------|
+| workspace-info.toon | `plugins/ws/templates/data/workspace-info-schema.toon` |
+| capabilities-info.toon | `plugins/ws/templates/data/capabilities-info-schema.toon` |
+| outcomes-info.toon | `plugins/ws/templates/data/outcomes-info-schema.toon` |
+| execution-info.toon | `plugins/ws/templates/data/execution-info-schema.toon` |
 
-@context: https://schema.org
-@type: SoftwareSourceCode
-@id: workspace/{workspace-name}
-dateCreated: {timestamp}
-dateModified: {timestamp}
-softwareVersion: 0.3.0
-
-# ─── Workspace ───────────────────────────────────────────
-workspace@type: Project
-workspace.name: {workspace-name}
-workspace.codeRepository: {github-url}
-workspace.version: {commit-hash}
-workspace.dateModified: {commit-timestamp}
-
-# ─── Related Data Files ─────────────────────────────────
-# Paths to detailed TOON instances (null if not yet generated)
-# All instances stored in .claude/ directory
-relatedData@type: ItemList
-relatedData.capabilitiesInfo: .claude/capabilities-info.toon
-relatedData.outcomesInfo: .claude/outcomes-info.toon
-relatedData.executionInfo: .claude/execution-info.toon
-
-# ─── Projects ────────────────────────────────────────────
-projects@type: ItemList
-projects.numberOfItems: {count}
-
-project{name,codeRepository,version,dateModified,path,@type,technologies|tab}:
-{merged-from-subagent-2}
-
-# ─── Capabilities ────────────────────────────────────────
-# Summary - full details in relatedData.capabilitiesInfo
-capabilities@type: ItemList
-capabilities.path: {path}
-capabilities.numberOfItems: {count}
-
-capability{identifier,name,path,maturityLevel|tab}:
-{capability-rows}
-
-# ─── Outcomes ────────────────────────────────────────────
-# Summary - full details in relatedData.outcomesInfo
-outcomes@type: ItemList
-outcomes.path: {path}
-
-outcomes.summary{stage,count,path|tab}:
-queued	{n}	outcomes/queued/
-ready	{n}	outcomes/ready/
-in-progress	{n}	outcomes/in-progress/
-blocked	{n}	outcomes/blocked/
-completed	{n}	outcomes/completed/
-
-# ─── Plans ───────────────────────────────────────────────
-plans@type: ItemList
-plans.path: plans/
-plans.numberOfItems: {count}
-
-# ─── Executions ──────────────────────────────────────────
-# Summary - full details in relatedData.executionInfo
-executions@type: ItemList
-executions.path: executions/
-executions.numberOfItems: {count}
-
-# ─── Research ────────────────────────────────────────────
-research@type: ItemList
-research.path: research/
-research.numberOfItems: {count}
-
-# ─── IDE Integration ─────────────────────────────────────
-{merged-from-subagent-3}
-
-# ─── Current Focus ───────────────────────────────────────
-focus@type: Action
-focus.name: null
-focus.target: null
-focus.actionStatus: PotentialActionStatus
-
-# ─── Session Tracking ────────────────────────────────────
-lastSession.id: null
-lastSession.timestamp: null
-lastSession.event: null
-```
-</workspace_info_template>
+The toon-specialist reads schemas directly and applies them to produce valid output.
+No manual formatting required - all schema.org/TOON production is delegated.
+</schema_reference>
 
 <report_mode>
 For REPORT state (healthy workspace-info.toon exists):
@@ -442,10 +452,11 @@ Check if these files exist in .claude/ directory:
 ```
 
 ### Step 3: Generate missing related files (if any)
-If any related files are missing, launch parallel subagents to generate them
-(same as Phase 4 subagents - capabilities, outcomes, executions scanners).
+If any related files are missing, use the two-phase pattern from Phase 4:
+1. Launch Explore scanners to gather data (Phase 4a pattern)
+2. Invoke toon-specialist to produce files (Phase 4b pattern)
 
-This ensures REPORT mode also repairs missing related data.
+This ensures REPORT mode also repairs missing related data with valid TOON format.
 
 ### Step 4: Display formatted summary
 
@@ -486,64 +497,102 @@ Last updated: {relative-time}
 <migrate_mode>
 For MIGRATE state:
 
-### Step 1: Launch migration subagent
+### Step 1: Read existing workspace-info.toon
+Read current file to extract existing data for preservation.
+
+### Step 2: Launch toon-specialist for migration
 ```
-Task(subagent_type="general-purpose", model="haiku", prompt="""
-Migrate workspace-info.toon from old version to current.
+Task(subagent_type="toon-specialist", model="sonnet", prompt="""
+@type: UpdateAction
+name: migrate
 
-Reference schema: plugins/ws/templates/data/workspace-info-schema.toon
+object.source: .claude/workspace-info.toon
+object.schema: workspace-info-schema.toon
+object.targetVersion: 0.3.0
 
-1. Read existing .claude/workspace-info.toon
-2. Identify version from softwareVersion field
-3. Apply migrations for each version step:
-   - Add relatedData section if missing
-   - Add lastSession tracking fields if missing
-   - Ensure all 5 outcome stages present
-4. Preserve all existing data
-5. Update softwareVersion to 0.2.2
-6. Write updated file
+migrations:
+- Add relatedData section if missing
+- Add lastSession tracking fields if missing
+- Ensure all 5 outcome stages present in outcomes.summary
+- Preserve all existing valid data
+- Update softwareVersion to 0.3.0
+- Update dateModified to current timestamp
 
-Return summary of changes made.
+Return migration report in TOON format showing changes made.
 """)
 ```
 
-### Step 2: Check and generate missing related files
+### Step 3: Check and generate missing related files
 After migration completes, check which related data files exist in `.claude/`:
 - .claude/capabilities-info.toon
 - .claude/outcomes-info.toon
 - .claude/execution-info.toon
 
-Launch parallel subagents to generate any missing files (same as Phase 4).
+For missing files, use the two-phase pattern from Phase 4:
+1. Launch Explore scanners to gather data (Phase 4a pattern)
+2. Invoke toon-specialist to produce files (Phase 4b pattern)
 </migrate_mode>
 
 <repair_mode>
 For REPAIR state:
 
-### Step 1: Launch repair subagent for workspace-info
+### Step 1: Analyze corrupted workspace-info.toon
 ```
-Task(subagent_type="general-purpose", model="haiku", prompt="""
-Repair corrupted workspace-info.toon.
+Task(subagent_type="Explore", model="haiku", prompt="""
+Analyze .claude/workspace-info.toon for corruption.
 
-Reference schema: plugins/ws/templates/data/workspace-info-schema.toon
+1. Read the file and identify:
+   - Which sections parse correctly
+   - Which sections are corrupted/incomplete
+   - What data can be preserved
+2. Scan filesystem to gather fresh data for corrupted sections
 
-1. Read existing .claude/workspace-info.toon
-2. Identify which sections are valid vs corrupted
-3. For corrupted sections, rescan filesystem to regenerate
-4. Preserve all valid data
-5. Ensure relatedData section exists
-6. Write repaired file following schema
-
-Return summary of repairs made.
+Return JSON format:
+{
+  "preservedSections": ["workspace", "projects", ...],
+  "corruptedSections": ["capabilities", "outcomes", ...],
+  "freshData": {
+    "workspace": {...},
+    "directories": {...},
+    ...
+  }
+}
 """)
 ```
 
-### Step 2: Check and regenerate related files
-After repair completes, check ALL related data files in `.claude/` (regenerate even if they exist but may be stale):
+### Step 2: Launch toon-specialist for repair
+```
+Task(subagent_type="toon-specialist", model="sonnet", prompt="""
+@type: UpdateAction
+name: repair
+
+object.path: .claude/workspace-info.toon
+object.schema: workspace-info-schema.toon
+object.preservedData: {preserved sections from analyzer}
+object.freshData: {fresh data from analyzer}
+
+Repair the workspace-info.toon file:
+1. Keep all valid preserved sections
+2. Replace corrupted sections with fresh data
+3. Ensure relatedData section exists
+4. Update softwareVersion to 0.3.0
+5. Update dateModified to current timestamp
+6. Validate complete file before writing
+
+Return repair report in TOON format.
+""")
+```
+
+### Step 3: Regenerate ALL related files
+After repair completes, regenerate ALL related data files (they may be stale):
 - .claude/capabilities-info.toon
 - .claude/outcomes-info.toon
 - .claude/execution-info.toon
 
-Launch parallel subagents to regenerate all files (same as Phase 4).
+Use the two-phase pattern from Phase 4:
+1. Launch Explore scanners to gather fresh data (Phase 4a pattern)
+2. Invoke toon-specialist to produce files (Phase 4b pattern)
+
 This ensures related data is consistent with repaired workspace-info.
 </repair_mode>
 
@@ -568,7 +617,7 @@ Checking related data files in .claude/...
 
 Workspace: {name}
 Repository: {url}
-Plugin: ws v0.2.2
+Plugin: ws v0.3.0
 
 ### Core Files
 - .claude/workspace-info.toon ✓
@@ -643,15 +692,18 @@ Preserved: {count} sections
 
 <success_criteria>
 - User notified immediately that scan is starting
-- Scanning delegated to parallel subagents (not main context)
+- Scanning delegated to parallel Explore subagents (READ-ONLY)
 - Main context only handles: state detection, orchestration, user prompts, final output
-- Results merged efficiently from subagent TOON outputs
-- Output follows workspace-info-schema.toon structure (from plugins/ws/templates/data/)
-- relatedData section included pointing to related instance files in .claude/
-- workspace-info.toon valid after execution
-- Related data files checked after workspace-info established
-- Missing related files generated in parallel via subagents
-- All generated files follow their respective schemas from plugins/ws/templates/data/
+- **Main context NEVER writes .toon files directly** - all production via toon-specialist
+- **Two-phase pattern for ALL file generation:**
+  - Phase A: Explore agents return structured data (JSON)
+  - Phase B: toon-specialist produces valid .toon files
+- **toon-specialist produces ALL .toon files:**
+  - workspace-info.toon (Phase 3)
+  - capabilities-info.toon, outcomes-info.toon, execution-info.toon (Phase 4)
+- toon-specialist validates all files before writing
+- All files follow their respective schemas from plugins/ws/templates/data/
 - All instance files written to .claude/ directory
 - Minimal main context token usage
+- **No TOON format errors** (toon-specialist ensures consistency)
 </success_criteria>

@@ -284,14 +284,28 @@ def parse_toon(text: str) -> Dict[str, Any]:
             i += 1
             continue
 
-        # Check for array declaration
-        # Pattern matches: key[N]{fields|delimiter}: or key[N]: or key[N]{fields}:
-        # Keys can contain hyphens (e.g., x-tokens)
-        array_match = re.match(r'^(\s*)([\w-]+)\[(\d+)\](?:\{([^}|]+)(?:\|(\w+))?\})?:\s*(.*)$', line)
+        # Check for array declaration (with or without count)
+        # Pattern 1: key[N]{fields|delimiter}: or key[N]: or key[N]{fields}:
+        # Pattern 2: key{fields|delimiter}: (without count)
+        # Keys can contain hyphens and dots (e.g., x-tokens, outcomes.summary)
+        array_match = re.match(r'^(\s*)([\w.-]+)\[(\d+)\](?:\{([^}|]+)(?:\|(\w+))?\})?:\s*(.*)$', line)
 
-        if array_match:
+        # Try pattern without count if first pattern didn't match
+        count = None  # Initialize count
+        if not array_match:
+            array_match_no_count = re.match(r'^(\s*)([\w.-]+)\{([^}|]+)(?:\|(\w+))?\}:\s*(.*)$', line)
+            if array_match_no_count:
+                indent, key, fields_str, delimiter_hint, inline_value = array_match_no_count.groups()
+                indent_level = len(indent)
+                count = None
+                # Set array_match to truthy value so the if block below executes
+                array_match = array_match_no_count
+        else:
+            # Pattern with count matched
             indent, key, count, fields_str, delimiter_hint, inline_value = array_match.groups()
             indent_level = len(indent)
+
+        if array_match:
 
             # Inline array
             if inline_value.strip():
@@ -316,8 +330,8 @@ def parse_toon(text: str) -> Dict[str, Any]:
 
                     # Check if this line is a new declaration (contains : but not part of data)
                     # A data row should not match key: value or key[N]: patterns
-                    # Keys can contain hyphens (e.g., x-tokens)
-                    if re.match(r'^\s*[\w-]+(\[\d+\])?(\{[^}]+\})?(\|\w+)?:\s*', next_line):
+                    # Keys can contain hyphens, dots, @ (e.g., x-tokens, outcomes.summary, @type, workspace@type)
+                    if re.match(r'^\s*[@\w.-]+(\[\d+\])?(\{[^}]+\})?(\|\w+)?:\s*', next_line):
                         # This is a new declaration, stop collecting data
                         break
 
@@ -340,8 +354,8 @@ def parse_toon(text: str) -> Dict[str, Any]:
             continue
 
         # Check for nested object
-        # Keys can contain hyphens (e.g., x-config)
-        obj_match = re.match(r'^(\s*)([\w-]+):\s*$', line)
+        # Keys can contain hyphens and dots (e.g., x-config, workspace.info)
+        obj_match = re.match(r'^(\s*)([\w.-]+):\s*$', line)
         if obj_match:
             indent, key = obj_match.groups()
             indent_level = len(indent)
@@ -370,8 +384,8 @@ def parse_toon(text: str) -> Dict[str, Any]:
             continue
 
         # Simple key: value
-        # Keys can contain hyphens (e.g., x-tokens, @type, @id)
-        kv_match = re.match(r'^(\s*)([@\w-]+):\s*(.*)$', line)
+        # Keys can contain hyphens, dots (e.g., x-tokens, @type, @id, workspace.name)
+        kv_match = re.match(r'^(\s*)([@\w.-]+):\s*(.*)$', line)
         if kv_match:
             indent, key, value = kv_match.groups()
             key = key.strip()
