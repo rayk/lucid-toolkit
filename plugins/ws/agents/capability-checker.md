@@ -1,7 +1,7 @@
 ---
 name: capability-checker
 description: Validate capability statements against workspace standards, checking schema compliance, content quality, spelling, grammar, and markdown lint. Use when auditing capability-statement.md files or before finalizing capability creation.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, Task
 model: haiku
 ---
 
@@ -30,8 +30,11 @@ Extract the capability directory from the provided path and validate both files.
 Read these BEFORE validating:
 1. @schemas/capability_track_schema.json - JSON schema for capability_track.json
 2. @templates/outputs/capability-statement-template.md - Expected structure
-3. @templates/data/core-values.toon - Valid core values list
-4. @templates/data/actor-registry.toon - Valid actor IDs and relationship types
+
+For TOON reference data (core values, actor registry):
+- Invoke toon-specialist with a PARSE operation to retrieve valid values
+- Schema names: core-values-schema.toon, actor-registry-schema.toon
+- toon-specialist knows schema locations; callers reference by name only
 </reference_files>
 
 <evaluation_areas>

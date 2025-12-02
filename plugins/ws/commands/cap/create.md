@@ -16,8 +16,8 @@ This command guides you through creating a comprehensive capability definition t
 <context>
 Template reference: @templates/outputs/capability-statement-template.md
 Schema validation: @schemas/capability_track_schema.json
-Core values reference: @templates/data/core-values.toon
-Actor registry reference: @templates/data/actor-registry.toon
+Core values: Retrieved via toon-specialist (core-values-schema.toon)
+Actor registry: Retrieved via toon-specialist (actor-registry-schema.toon)
 Workspace info: Read workspace-info.toon from workspace root for capabilities.path
 </context>
 
@@ -41,7 +41,7 @@ Workspace info: Read workspace-info.toon from workspace root for capabilities.pa
 
 4. **Identify Actor Involvement** (REQUIRED):
    - Load actors from `status/actor_summary.json`
-   - Present actors organized by domain (reference @templates/data/actor-registry.toon)
+   - Present actors organized by domain (invoke toon-specialist to parse actor-registry-schema.toon)
    - User selects 1+ actors this capability involves/impacts
    - For each selected actor capture:
      - **Relationship type**: requires | provides | consumes | enables | governs
@@ -50,7 +50,7 @@ Workspace info: Read workspace-info.toon from workspace root for capabilities.pa
    - Validate selected actor IDs exist in the registry
 
 5. **Map Core Business Values** (REQUIRED):
-   - Present the 34 core values framework (reference @templates/data/core-values.toon)
+   - Present the 34 core values framework (invoke toon-specialist to parse core-values-schema.toon)
    - User selects 1-3 primary values this capability delivers
    - For each value:
      - Contribution percentage (must sum to d100%)

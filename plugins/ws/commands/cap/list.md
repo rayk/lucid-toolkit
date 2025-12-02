@@ -59,7 +59,17 @@ Workspace info: Read workspace-info.toon to locate capabilities.path
      - Average maturity
      - Maturity distribution buckets
    - Identify alerts from validation results
-   - Write updated capabilities-info.toon with current timestamp
+   - Invoke toon-specialist to produce updated capabilities-info.toon:
+     ```
+     Task(
+       subagent_type="toon-specialist",
+       prompt="@type: CreateAction
+         name: produce
+         object.schema: capabilities-info-schema.toon
+         object.output: .claude/capabilities-info.toon
+         object.data: {aggregated capability data from subagents}"
+     )
+     ```
 
 5. **If Index is Fresh** (or `--no-sync` specified):
    - Skip sync, use cached data
@@ -118,7 +128,7 @@ capability.{id}.name: {value}
 ```
 
 **Aggregation:**
-After all subagents complete, aggregate into capabilities-info.toon format.
+After all subagents complete, pass aggregated data to toon-specialist to produce capabilities-info.toon.
 </sync_strategy>
 
 <output_format>
@@ -188,7 +198,7 @@ alerts[2]: auth-system:STALE_CHECK,billing-core:VALIDATION_FAILED
 - Freshness check performed against all capability_track.json files
 - If stale: subagents launched in parallel (max 5) to extract capability data
 - If stale: capability-checker subagents validate each updated capability
-- If stale: capabilities-info.toon updated with aggregated results
+- If stale: toon-specialist invoked to produce updated capabilities-info.toon
 - Summary statistics displayed accurately
 - Capability table formatted and readable
 - Alerts highlighted if any exist

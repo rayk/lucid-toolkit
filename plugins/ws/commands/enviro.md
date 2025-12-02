@@ -12,16 +12,7 @@ This command delegates scanning work to parallel subagents to minimize main cont
 <schema_reference>
 ## Schema / Instance Relationship
 
-**Schemas** are stored in the plugin directory (read-only reference):
-```
-plugins/ws/templates/data/
-├── workspace-info-schema.toon
-├── capabilities-info-schema.toon
-├── outcomes-info-schema.toon
-├── execution-info-schema.toon
-├── core-values-schema.toon      (reference data, no instance)
-└── actor-registry-schema.toon   (reference data, no instance)
-```
+**Schemas** are managed by the toon-specialist subagent (read-only reference data).
 
 **Instances** are ALWAYS saved to `.claude/` in the project where the plugin is installed:
 ```
@@ -32,12 +23,14 @@ plugins/ws/templates/data/
 └── execution-info.toon          (execution tracking)
 ```
 
-| Data File | Schema (read-only) | Instance (generated) |
-|-----------|-------------------|---------------------|
-| workspace-info | `plugins/ws/templates/data/workspace-info-schema.toon` | `.claude/workspace-info.toon` |
-| capabilities-info | `plugins/ws/templates/data/capabilities-info-schema.toon` | `.claude/capabilities-info.toon` |
-| outcomes-info | `plugins/ws/templates/data/outcomes-info-schema.toon` | `.claude/outcomes-info.toon` |
-| execution-info | `plugins/ws/templates/data/execution-info-schema.toon` | `.claude/execution-info.toon` |
+| Data File | Schema Name | Instance |
+|-----------|-------------|----------|
+| workspace-info | `workspace-info-schema.toon` | `.claude/workspace-info.toon` |
+| capabilities-info | `capabilities-info-schema.toon` | `.claude/capabilities-info.toon` |
+| outcomes-info | `outcomes-info-schema.toon` | `.claude/outcomes-info.toon` |
+| execution-info | `execution-info-schema.toon` | `.claude/execution-info.toon` |
+
+**Note:** Schema locations are known only to toon-specialist. Callers reference schemas by name only.
 </schema_reference>
 
 <execution_model>
@@ -419,22 +412,22 @@ Confirm all .toon files were produced by toon-specialist:
 - `.claude/outcomes-info.toon` - exists if outcomes/ directory found
 - `.claude/execution-info.toon` - exists if executions/ directory found
 
-All files were produced by toon-specialist following schemas in: `plugins/ws/templates/data/`
+All files were produced by toon-specialist using its schema registry.
 
 If any expected file is missing, report the error from toon-specialist.
 </process>
 
 <schema_reference>
-**toon-specialist** produces all .toon files using these schemas:
+**toon-specialist** produces all .toon files using its schema registry.
 
-| File | Schema |
-|------|--------|
-| workspace-info.toon | `plugins/ws/templates/data/workspace-info-schema.toon` |
-| capabilities-info.toon | `plugins/ws/templates/data/capabilities-info-schema.toon` |
-| outcomes-info.toon | `plugins/ws/templates/data/outcomes-info-schema.toon` |
-| execution-info.toon | `plugins/ws/templates/data/execution-info-schema.toon` |
+| File | Schema Name |
+|------|-------------|
+| workspace-info.toon | `workspace-info-schema.toon` |
+| capabilities-info.toon | `capabilities-info-schema.toon` |
+| outcomes-info.toon | `outcomes-info-schema.toon` |
+| execution-info.toon | `execution-info-schema.toon` |
 
-The toon-specialist reads schemas directly and applies them to produce valid output.
+The toon-specialist knows schema locations and applies them to produce valid output.
 No manual formatting required - all schema.org/TOON production is delegated.
 </schema_reference>
 
@@ -468,7 +461,7 @@ Output format:
 Last updated: {relative-time}
 
 ### Schema Reference
-- Schema: plugins/ws/templates/data/workspace-info-schema.toon
+- Schema: workspace-info-schema.toon (via toon-specialist)
 - Instance: .claude/workspace-info.toon
 
 ### Related Data Status
@@ -702,7 +695,7 @@ Preserved: {count} sections
   - workspace-info.toon (Phase 3)
   - capabilities-info.toon, outcomes-info.toon, execution-info.toon (Phase 4)
 - toon-specialist validates all files before writing
-- All files follow their respective schemas from plugins/ws/templates/data/
+- All files follow their respective schemas (managed by toon-specialist)
 - All instance files written to .claude/ directory
 - Minimal main context token usage
 - **No TOON format errors** (toon-specialist ensures consistency)
