@@ -198,7 +198,7 @@ Write workspace-info.toon using template from collected data.
 @id: workspace/{workspace-name}
 dateCreated: {timestamp}
 dateModified: {timestamp}
-softwareVersion: 0.1.1
+softwareVersion: 0.2.2
 
 # ─── Workspace ───────────────────────────────────────────
 workspace@type: Project
@@ -277,7 +277,7 @@ Migrate workspace-info.toon from old version to current.
 3. Apply migrations for each version step
 4. Preserve all existing data
 5. Add any new required fields with defaults
-6. Update softwareVersion to 0.1.1
+6. Update softwareVersion to 0.2.2
 7. Write updated file
 
 Return summary of changes made.

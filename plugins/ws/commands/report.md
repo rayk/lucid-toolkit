@@ -2,7 +2,7 @@
 description: Report misbehavior of any ws plugin component for later debugging
 argument-hint: <problem description>
 model-hint: haiku
-allowed-tools: [Bash, Write, AskUserQuestion]
+allowed-tools: [Bash, Read, Write, AskUserQuestion]
 ---
 
 <objective>
@@ -11,13 +11,16 @@ Capture a fault report for ws plugin misbehavior, preserving enough context to e
 This command:
 - Captures user's description of the problem
 - Records session ID and debug log reference
+- Includes ws plugin version and project path from workspace-info.toon
 - Identifies recent actions before the report
 - Saves structured report to ~/.claude/fault directory
 </objective>
 
 <context>
+Workspace info: @.claude/workspace-info.toon
 Session: !`cat ~/.claude/debug/latest | head -1 | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' || echo "unknown"`
 Debug log: !`ls -la ~/.claude/debug/latest | awk '{print $NF}'`
+Project path: !`pwd`
 Timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
 </context>
 
@@ -34,6 +37,10 @@ Timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
 3. **Gather Context Automatically**:
    - Extract session ID from ~/.claude/debug/latest
    - Get debug log filename from the symlink
+   - Read .claude/workspace-info.toon if it exists:
+     - Extract `softwareVersion` for ws plugin version
+     - Extract `workspace.name` for workspace name
+   - Get current project path from pwd
    - Capture last 50 lines of relevant activity
 
 4. **Create Report File**:
@@ -45,6 +52,11 @@ Timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
    {
      "id": "ws-fault-20251202-153045",
      "reportedAt": "2025-12-02T15:30:45Z",
+     "environment": {
+       "pluginVersion": "0.2.1",
+       "workspaceName": "lucid-workspace",
+       "projectPath": "/Users/rayk/Projects/lucid-workspace"
+     },
      "session": {
        "id": "abc12345-...",
        "debugLog": "abc12345-...txt",
@@ -74,6 +86,9 @@ Timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
    ## Fault Report Created
 
    ID: ws-fault-20251202-153045
+   Plugin: ws v0.2.1
+   Project: /Users/rayk/Projects/lucid-workspace
+
    Component: /ws:version (command)
    Area: cap (Capabilities)
 
@@ -101,6 +116,8 @@ If problem description doesn't clearly identify the component, ask:
 
 <success_criteria>
 - Problem description captured
+- Plugin version extracted from workspace-info.toon (or "unknown")
+- Project path recorded
 - Session ID recorded
 - Debug log path saved
 - Component identified
@@ -112,6 +129,7 @@ If problem description doesn't clearly identify the component, ask:
 <output_format>
 **Confirmation Output** (Markdown):
 - Report ID and timestamp
+- Plugin version and project path
 - Component details
 - Session reference
 - File location
@@ -125,6 +143,9 @@ name: ws-fault-report
 reportNumber: ws-fault-20251202-153045
 dateCreated: 2025-12-02T15:30:45Z
 actionStatus: CompletedActionStatus
+
+environment{pluginVersion,workspaceName,projectPath|tab}:
+0.2.1	lucid-workspace	/Users/rayk/Projects/lucid-workspace
 
 session{id,debugLog}:
 abc12345-...,abc12345-...txt

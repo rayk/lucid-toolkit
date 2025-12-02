@@ -151,14 +151,21 @@ Today: !`date +%Y-%m-%d`
     ```
     ```
 
+## Phase 5.6: Sync enviro.md Version
+
+15. **Update `plugins/ws/commands/enviro.md`** with current version:
+    - Find and replace `softwareVersion: X.Y.Z` with new version
+    - Update the migrate_mode version reference as well
+    - This ensures workspace-info.toon files get the correct plugin version
+
 ## Phase 6: Release Commit
 
-15. **Stage version, changelog, and version command**:
+16. **Stage version, changelog, version command, and enviro command**:
     ```bash
-    git add plugins/ws/plugin.json plugins/ws/CHANGELOG.md plugins/ws/commands/version.md
+    git add plugins/ws/plugin.json plugins/ws/CHANGELOG.md plugins/ws/commands/version.md plugins/ws/commands/enviro.md
     ```
 
-16. **Create release commit**:
+17. **Create release commit**:
     ```bash
     git commit -m "$(cat <<'EOF'
     release(ws): v{new-version}
@@ -175,18 +182,18 @@ Today: !`date +%Y-%m-%d`
 
 ## Phase 7: Push and Verify
 
-17. **Final sync check**:
+18. **Final sync check**:
     ```bash
     git fetch origin
     git status -sb
     ```
 
-18. **Push to remote**:
+19. **Push to remote**:
     ```bash
     git push origin $(git branch --show-current)
     ```
 
-19. **Verify push succeeded**:
+20. **Verify push succeeded**:
     ```bash
     git status -sb
     ```
@@ -263,4 +270,5 @@ After completion, verify:
 4. `plugins/ws/plugin.json` has new version
 5. `plugins/ws/CHANGELOG.md` has new entry dated today
 6. `plugins/ws/commands/version.md` has embedded version matching plugin.json
+7. `plugins/ws/commands/enviro.md` has softwareVersion matching plugin.json
 </verification>
