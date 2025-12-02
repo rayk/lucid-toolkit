@@ -123,14 +123,42 @@ Today: !`date +%Y-%m-%d`
 
 13. **Include detailed explanations** for each change
 
-## Phase 6: Release Commit
+## Phase 5.5: Sync version.md Command
 
-14. **Stage version and changelog**:
-    ```bash
-    git add plugins/ws/plugin.json plugins/ws/CHANGELOG.md
+14. **Update `plugins/ws/commands/version.md`** with embedded version info:
+    - The version.md command must be self-contained (no dynamic @path references)
+    - This is required because installed plugins can't resolve paths to source repo
+    - Replace the entire content with current version and changelog entries
+    - Format:
+    ```markdown
+    ---
+    description: Display ws plugin version and recent changelog entries
+    allowed-tools: []
+    ---
+
+    Display the following version information exactly as shown:
+
+    ```
+    ws Workspace Plugin v{new-version}
+
+    ## What's New (v{new-version} - {date})
+
+    {current version changelog entries}
+
+    ## Previous Release (v{old-version})
+
+    {previous version changelog entries, if any}
+    ```
     ```
 
-15. **Create release commit**:
+## Phase 6: Release Commit
+
+15. **Stage version, changelog, and version command**:
+    ```bash
+    git add plugins/ws/plugin.json plugins/ws/CHANGELOG.md plugins/ws/commands/version.md
+    ```
+
+16. **Create release commit**:
     ```bash
     git commit -m "$(cat <<'EOF'
     release(ws): v{new-version}
@@ -147,18 +175,18 @@ Today: !`date +%Y-%m-%d`
 
 ## Phase 7: Push and Verify
 
-16. **Final sync check**:
+17. **Final sync check**:
     ```bash
     git fetch origin
     git status -sb
     ```
 
-17. **Push to remote**:
+18. **Push to remote**:
     ```bash
     git push origin $(git branch --show-current)
     ```
 
-18. **Verify push succeeded**:
+19. **Verify push succeeded**:
     ```bash
     git status -sb
     ```
@@ -234,4 +262,5 @@ After completion, verify:
 3. `git status -sb` shows sync with remote
 4. `plugins/ws/plugin.json` has new version
 5. `plugins/ws/CHANGELOG.md` has new entry dated today
+6. `plugins/ws/commands/version.md` has embedded version matching plugin.json
 </verification>

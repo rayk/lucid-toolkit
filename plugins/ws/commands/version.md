@@ -1,45 +1,24 @@
 ---
 description: Display ws plugin version and recent changelog entries
-allowed-tools: [Read]
+allowed-tools: []
 ---
 
-<objective>
-Display the current version of the ws plugin along with recent release changes from the changelog.
-
-This helps users understand what version they're running and what features/fixes are included.
-</objective>
-
-<context>
-Plugin metadata: @plugins/ws/plugin.json
-Changelog: @plugins/ws/CHANGELOG.md
-</context>
-
-<process>
-1. Read the plugin.json to get the current version number
-2. Read the CHANGELOG.md to get recent release notes
-3. Present the information in a clean, readable format:
-   - Version number prominently displayed
-   - Recent changelog entries (current version and previous if available)
-</process>
-
-<output>
-Display format:
+Display the following version information exactly as shown:
 
 ```
-ws Workspace Plugin v:{version}
+ws Workspace Plugin v0.1.0
 
-## What's New
+## What's New (v0.1.0 - 2025-12-02)
 
-{changelog entries for current version}
-
-## Previous Release
-
-{changelog entries for previous version, if available}
+### Added
+- Initial plugin structure with plugin.json metadata
+- Five key areas: Capabilities (cap), Outcomes (out), Designs (des), Plans (pln), Execution (exe)
+- /ws:version command - display version and recent changelog entries
+- /ws:report command - capture fault reports for debugging with session context
+- /ws:enviro command - idempotent workspace environment management (setup, repair, migrate, report)
+- workspace-info.toon template using schema.org vocabulary for workspace snapshots
+- Comprehensive scanning for IntelliJ .idea/, project-map.json, and technology indicators
+- README.md documentation
 ```
-</output>
 
-<success_criteria>
-- Version number clearly displayed
-- Changelog entries shown for current version
-- Output is concise and well-formatted
-</success_criteria>
+This is the initial release. No previous version available.
