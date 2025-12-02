@@ -5,6 +5,33 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2025-12-03
+
+### Added
+
+- `git-commits` skill for extended semantic commit workflow
+  - Commit format with mandatory purpose section explaining WHY
+  - Architectural scope hierarchy (domain/component/subcomponent)
+  - Local commit squashing guidance for clean remote history
+  - Pre-push checklist and validation rules
+
+### Changed
+
+- Consolidated capability tracking to YAML frontmatter in capability-statement.md
+  - Single source of truth (no separate capability_track.json)
+  - Machine-parseable frontmatter with human-readable body
+  - Scanners now extract from YAML instead of JSON
+- `capability-checker`: Validates YAML frontmatter instead of JSON schema
+- `cap:create`: Generates single file with embedded tracking data
+- `cap:list`: Extracts capability data from YAML frontmatter
+- `enviro.md`: Updated scanners to read capability-statement.md frontmatter
+- `capabilities-info-schema.toon`: Removed trackPath field
+
+### Removed
+
+- `capability_track_schema.json` from plugin schemas (tracking now in frontmatter)
+- `plans/toon-specialist-design.md` (design complete)
+
 ## [0.4.2] - 2025-12-02
 
 ### Performance
