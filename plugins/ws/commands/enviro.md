@@ -1,242 +1,210 @@
 ---
 description: Idempotent workspace environment setup, repair, migration, and status reporting
-allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion]
+allowed-tools: [Task, Read, Write, AskUserQuestion]
 ---
 
 <objective>
 Manage the workspace environment through an idempotent command that detects current state and performs the appropriate action: setup, repair, migrate, or report.
 
-This command maintains `workspace-info.toon` in the `.claude` directory, using schema.org vocabulary to describe the workspace structure and status snapshot.
+This command delegates scanning work to parallel subagents to minimize main context usage.
 </objective>
 
-<context>
-Workspace info: @.claude/workspace-info.toon
-Plugin version: @plugins/ws/plugin.json
-Git status: !`git rev-parse --short HEAD 2>/dev/null || echo "no-git"`
-Git remote: !`git remote get-url origin 2>/dev/null || echo "no-remote"`
-Timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
-</context>
+<execution_model>
+This command uses a coordinator pattern:
+1. **Main context**: State detection, orchestration, user interaction, final output
+2. **Subagents**: All scanning and data gathering (runs in parallel, isolated context)
 
-<state_detection>
-Detect workspace state by checking for `.claude/workspace-info.toon`:
+IMPORTANT: Immediately notify user that scanning is starting, then delegate.
+</execution_model>
+
+<process>
+## Phase 1: Quick State Detection (Main Context)
+
+Notify user immediately:
+```
+Starting workspace environment scan...
+```
+
+Check state with minimal reads:
+1. Check if `.claude/workspace-info.toon` exists
+2. If exists: read first 10 lines to get version
+3. Determine action: setup | repair | migrate | report
 
 | State | Condition | Action |
 |-------|-----------|--------|
-| **virgin** | File doesn't exist | Run SETUP |
-| **healthy** | File exists, valid, version matches | Run REPORT |
-| **outdated** | File exists, version mismatch | Run MIGRATE |
-| **corrupted** | File exists, invalid/incomplete | Run REPAIR |
-</state_detection>
+| **virgin** | File doesn't exist | Run SETUP via subagents |
+| **healthy** | File exists, valid, version matches | Run REPORT (direct read) |
+| **outdated** | File exists, version mismatch | Run MIGRATE via subagent |
+| **corrupted** | File exists, invalid/incomplete | Run REPAIR via subagent |
 
-<setup_scanning>
-When workspace-info.toon does not exist, perform comprehensive directory and file scanning:
+## Phase 2: Delegate Scanning (Parallel Subagents)
 
-## 1. Standard Workspace Directories
+For SETUP state, launch these subagents IN PARALLEL using a single message with multiple Task tool calls:
 
-Scan for these directories at workspace root:
+### Subagent 1: Standard Directories Scanner
+```
+Task(subagent_type="Explore", prompt="""
+Scan workspace for standard capability-driven development directories.
 
-| Directory | Purpose | Scan For |
-|-----------|---------|----------|
-| `capabilities/` | Capability tracking | `**/capability_track.json`, subdirs |
-| `outcomes/` | Outcome management | `**/outcome_track.json`, stage subdirs |
-| `plans/` | Plan documents | `*.md`, design docs |
-| `executions/` | Execution logs | Session logs, reports |
-| `research/` | Research artifacts | Notes, references, findings |
-| `status/` | Summary files | `capability_summary.json`, `outcome_summary.json` |
+Check for these directories at workspace root and report findings:
+- capabilities/ → count **/capability_track.json files
+- outcomes/ → count **/outcome_track.json files, note stage subdirs
+- plans/ → count *.md files
+- executions/ → count session logs
+- research/ → check if exists
+- status/ → check for capability_summary.json, outcome_summary.json
 
-For each found directory, record:
-- Path (relative to workspace root)
-- Item count
-- Last modified timestamp
-
-## 2. Project Map Detection
-
-Check for `project-map.json` at workspace root or in `.claude/`:
-
-```bash
-# Scan locations
-ls -la project-map.json .claude/project-map.json 2>/dev/null
+Return TOON format:
+```
+@type: ItemList
+directories{name,exists,itemCount,path|tab}:
+capabilities	true	5	./capabilities
+outcomes	true	12	./outcomes
+...
+```
+""")
 ```
 
-If found, extract:
-- Project names and paths
-- Project types and technologies
-- Cross-project dependencies
+### Subagent 2: Project & Technology Scanner
+```
+Task(subagent_type="Explore", prompt="""
+Scan workspace for projects and technology indicators.
 
-## 3. IntelliJ IDEA Configuration
+1. Check for project-map.json at root or .claude/
+2. Scan for technology indicators:
+   - package.json → Node.js/TypeScript
+   - pyproject.toml, setup.py → Python
+   - Cargo.toml → Rust
+   - go.mod → Go
+   - pom.xml, build.gradle → Java/Kotlin
+   - pubspec.yaml → Flutter/Dart
+   - *.csproj → .NET
 
-Scan for `.idea/` directory at workspace root:
+3. Identify .git directories to find project boundaries
 
-```bash
-# Check for IntelliJ project
-ls -la .idea/ 2>/dev/null
+Return TOON format:
+```
+@type: ItemList
+hasProjectMap: true|false
+projectMapPath: {path}
+
+projects{name,path,technology,gitRoot|tab}:
+{name}	{path}	{tech}	{git-root}
+...
+```
+""")
 ```
 
-### Key IntelliJ Files to Read
-
-| File | Contains | Extract |
-|------|----------|---------|
-| `.idea/modules.xml` | Module definitions | Project modules and their paths |
-| `.idea/misc.xml` | Project SDK, language level | Java/Kotlin version, SDK name |
-| `.idea/vcs.xml` | VCS mappings | Git roots, VCS type |
-| `.idea/*.iml` | Module configs | Source roots, dependencies |
-| `.idea/runConfigurations/` | Run configs | Application entry points |
-| `.idea/codeStyles/` | Code style settings | Formatting preferences |
-
-### IntelliJ Parsing Logic
-
+### Subagent 3: IDE Configuration Scanner
 ```
-1. If .idea/modules.xml exists:
-   - Parse <module> elements for fileurl paths
-   - Each module = potential project/subproject
+Task(subagent_type="Explore", prompt="""
+Scan for IntelliJ IDEA configuration in .idea/ directory.
 
-2. If .idea/misc.xml exists:
-   - Extract <component name="ProjectRootManager">
-   - Get project-jdk-name, languageLevel
+If .idea/ exists, extract:
+1. From modules.xml: module names and paths
+2. From misc.xml: SDK name, language level
+3. From vcs.xml: VCS mappings
+4. List *.iml files found
 
-3. If .idea/vcs.xml exists:
-   - Parse <mapping directory="..." vcs="Git"/>
-   - Identify git-tracked subdirectories
+Return TOON format:
+```
+@type: SoftwareApplication
+ide.name: IntelliJ IDEA
+ide.configPath: .idea/
+ide.sdkName: {sdk}
+ide.languageLevel: {level}
 
-4. For each *.iml file found:
-   - Extract <sourceFolder> elements
-   - Identify src/main, src/test, resources
-   - Note module dependencies
+ide.modules{name,path,type|tab}:
+{module}	{path}	{type}
+...
+
+ide.vcsRoots{directory,vcs|tab}:
+{dir}	Git
+...
 ```
 
-### IntelliJ Directory Locations (Reference)
-
-**Project-level** (in workspace):
-- `.idea/` - Project settings directory
-- `*.iml` - Module files (may be in root or subdirs)
-
-**User-level** (global, do not scan):
-- macOS: `~/Library/Application Support/JetBrains/IntelliJIdea{version}/`
-- Windows: `%APPDATA%\JetBrains\IntelliJIdea{version}\`
-- Linux: `~/.config/JetBrains/IntelliJIdea{version}/`
-
-## 4. Additional Project Indicators
-
-Also scan for:
-
-| File | Indicates | Technology |
-|------|-----------|------------|
-| `package.json` | Node.js project | JavaScript/TypeScript |
-| `pyproject.toml` | Python project | Python (modern) |
-| `setup.py` | Python project | Python (legacy) |
-| `Cargo.toml` | Rust project | Rust |
-| `go.mod` | Go project | Go |
-| `pom.xml` | Maven project | Java |
-| `build.gradle` | Gradle project | Java/Kotlin |
-| `*.csproj` | .NET project | C# |
-| `pubspec.yaml` | Flutter/Dart | Dart |
-| `Gemfile` | Ruby project | Ruby |
-
-## 5. Scan Execution Order
-
+If no .idea/ directory, return:
 ```
-1. Check for project-map.json → use as primary source if found
-2. Scan for .idea/ → extract IntelliJ project structure
-3. Scan for standard directories (capabilities, outcomes, etc.)
-4. Scan for technology indicators (package.json, etc.)
-5. Scan for .git directories → identify project boundaries
-6. Merge and deduplicate findings
-7. Present discovered structure for confirmation
+@type: SoftwareApplication
+ide.name: none
+```
+""")
 ```
 
-## 6. Scan Output
-
-After scanning, present findings before generating workspace-info.toon:
-
+### Subagent 4: Git & Workspace Metadata
 ```
-## Workspace Scan Results
+Task(subagent_type="Explore", prompt="""
+Gather git and workspace metadata.
 
-### Detected from IntelliJ (.idea/)
-- Modules: {list}
-- SDK: {java-version}
-- VCS roots: {list}
+Execute and report:
+1. git rev-parse --short HEAD
+2. git remote get-url origin
+3. git log -1 --format=%cI (commit timestamp)
+4. basename of workspace directory
 
-### Detected from project-map.json
-- Projects: {list with paths}
+Return TOON format:
+```
+@type: Project
+workspace.name: {directory-name}
+workspace.codeRepository: {remote-url}
+workspace.version: {commit-hash}
+workspace.dateModified: {commit-timestamp}
+```
+""")
+```
 
-### Standard Directories Found
-- capabilities/: {count} capabilities
-- outcomes/: {count} outcomes
-- plans/: {count} plans
-- executions/: {count} executions
-- research/: {found|not found}
+## Phase 3: Merge Results (Main Context)
 
-### Technology Stack
-- {tech}: {project-path}
-- ...
+After all subagents complete:
+1. Collect TOON outputs from each subagent
+2. Merge into unified workspace-info.toon structure
+3. If SETUP: present summary and ask user to confirm
+4. Write .claude/workspace-info.toon
+
+## Phase 4: User Confirmation (SETUP only)
+
+Present merged findings:
+```
+## Workspace Scan Complete
+
+Workspace: {name} @ {commit}
+Repository: {remote-url}
+
+### Projects ({count})
+{project-list}
+
+### Standard Directories
+{directory-summary}
+
+### IDE Integration
+{ide-summary}
 
 Proceed with workspace initialization? [Y/n]
 ```
-</setup_scanning>
 
-<process>
-1. **Detect State**:
-   - Check if `.claude/workspace-info.toon` exists
-   - If exists: validate structure and version
-   - Determine action: setup | repair | migrate | report
+## Phase 5: Generate Output File
 
-2. **Execute Action**:
-
-   **SETUP** (virgin state):
-   - Create `.claude/` directory if needed
-   - Run comprehensive workspace scan (see `<setup_scanning>`)
-   - Gather remaining information interactively
-   - Generate initial `workspace-info.toon`
-   - Display setup summary
-
-   **REPAIR** (corrupted state):
-   - Identify missing/invalid sections
-   - Preserve valid data
-   - Regenerate corrupted sections from filesystem
-   - Update snapshot timestamp
-   - Display repair summary
-
-   **MIGRATE** (outdated state):
-   - Read existing file
-   - Transform to new schema version
-   - Preserve all compatible data
-   - Add new required fields with defaults
-   - Update version and timestamp
-   - Display migration summary
-
-   **REPORT** (healthy state):
-   - Read and display current workspace status
-   - Show workspace overview
-   - List projects with sync status
-   - Summarize capabilities and maturity
-   - Summarize outcomes by stage
-   - Show current focus
-
-3. **Update Snapshot**:
-   - Always update `dateModified` timestamp
-   - Update git commit references
-   - Write changes to file
+Write workspace-info.toon using template from collected data.
 </process>
 
-<workspace_info_schema>
-The `workspace-info.toon` file uses TOON format with schema.org vocabulary:
-
+<workspace_info_template>
 ```toon
 # Workspace Environment Snapshot
-# Generated by ws plugin
+# Generated by ws plugin - DO NOT EDIT MANUALLY
+# Use /ws:enviro to update
 
 @context: https://schema.org
 @type: SoftwareSourceCode
 @id: workspace/{workspace-name}
-dateCreated: {initial-creation-timestamp}
-dateModified: {last-snapshot-timestamp}
-softwareVersion: {ws-plugin-version}
+dateCreated: {timestamp}
+dateModified: {timestamp}
+softwareVersion: 0.1.1
 
 # ─── Workspace ───────────────────────────────────────────
 workspace@type: Project
 workspace.name: {workspace-name}
 workspace.codeRepository: {github-url}
-workspace.version: {last-commit-id}
+workspace.version: {commit-hash}
 workspace.dateModified: {commit-timestamp}
 
 # ─── Projects ────────────────────────────────────────────
@@ -244,113 +212,38 @@ projects@type: ItemList
 projects.numberOfItems: {count}
 
 project{name,codeRepository,version,dateModified,path,@type,technologies|tab}:
-{name}	{repo}	{commit}	{timestamp}	{relative-path}	{project-type}	{tech-stack}
-...
-
-# Project Artifacts (per project)
-artifacts.{project-name}{name,@type,path,description,usedBy|tab}:
-{artifact-name}	{artifact-type}	{relative-path}	{contains-description}	{used-by}
-...
+{merged-from-subagent-2}
 
 # ─── Capabilities ────────────────────────────────────────
 capabilities@type: ItemList
-capabilities.path: {capabilities-root-path}
+capabilities.path: {path}
 capabilities.numberOfItems: {count}
-
-capability{identifier,name,path,maturityLevel|tab}:
-{id}	{capability-name}	{relative-path}	{maturity-percentage}
-...
 
 # ─── Outcomes ────────────────────────────────────────────
 outcomes@type: ItemList
-outcomes.path: {outcomes-root-path}
+outcomes.path: {path}
 
 outcomes.summary{stage,count,path|tab}:
-queued	{n}	{path-to-queued}
-ready	{n}	{path-to-ready}
-in-progress	{n}	{path-to-in-progress}
-blocked	{n}	{path-to-blocked}
-completed	{n}	{path-to-completed}
-
-# ─── Plans ───────────────────────────────────────────────
-plans@type: ItemList
-plans.path: {plans-root-path}
-plans.numberOfItems: {count}
-
-# ─── Executions ──────────────────────────────────────────
-executions@type: ItemList
-executions.path: {executions-root-path}
-executions.numberOfItems: {count}
-
-# ─── Research ────────────────────────────────────────────
-research@type: ItemList
-research.path: {research-root-path}
-research.numberOfItems: {count}
+{merged-from-subagent-1}
 
 # ─── IDE Integration ─────────────────────────────────────
-ide@type: SoftwareApplication
-ide.name: {ide-name}
-ide.softwareVersion: {ide-version}
-ide.configPath: {.idea-path}
-
-ide.modules{name,path,type|tab}:
-{module-name}	{module-path}	{module-type}
-...
-
-ide.sdkName: {sdk-name}
-ide.languageLevel: {language-level}
+{merged-from-subagent-3}
 
 # ─── Current Focus ───────────────────────────────────────
 focus@type: Action
-focus.name: {current-outcome-name}
-focus.target: {current-outcome-path}
-focus.actionStatus: ActiveActionStatus
+focus.name: {none}
+focus.target: {none}
+focus.actionStatus: PotentialActionStatus
 ```
-</workspace_info_schema>
+</workspace_info_template>
 
-<setup_questions>
-After scanning completes, only ask for information that couldn't be auto-detected:
+<report_mode>
+For REPORT state (healthy workspace-info.toon exists):
+- Read the file directly (no subagents needed)
+- Display formatted summary to user
+- No context pollution since it's a single read
 
-1. **Workspace name**:
-   - Auto-detect from: git remote name, .idea project name, directory name
-   - Ask only if: multiple candidates or none found
-
-2. **Confirm detected structure**:
-   - Present scan results (see `<setup_scanning>` output)
-   - Ask user to confirm or modify detected paths
-
-3. **Missing directories** (if not found):
-   - Ask whether to create standard directories (capabilities/, outcomes/, etc.)
-   - Or specify custom paths
-
-4. **Current focus**:
-   - If outcomes exist, ask which outcome is currently in progress
-   - Otherwise, leave focus empty
-
-For each project discovered:
-- Auto-detect type from build files (package.json → library/app, pom.xml → service, etc.)
-- Auto-detect technology stack from manifest files
-- Auto-scan for key artifacts (entry points, configs, schemas)
-- Only ask for clarification if detection is ambiguous
-</setup_questions>
-
-<output_format>
-**SETUP Output**:
-```
-## Workspace Environment Initialized
-
-Workspace: {name}
-Repository: {github-url}
-Plugin: ws v{version}
-
-Projects: {count} discovered
-Capabilities: {count} tracked
-Outcomes: {count} total ({in-progress} active)
-
-Created: .claude/workspace-info.toon
-```
-
-**REPORT Output**:
+Output format:
 ```
 ## Workspace Status
 
@@ -361,60 +254,106 @@ Last updated: {relative-time}
 {project-table}
 
 ### Capabilities ({count})
-{capability-summary-with-maturity}
+{capability-summary}
 
 ### Outcomes
 - Queued: {n}
-- Ready: {n}
 - In Progress: {n}
-- Blocked: {n}
 - Completed: {n}
 
 ### Current Focus
-{outcome-name} ({outcome-path})
+{focus-name} ({focus-path})
+```
+</report_mode>
+
+<migrate_mode>
+For MIGRATE state, launch single subagent:
+```
+Task(subagent_type="general-purpose", prompt="""
+Migrate workspace-info.toon from old version to current.
+
+1. Read existing .claude/workspace-info.toon
+2. Identify version from softwareVersion field
+3. Apply migrations for each version step
+4. Preserve all existing data
+5. Add any new required fields with defaults
+6. Update softwareVersion to 0.1.1
+7. Write updated file
+
+Return summary of changes made.
+""")
+```
+</migrate_mode>
+
+<repair_mode>
+For REPAIR state, launch single subagent:
+```
+Task(subagent_type="general-purpose", prompt="""
+Repair corrupted workspace-info.toon.
+
+1. Read existing .claude/workspace-info.toon
+2. Identify which sections are valid vs corrupted
+3. For corrupted sections, rescan filesystem to regenerate
+4. Preserve all valid data
+5. Write repaired file
+
+Return summary of repairs made.
+""")
+```
+</repair_mode>
+
+<output_format>
+**Progress Notification** (immediate):
+```
+Starting workspace environment scan...
+Launching parallel scanners for directories, projects, IDE config...
 ```
 
-**REPAIR Output**:
+**SETUP Complete**:
 ```
-## Workspace Repaired
+## Workspace Environment Initialized
 
-Fixed sections:
-- {section}: {issue} → {resolution}
+Workspace: {name}
+Repository: {url}
+Plugin: ws v0.1.1
 
-Preserved: {count} sections unchanged
-Updated: .claude/workspace-info.toon
+Projects: {count} discovered
+Capabilities: {count} tracked
+Outcomes: {count} total
+
+Created: .claude/workspace-info.toon
 ```
 
-**MIGRATE Output**:
+**REPORT Complete**:
+```
+## Workspace Status
+
+{name} @ {commit}
+...
+```
+
+**MIGRATE Complete**:
 ```
 ## Workspace Migrated
 
-From: ws v{old-version}
-To: ws v{new-version}
+From: ws v{old} → v{new}
+Changes: {summary}
+```
 
-Changes:
-- {migration-change-description}
+**REPAIR Complete**:
+```
+## Workspace Repaired
 
-Updated: .claude/workspace-info.toon
+Fixed: {list}
+Preserved: {count} sections
 ```
 </output_format>
 
 <success_criteria>
-- State correctly detected (virgin/healthy/outdated/corrupted)
-- Appropriate action executed (setup/report/migrate/repair)
-- workspace-info.toon is valid after execution
-- All sections populated with accurate data
-- Git references current and accurate
-- Timestamps in ISO 8601 UTC format
-- schema.org vocabulary used correctly
-- Command is truly idempotent (safe to run repeatedly)
+- User notified immediately that scan is starting
+- Scanning delegated to parallel subagents (not main context)
+- Main context only handles: state detection, orchestration, user prompts, final output
+- Results merged efficiently from subagent TOON outputs
+- workspace-info.toon valid after execution
+- Minimal main context token usage
 </success_criteria>
-
-<verification>
-After any write operation:
-1. Read back workspace-info.toon
-2. Validate all required sections present
-3. Verify git commit matches current HEAD
-4. Confirm timestamp is recent
-5. Check version matches ws plugin version
-</verification>

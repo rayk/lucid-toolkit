@@ -5,6 +5,18 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-12-02
+
+### Changed
+
+- `/ws:enviro` command now uses parallel subagent delegation pattern
+- Scanning operations run in isolated contexts, minimizing main context pollution
+- State detection remains in main context (minimal reads)
+- REPORT mode reads directly (no delegation needed)
+- SETUP launches 4 parallel scanners: directories, projects, IDE, git metadata
+- MIGRATE and REPAIR delegate to single general-purpose subagent
+- User notified immediately when scan starts, results reported on completion
+
 ## [0.1.1] - 2025-12-02
 
 ### Fixed

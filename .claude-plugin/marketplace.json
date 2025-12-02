@@ -70,7 +70,7 @@
       "name": "ws",
       "source": "./plugins/ws",
       "description": "Capability-based workspace management with environment snapshots",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "category": "workflow",
       "tags": ["workspace", "environment", "capability-driven"]
     }
