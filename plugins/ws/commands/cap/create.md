@@ -8,14 +8,12 @@ Produce a complete capability statement that complies with the workspace schema 
 
 This command guides you through creating a comprehensive capability definition that:
 - Maps to 1-3 core business values from the 34-value framework
-- Follows the capability statement template structure
-- Validates against capability_track_schema.json requirements
+- Follows the capability statement template structure with YAML frontmatter
 - Captures strategic context, maturity milestones, and measurement criteria
 </objective>
 
 <context>
 Template reference: @templates/outputs/capability-statement-template.md
-Schema validation: @schemas/capability_track_schema.json
 Core values: Retrieved via toon-specialist (core-values-schema.toon)
 Actor registry: Retrieved via toon-specialist (actor-registry-schema.toon)
 Workspace info: Read workspace-info.toon from workspace root for capabilities.path
@@ -95,10 +93,9 @@ Workspace info: Read workspace-info.toon from workspace root for capabilities.pa
     - Note: Weight sum validation is performed by capability-checker in step 13
 
 12. **Generate Complete Statement**:
-    - Populate template with all gathered information
-    - Populate actors array in capability_track.json
+    - Populate YAML frontmatter with tracking data (identifier, name, type, status, domain, maturity, coreValues, actors, relationships)
+    - Populate template body with all gathered information
     - Save to `{capabilities.path}/[capability-id]/capability-statement.md`
-    - Save to `{capabilities.path}/[capability-id]/capability_track.json`
 
 13. **Validate with Capability Checker**:
     - Call the `capability-checker` subagent with the capability directory path
@@ -132,11 +129,12 @@ The checker validates:
 </validation>
 
 <output>
-Files created:
-- `{capabilities.path}/[capability-id]/capability-statement.md` - Complete capability definition
-- `{capabilities.path}/[capability-id]/capability_track.json` - Schema-compliant tracking file with actors
+File created:
+- `{capabilities.path}/[capability-id]/capability-statement.md` - Complete capability definition with YAML frontmatter
 
-The files will follow the workspace template structure with all sections populated.
+The file contains:
+- YAML frontmatter with machine-parseable tracking data (identifier, maturity, actors, relationships, etc.)
+- Markdown body following the workspace template structure
 </output>
 
 <output_format>
@@ -149,7 +147,7 @@ actionStatus: CompletedActionStatus
 @id: authentication-system
 result: Created capability with initial maturity 0%
 
-filesCreated[2]: capability_track.json,capability-statement.md
+filesCreated[1]: capability-statement.md
 crossRefsUpdated[1]: capability_summary.json
 ```
 

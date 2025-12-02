@@ -9,13 +9,13 @@
     "python": ">=3.10"
   },
   "commands": ["ws:version", "ws:report", "ws:enviro", "cap:create", "cap:list"],
-  "skills": [],
+  "skills": ["git-commits"],
   "agents": ["capability-checker", "toon-specialist"],
   "hooks": {
     "SessionStart": ["python3 hooks/session_start.py"],
     "PostToolUse": ["python3 hooks/focus_tracker.py"]
   },
-  "schemas": ["capability_track_schema.json"],
+  "schemas": [],
   "templates": [
     "data/workspace-info-schema.toon",
     "data/capabilities-info-schema.toon",

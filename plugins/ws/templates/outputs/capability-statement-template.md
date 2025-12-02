@@ -2,26 +2,58 @@
 
 Use this template when defining new capabilities to ensure completeness, clarity, and alignment with workspace schema requirements.
 
+```yaml
 ---
+# ═══════════════════════════════════════════════════════════════════════════════
+# CAPABILITY FRONTMATTER - Machine-parseable tracking data
+# ═══════════════════════════════════════════════════════════════════════════════
+# This YAML block is the single source of truth for capability tracking.
+# Scanners extract this data to generate capabilities-info.toon.
+# ═══════════════════════════════════════════════════════════════════════════════
 
-## Metadata
+identifier: capability-id           # kebab-case, matches directory name
+name: Human-Readable Name           # Display name
+type: atomic                        # atomic | composed
+status: active                      # active | deprecated | planned
+domain: strategic-domain            # e.g., security, infrastructure, identity
 
-**Capability ID**: `[domain]-[name]`
-_Pattern: `^[a-z0-9]+(-[a-z0-9]+)*$` (kebab-case, e.g., `authentication-system`)_
+maturity:
+  current: 0                        # 0-100, current assessed maturity
+  target: 80                        # 0-100, strategic goal
 
-**Name**: [Human-Readable Capability Name]
-_Concise, action-oriented (e.g., "Secure Authentication System")_
+coreValues:
+  primary:                          # 1-3 core business values this delivers
+    - Value Name
+  # contributions optional - for detailed tracking
+  # contributions:
+  #   - value: Value Name
+  #     percentage: 50
 
-**Type**: [ ] Atomic (built from outcomes) | [ ] Composed (built from sub-capabilities)
+actors:                             # Stakeholders involved with this capability
+  - id: actor-id                    # From actor registry
+    relationship: requires          # requires | provides | consumes | enables | governs
+    criticality: essential          # essential | important | optional
 
-**Domain**: [Strategic Category]
-_E.g., "Data Security & Privacy", "Product Lifecycle", "Developer Experience"_
+relationships:
+  prerequisites:                    # Capabilities that must exist first
+    - capability: other-capability-id
+      minMaturity: 60
+  enables:                          # Capabilities this unlocks
+    - capability-id-enabled
 
-**Status**: [ ] Active | [ ] Deprecated | [ ] Merged
-_Default: Active for new capabilities_
+# For COMPOSED capabilities only (type: composed)
+# subCapabilities:
+#   - id: sub-capability-id
+#     weight: 40                    # Weights must sum to 100
 
-**Target Maturity**: [0-100]%
-_Strategic goal - what maturity level makes this capability "good enough" for business needs?_
+# For ATOMIC capabilities - outcomes tracked separately in outcomes/
+# Maturity calculated from completed outcomes' contributions
+
+validation:
+  lastChecked: null                 # ISO-8601 timestamp or null
+  status: UNCHECKED                 # VALID | NEEDS_ATTENTION | INVALID | UNCHECKED
+---
+```
 
 ---
 
@@ -328,4 +360,4 @@ Total contributions should align with target maturity (e.g., if target is 80%, o
 
 ---
 
-*This template aligns with `schemas/capability_track_schema.json` requirements and workspace conventions defined in `CLAUDE.md`.*
+*This template uses YAML frontmatter as the single source of truth for capability tracking. Scanners parse the frontmatter to generate capabilities-info.toon.*

@@ -96,7 +96,7 @@ Count files in workspace directories. Return ONLY this TOON - no prose:
 
 @type: ItemList
 directories{name,exists,count|tab}:
-capabilities	{true|false}	{count of **/capability_track.json}
+capabilities	{true|false}	{count of **/capability-statement.md}
 outcomes	{true|false}	{count of **/outcome_track.json}
 plans	{true|false}	{count of *.md}
 executions	{true|false}	{count of files}
@@ -213,7 +213,7 @@ Launch ALL needed scanners IN PARALLEL in a SINGLE message. Scanners return comp
 #### Scanner: Capabilities Data (if capabilities-info.toon missing)
 ```
 Task(subagent_type="Explore", model="haiku", prompt="""
-Read all capabilities/**/capability_track.json. Return ONLY this TOON - no prose:
+Read all capabilities/**/capability-statement.md YAML frontmatter. Return ONLY this TOON - no prose:
 
 @type: ItemList
 summary.total: {count}
@@ -221,7 +221,7 @@ summary.active: {count where status=active}
 summary.avgMaturity: {average currentMaturity as int}
 
 capabilities{id,name,type,status,maturity,target|tab}:
-{folderName}	{name}	{atomic|composed}	{active|deprecated}	{currentMaturity}	{targetMaturity}
+{identifier}	{name}	{atomic|composed}	{active|deprecated}	{maturity.current}	{maturity.target}
 """)
 ```
 

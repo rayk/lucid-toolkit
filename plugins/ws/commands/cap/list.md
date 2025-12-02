@@ -19,9 +19,9 @@ Workspace info: Read workspace-info.toon to locate capabilities.path
 
 2. **Check Index Freshness**:
    - Read capabilities-info.toon `dateModified` timestamp
-   - List all `capability_track.json` files in capabilities directory
-   - Compare index timestamp against each track file's modification time
-   - Index is STALE if any track file is newer than index
+   - List all `capability-statement.md` files in capabilities directory
+   - Compare index timestamp against each statement file's modification time
+   - Index is STALE if any statement file is newer than index
 
 3. **If Index is Stale** (and `--no-sync` not specified):
    - Inform user: "Index is out of sync. Updating capabilities-info.toon..."
@@ -33,12 +33,11 @@ Workspace info: Read workspace-info.toon to locate capabilities.path
    Task(
      subagent_type="general-purpose",
      model="haiku",
-     prompt="Read capability_track.json at {cap_path} and extract:
+     prompt="Read capability-statement.md at {cap_path} and extract YAML frontmatter:
        - identifier, name, type, status, domain
-       - currentMaturity, targetMaturity
-       - purpose (first sentence of description)
+       - maturity.current, maturity.target
        - coreValues.primary (as comma list)
-       - actor count, prerequisite count, enables count
+       - actors array length, relationships.prerequisites length, relationships.enables length
        Return as TOON properties for capability.{id}.*"
    )
    ```
@@ -105,17 +104,16 @@ When sync is needed, dispatch subagents efficiently:
 
 **Subagent prompt template:**
 ```
-Extract capability summary from {path}/capability_track.json:
+Extract capability summary from {path}/capability-statement.md YAML frontmatter:
 
 Required fields (return as TOON):
-- identifier: folderName value
+- identifier: identifier value
 - name: name value
 - type: type value (atomic|composed)
-- status: status value (active|deprecated|merged)
+- status: status value (active|deprecated|planned)
 - domain: domain value
-- currentMaturity: currentMaturity value
-- targetMaturity: targetMaturity value
-- purpose: first sentence of description
+- currentMaturity: maturity.current value
+- targetMaturity: maturity.target value
 - coreValues: coreValues.primary array as comma string
 - actorCount: length of actors array
 - prereqCount: length of relationships.prerequisites array
@@ -195,8 +193,8 @@ alerts[2]: auth-system:STALE_CHECK,billing-core:VALIDATION_FAILED
 </output_format>
 
 <success_criteria>
-- Freshness check performed against all capability_track.json files
-- If stale: subagents launched in parallel (max 5) to extract capability data
+- Freshness check performed against all capability-statement.md files
+- If stale: subagents launched in parallel (max 5) to extract YAML frontmatter
 - If stale: capability-checker subagents validate each updated capability
 - If stale: toon-specialist invoked to produce updated capabilities-info.toon
 - Summary statistics displayed accurately
