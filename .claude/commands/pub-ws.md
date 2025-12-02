@@ -158,20 +158,42 @@ Today: !`date +%Y-%m-%d`
     - Update the migrate_mode version reference as well
     - This ensures workspace-info.toon files get the correct plugin version
 
+## Phase 5.7: Pre-Release Verification (MANDATORY)
+
+16. **Verify all version references are in sync** before creating release commit:
+    ```bash
+    # Extract versions from all files
+    PLUGIN_VER=$(grep '"version"' plugins/ws/plugin.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+    VERSION_MD_VER=$(grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' plugins/ws/commands/version.md | head -1 | tr -d 'v')
+    ENVIRO_VER=$(grep 'softwareVersion:' plugins/ws/commands/enviro.md | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+
+    echo "plugin.json:  $PLUGIN_VER"
+    echo "version.md:   $VERSION_MD_VER"
+    echo "enviro.md:    $ENVIRO_VER"
+    ```
+
+    **ABORT if versions don't match.** All three must show the NEW version.
+
+    Common issues:
+    - Forgot to update version.md → Go back to Phase 5.5
+    - Forgot to update enviro.md → Go back to Phase 5.6
+    - Typo in version string → Fix and re-verify
+
 ## Phase 6: Release Commit
 
-16. **Stage version, changelog, version command, and enviro command**:
+17. **Stage version, changelog, version command, and enviro command**:
     ```bash
     git add plugins/ws/plugin.json plugins/ws/CHANGELOG.md plugins/ws/commands/version.md plugins/ws/commands/enviro.md
     ```
 
-17. **Create release commit**:
+19. **Create release commit**:
     ```bash
     git commit -m "$(cat <<'EOF'
     release(ws): v{new-version}
 
     Bump version {old} → {new}
     Update CHANGELOG.md with release notes
+    Sync version.md and enviro.md
 
     🤖 Generated with [Claude Code](https://claude.ai/claude-code)
 
@@ -182,18 +204,18 @@ Today: !`date +%Y-%m-%d`
 
 ## Phase 7: Push and Verify
 
-18. **Final sync check**:
+20. **Final sync check**:
     ```bash
     git fetch origin
     git status -sb
     ```
 
-19. **Push to remote**:
+21. **Push to remote**:
     ```bash
     git push origin $(git branch --show-current)
     ```
 
-20. **Verify push succeeded**:
+22. **Verify push succeeded**:
     ```bash
     git status -sb
     ```

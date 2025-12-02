@@ -351,7 +351,7 @@ Generate output following workspace-info-schema.toon structure:
 @id: workspace/{workspace-name}
 dateCreated: {timestamp}
 dateModified: {timestamp}
-softwareVersion: 0.2.2
+softwareVersion: 0.3.0
 
 # ─── Workspace ───────────────────────────────────────────
 workspace@type: Project
