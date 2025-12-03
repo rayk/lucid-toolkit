@@ -5,6 +5,23 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.4] - 2025-12-03
+
+### Added
+
+- `references/output-patterns.md` - Standard terminal output formatting patterns
+  - TOON blocks, markdown tables, status lines, box reports, summaries
+  - Adaptive styling rules (plain for simple, boxes for complex)
+  - Symbol reference table (✓✗⚠→)
+  - Anti-patterns to avoid
+
+### Changed
+
+- Updated commands to reference output-patterns.md for consistent formatting:
+  - `cap/list`, `cap/check`, `out/list`, `out/check`, `enviro`
+- Updated agents to reference output-patterns.md:
+  - `capability-checker`, `outcome-checker`
+
 ## [0.9.3] - 2025-12-03
 
 ### Added
