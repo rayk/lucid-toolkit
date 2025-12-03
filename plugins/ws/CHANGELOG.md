@@ -5,6 +5,26 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2025-12-03
+
+### Changed
+
+- `out:create`: Replace token budget estimate with complexity-based decomposition criteria
+  - Decompose when: multiple behaviors, independent parts, multiple systems, uncertainty
+  - Don't decompose when: atomic requirement, interdependent parts, overhead exceeds benefit
+  - Decision heuristics: "Can I verify independently?", "What's the failure mode?"
+- `out:create`: Add dependency tree creation between decomposed sub-outcomes
+  - Analyze which sub-outcomes must complete before others
+  - Populate `dependsOn` and `enables` fields for each sub-outcome
+  - Validate acyclic graph (no circular dependencies)
+- `out:create`: Support recursive sub-outcome creation up to 5 levels deep
+- `out:create`: Remove reports/evidence subdirectory creation (only child outcomes create subdirs)
+- `out:check`: Enhanced with full outcome-checker agent integration
+  - Locates outcomes across all stages (queued, ready, in-progress, blocked, completed)
+  - Supports child/nested outcomes (e.g., `005.1-child-name`)
+  - All 10 evaluation areas checked including decomposition validation
+- `out:check`: Now syncs both outcomes-info.toon and project-info.toon after validation
+
 ## [0.8.0] - 2025-12-03
 
 ### Added
