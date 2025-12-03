@@ -5,6 +5,32 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2025-12-03
+
+### Changed
+
+- `cap:create`: Major efficiency overhaul
+  - Read TOON schema files directly (no toon-specialist delegation for reads)
+  - Removed capability_track.json creation (all tracking in YAML frontmatter)
+  - Added `<critical_constraints>` section enforcing format rules upfront
+  - Added `<anti_patterns>` table preventing common mistakes (TBD placeholders, wrong actor ID format)
+  - Added `<yaml_frontmatter_template>` with exact structure to generate
+  - Reduced expected tool calls from 30+ to 10-15
+
+- `capability-checker`: Tool efficiency optimization
+  - Replace Bash grep/test calls with Grep/Glob/Read tools
+  - Added `<tool_usage>` table mapping each check to correct tool
+  - Added `<critical_checks>` for early YAML frontmatter validation (fail fast)
+  - Target 5-8 tool calls per validation (was 30+)
+  - Removed autofix operations (simplify scope, reduce complexity)
+  - Removed Write/Edit tools from agent (read-only validation)
+
+### Fixed
+
+- `cap:create` no longer writes TBD/TODO placeholders
+- `cap:create` generates correct kebab-case actor IDs
+- `cap:create` produces proper YAML frontmatter (not markdown metadata sections)
+
 ## [0.6.0] - 2025-12-03
 
 ### Added
