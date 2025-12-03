@@ -31,6 +31,8 @@ This command delegates scanning work to parallel subagents to minimize main cont
 | execution-info | `execution-info-schema.toon` | `.claude/execution-info.toon` |
 
 **Note:** Schema locations are known only to toon-specialist. Callers reference schemas by name only.
+
+**Output patterns:** Follow [output-patterns.md](references/output-patterns.md) for consistent terminal formatting.
 </schema_reference>
 
 <execution_model>

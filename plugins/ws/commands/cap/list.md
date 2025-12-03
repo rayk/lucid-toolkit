@@ -10,6 +10,7 @@ Display a summary list of all capabilities in the workspace by reading the capab
 <context>
 Index file: Read capabilities-info.toon from workspace status directory
 Workspace info: Read workspace-info.toon to locate capabilities.path
+Output patterns: Follow [output-patterns.md](../../references/output-patterns.md) for consistent formatting
 </context>
 
 <process>

@@ -11,6 +11,7 @@ Display a summary list of all outcomes in the workspace by reading workspace-inf
 Workspace info: `.claude/workspace-info.toon` - contains outcomes.path and summary counts
 Outcomes index: `status/outcomes-info.toon` (from relatedData.outcomesInfo) - detailed outcome index
 Sync skill: `outcome-index-sync` - regenerates indexes from outcome-statement.md files
+Output patterns: Follow [output-patterns.md](../../references/output-patterns.md) for consistent formatting
 </context>
 
 <process>

@@ -13,6 +13,7 @@ This ensures outcomes created by `/ws:out:create` meet workspace standards befor
 <context>
 Workspace config: @.claude/workspace-info.toon
 Outcome-checker agent: @agents/outcome-checker.md
+Output patterns: Follow [output-patterns.md](../../references/output-patterns.md) for consistent formatting
 </context>
 
 <argument_normalization>

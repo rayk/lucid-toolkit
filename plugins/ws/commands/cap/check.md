@@ -12,6 +12,7 @@ This ensures capability statements meet workspace standards before being used in
 <context>
 Workspace config: @.claude/workspace-info.toon
 Capability-checker agent: @agents/capability-checker.md
+Output patterns: Follow [output-patterns.md](../../references/output-patterns.md) for consistent formatting
 </context>
 
 <process>

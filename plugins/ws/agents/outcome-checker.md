@@ -42,6 +42,7 @@ Determine outcome type from `outcome.type` field in outcome_track.json:
 <reference_files>
 Read these BEFORE validating:
 1. `@templates/outcome-statement-template.md` - Expected structure for outcome-statement.md
+2. `@references/output-patterns.md` - Terminal output formatting patterns
 
 For actor validation, use the actors array in outcome_track.json - actorId values follow pattern `^[a-z0-9]+(-[a-z0-9]+)*$`
 </reference_files>
