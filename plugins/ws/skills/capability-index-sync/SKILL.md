@@ -1,6 +1,6 @@
 ---
 name: capability-index-sync
-description: Synchronizes capability indexes after capability modifications. Invokes toon-specialist to regenerate capabilities-info.toon and update project-info.toon. Use after cap/create, cap/edit, cap/delete, cap/merge, or cap/split completes.
+description: Synchronizes capability indexes after capability modifications. Invokes toon-specialist to regenerate capabilities-info.toon and update workspace-info.toon. Use after cap/create, cap/edit, cap/delete, cap/merge, or cap/split completes.
 ---
 
 <objective>
@@ -17,7 +17,7 @@ Skill("capability-index-sync")
 The skill will:
 1. Scan all capability-statement.md files
 2. Regenerate capabilities-info.toon via toon-specialist
-3. Update project-info.toon capability summary
+3. Update workspace-info.toon capability summary
 </quick_start>
 
 <context>
@@ -25,7 +25,7 @@ The skill will:
 | File | Purpose |
 |------|---------|
 | `.claude/capabilities-info.toon` | Index of all capabilities with maturity, status |
-| `.claude/project-info.toon` | Project summary including capability count |
+| `.claude/workspace-info.toon` | Workspace summary including capability count |
 </files_updated>
 
 <trigger_commands>
@@ -80,7 +80,7 @@ Task(
 </step_3>
 
 <step_4>
-**Update project-info.toon capability summary**
+**Update workspace-info.toon capability summary**
 
 ```
 Task(
@@ -88,8 +88,8 @@ Task(
   prompt="""
   @type: UpdateAction
   name: convert
-  object.source: .claude/project-info.toon
-  object.target: .claude/project-info.toon
+  object.source: .claude/workspace-info.toon
+  object.target: .claude/workspace-info.toon
   object.schema: workspace-info-schema.toon
 
   Update these fields:
@@ -104,14 +104,14 @@ Task(
 
 <constraints>
 - MUST use toon-specialist for all .toon file writes
-- MUST preserve existing project-info.toon data (only update capability summary)
+- MUST preserve existing workspace-info.toon data (only update capability summary)
 - MUST handle missing capabilities directory gracefully
 - SHOULD complete in under 5 tool calls
 </constraints>
 
 <success_criteria>
 - capabilities-info.toon reflects current state of all capabilities
-- project-info.toon capability summary is accurate
+- workspace-info.toon capability summary is accurate
 - No orphaned or missing capability entries
 - toon-specialist confirms valid TOON output
 </success_criteria>

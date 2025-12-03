@@ -36,7 +36,7 @@ Outcomes are units of tactical work that BUILD capabilities. Each outcome:
 
 | Purpose | Path |
 |---------|------|
-| Workspace config | `.claude/project-info.toon` (in workspace root) |
+| Workspace config | `.claude/workspace-info.toon` (in workspace root) |
 | Outcomes schema | `@shared/schemas/outcomes-info-schema.toon` |
 | Actor registry | `@shared/schemas/actor-registry-schema.toon` |
 
@@ -47,7 +47,7 @@ Outcomes are units of tactical work that BUILD capabilities. Each outcome:
 
 ## Phase 1: Load Context (2-3 Read calls max)
 
-1. **Read project-info.toon** from workspace root (`.claude/project-info.toon`)
+1. **Read workspace-info.toon** from workspace root (`.claude/workspace-info.toon`)
    - Extract `outcomes.path` for output location
    - Note existing outcome IDs to validate uniqueness
    - Get next sequence number
@@ -307,7 +307,7 @@ After successful outcome creation, sync workspace indexes:
 Skill("outcome-index-sync")
 ```
 
-This ensures outcomes-info.toon and project-info.toon reflect the new outcome.
+This ensures outcomes-info.toon and workspace-info.toon reflect the new outcome.
 </epilogue>
 
 <success_criteria>

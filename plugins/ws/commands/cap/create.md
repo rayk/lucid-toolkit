@@ -224,5 +224,5 @@ After successful capability creation, sync workspace indexes:
 Skill("capability-index-sync")
 ```
 
-This ensures capabilities-info.toon and project-info.toon reflect the new capability.
+This ensures capabilities-info.toon and workspace-info.toon reflect the new capability.
 </epilogue>

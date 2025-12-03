@@ -1,24 +1,43 @@
 ---
 description: Validate an outcome statement against workspace standards using outcome-checker agent
 argument-hint: <outcome-id>
+allowed-tools: Read, Glob, Task, Skill
 ---
 
 <objective>
-Validate an outcome statement for schema compliance, content quality, decomposition adequacy, and cross-reference integrity using the outcome-checker agent. After validation, sync workspace indexes (outcomes-info.toon and project-info.toon) to reflect any status changes.
+Validate an outcome statement for schema compliance, content quality, decomposition adequacy, and cross-reference integrity using the outcome-checker agent. After validation, sync workspace indexes (outcomes-info.toon and workspace-info.toon) to reflect any status changes.
 
 This ensures outcomes created by `/ws:out:create` meet workspace standards before execution.
 </objective>
 
 <context>
-Workspace config: @.claude/project-info.toon
+Workspace config: @.claude/workspace-info.toon
 Outcome-checker agent: @agents/outcome-checker.md
 </context>
+
+<argument_normalization>
+## Argument Processing
+
+Before using `$ARGUMENTS`, normalize the outcome-id:
+
+1. **Strip prefixes**: Remove `@`, `outcomes/`, and stage names (`queued/`, `ready/`, `in-progress/`, `blocked/`, `completed/`)
+2. **Strip trailing slashes**: Remove any trailing `/`
+3. **Validate format**: Result must match `^[0-9]+(-[a-z0-9-]+)+$` (parent) or `^[0-9]+\.[0-9]+-[a-z0-9-]+$` (child)
+
+| Input | Normalized |
+|-------|------------|
+| `@outcomes/ready/005-name/` | `005-name` |
+| `outcomes/queued/002.1-child` | `002.1-child` |
+| `005-ontology-workflow` | `005-ontology-workflow` |
+
+If normalization fails, report error with expected format.
+</argument_normalization>
 
 <process>
 
 ## Phase 1: Locate Outcome
 
-1. **Read project-info.toon** to get `outcomes.path`
+1. **Read workspace-info.toon** to get `outcomes.path`
 2. **Search for outcome** matching `$ARGUMENTS`:
    - Check `{outcomes.path}/queued/$ARGUMENTS/outcome-statement.md`
    - Check `{outcomes.path}/ready/$ARGUMENTS/outcome-statement.md`
@@ -51,7 +70,7 @@ Outcome-checker agent: @agents/outcome-checker.md
    ```
    This updates:
    - `outcomes-info.toon` - outcome registry with validation timestamp and status
-   - `project-info.toon` - workspace summary with current outcome counts by stage
+   - `workspace-info.toon` - workspace summary with current outcome counts by stage
 
 </process>
 
@@ -71,7 +90,7 @@ issues.info: {count}
 
 indexesSynced: true
 outcomesInfoUpdated: true
-projectInfoUpdated: true
+workspaceInfoUpdated: true
 ```
 </output_format>
 
@@ -92,5 +111,5 @@ projectInfoUpdated: true
 - If parent outcome: child decomposition validated
 - If INVALID: failure report created at outcome path
 - outcomes-info.toon updated with validation timestamp and status
-- project-info.toon synced to reflect current outcome state
+- workspace-info.toon synced to reflect current outcome state
 </success_criteria>

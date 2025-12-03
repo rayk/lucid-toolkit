@@ -14,7 +14,7 @@ ws Workspace Plugin v0.9.0
 - out:create: Dependency tree creation between sub-outcomes
 - out:create: Recursive sub-outcome creation up to 5 levels
 - out:check: Full outcome-checker agent integration
-- out:check: Syncs outcomes-info.toon and project-info.toon
+- out:check: Syncs outcomes-info.toon and workspace-info.toon
 
 ## Previous Release (v0.8.0)
 

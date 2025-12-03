@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Locates outcomes across all stages (queued, ready, in-progress, blocked, completed)
   - Supports child/nested outcomes (e.g., `005.1-child-name`)
   - All 10 evaluation areas checked including decomposition validation
-- `out:check`: Now syncs both outcomes-info.toon and project-info.toon after validation
+- `out:check`: Now syncs both outcomes-info.toon and workspace-info.toon after validation
 
 ## [0.8.0] - 2025-12-03
 
@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `capability-index-sync` skill for cross-cutting index synchronization
   - Regenerates capabilities-info.toon after any capability modification
-  - Updates project-info.toon capability summary
+  - Updates workspace-info.toon capability summary
   - Invokes toon-specialist for all .toon file production
 
 - `capability_sync.py` PostToolUse hook as safety net

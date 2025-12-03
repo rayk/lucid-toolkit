@@ -1,6 +1,6 @@
 ---
 name: outcome-index-sync
-description: Synchronizes outcome indexes after outcome modifications. Invokes toon-specialist to regenerate outcomes-info.toon and update project-info.toon. Use after out/create, out/edit, out/delete, or stage transitions.
+description: Synchronizes outcome indexes after outcome modifications. Invokes toon-specialist to regenerate outcomes-info.toon and update workspace-info.toon. Use after out/create, out/edit, out/delete, or stage transitions.
 ---
 
 <objective>
@@ -17,7 +17,7 @@ Skill("outcome-index-sync")
 The skill will:
 1. Scan all outcome-statement.md files across all stages
 2. Regenerate outcomes-info.toon via toon-specialist
-3. Update project-info.toon outcome summary
+3. Update workspace-info.toon outcome summary
 </quick_start>
 
 <context>
@@ -25,7 +25,7 @@ The skill will:
 | File | Purpose |
 |------|---------|
 | `.claude/outcomes-info.toon` | Index of all outcomes with stage, priority, contributions |
-| `.claude/project-info.toon` | Project summary including outcome counts |
+| `.claude/workspace-info.toon` | Workspace summary including outcome counts |
 </files_updated>
 
 <trigger_commands>
@@ -41,10 +41,10 @@ This skill is invoked by:
 <step_1>
 **Read workspace configuration**
 
-Read project-info.toon to get outcomes path:
+Read workspace-info.toon to get outcomes path:
 
 ```
-Read(".claude/project-info.toon")
+Read(".claude/workspace-info.toon")
 ```
 
 Extract `outcomes.path` for scanning.
@@ -99,7 +99,7 @@ Task(
 </step_4>
 
 <step_5>
-**Update project-info.toon outcome summary**
+**Update workspace-info.toon outcome summary**
 
 ```
 Task(
@@ -107,8 +107,8 @@ Task(
   prompt="""
   @type: UpdateAction
   name: convert
-  object.source: .claude/project-info.toon
-  object.target: .claude/project-info.toon
+  object.source: .claude/workspace-info.toon
+  object.target: .claude/workspace-info.toon
   object.schema: workspace-info-schema.toon
 
   Update these fields:
@@ -120,11 +120,35 @@ Task(
 )
 ```
 </step_5>
+
+<step_6>
+**Verify sync completed**
+
+After toon-specialist completes, verify the sync:
+
+```
+Read(".claude/outcomes-info.toon")
+```
+
+Confirm:
+- `summary.totalOutcomes` matches glob count from step 2
+- `dateModified` is today's date
+- All outcomes from step 2 appear in outcomes table
+
+If mismatch detected:
+```toon
+@type: FailedAction
+error: index_mismatch
+expected: {glob_count}
+actual: {index_count}
+missingOutcomes[N]: {list of missing outcome IDs}
+```
+</step_6>
 </process>
 
 <constraints>
 - MUST use toon-specialist for all .toon file writes
-- MUST preserve existing project-info.toon data (only update outcome summary)
+- MUST preserve existing workspace-info.toon data (only update outcome summary)
 - MUST include all 5 stages in stages.summary (even if count=0)
 - MUST handle nested child outcomes (dot notation: 005.1-name)
 - SHOULD complete in under 6 tool calls
@@ -135,6 +159,7 @@ Task(
 - All 5 stages present in stages.summary
 - Parent/child relationships captured in outcome.hierarchy
 - Capability contributions aggregated correctly
-- project-info.toon outcome summary is accurate
+- workspace-info.toon outcome summary is accurate
+- Verification step confirms index count matches glob scan
 - toon-specialist confirms valid TOON output
 </success_criteria>

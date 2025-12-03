@@ -77,5 +77,5 @@ After successful capability edit, sync workspace indexes:
 Skill("capability-index-sync")
 ```
 
-This ensures capabilities-info.toon and project-info.toon reflect the changes.
+This ensures capabilities-info.toon and workspace-info.toon reflect the changes.
 </epilogue>
