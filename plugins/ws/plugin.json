@@ -8,12 +8,12 @@
     "claudeCode": ">=1.0.0",
     "python": ">=3.10"
   },
-  "commands": ["ws:version", "ws:report", "ws:enviro", "cap:create", "cap:list"],
-  "skills": ["git-commits"],
+  "commands": ["ws:version", "ws:report", "ws:enviro", "cap:create", "cap:list", "cap:edit", "cap:delete", "cap:merge", "cap:split"],
+  "skills": ["git-commits", "capability-index-sync"],
   "agents": ["capability-checker", "outcome-checker", "toon-specialist"],
   "hooks": {
     "SessionStart": ["python3 hooks/session_start.py"],
-    "PostToolUse": ["python3 hooks/focus_tracker.py"]
+    "PostToolUse": ["python3 hooks/focus_tracker.py", "python3 hooks/capability_sync.py"]
   },
   "schemas": [],
   "templates": [

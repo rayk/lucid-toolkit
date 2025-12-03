@@ -216,3 +216,13 @@ validationStatus: VALID
 
 **No `crossRefsUpdated` field** - we no longer update capability_track.json or summary files.
 </output_format>
+
+<epilogue>
+After successful capability creation, sync workspace indexes:
+
+```
+Skill("capability-index-sync")
+```
+
+This ensures capabilities-info.toon and project-info.toon reflect the new capability.
+</epilogue>
