@@ -563,7 +563,7 @@ class TestConvenienceMethods:
         # TOON parser limitations with tab-delimited arrays
         ws = WorkspaceInfo(empty_workspace)
 
-        # Create workspace with initial project list
+        # Create workspace with initial project list.md
         ws.create("test-workspace")
         ws.set_projects([
             {"name": "lib-core", "path": "./libs/core"},
@@ -579,7 +579,7 @@ class TestConvenienceMethods:
         projects = ws.get_projects()
         # Should have one more project than before
         assert len(projects) == initial_count + 1
-        # New project should be in the list
+        # New project should be in the list.md
         assert any(p.get("name") == "new-project" for p in projects)
 
     def test_remove_project(self, valid_workspace):

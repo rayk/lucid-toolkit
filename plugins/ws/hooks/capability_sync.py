@@ -16,7 +16,7 @@ Updates:
 
 Note: Actual index regeneration is handled by:
 1. The capability-index-sync skill (invoked by cap/* commands)
-2. The cap/list command (checks freshness before listing)
+2. The cap/list.md command (checks freshness before listing)
 """
 import re
 from workspace_info import HookContext, WorkspaceInfo

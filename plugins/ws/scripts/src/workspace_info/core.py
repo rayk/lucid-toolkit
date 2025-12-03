@@ -306,12 +306,12 @@ class WorkspaceInfo:
         }
 
     def get_projects(self) -> list[dict]:
-        """Get list of projects from tabular array."""
+        """Get list.md of projects from tabular array."""
         data = self.load()
         return data.get("project", [])
 
     def get_capabilities(self) -> list[dict]:
-        """Get list of capabilities from tabular array."""
+        """Get list.md of capabilities from tabular array."""
         data = self.load()
         return data.get("capability", [])
 
@@ -319,7 +319,7 @@ class WorkspaceInfo:
         """Get outcomes summary by stage."""
         data = self.load()
         summary = data.get("outcomes.summary", [])
-        # Convert list to dict keyed by stage
+        # Convert list.md to dict keyed by stage
         return {item["stage"]: item for item in summary}
 
     def get_focus(self) -> dict:
@@ -371,7 +371,7 @@ class WorkspaceInfo:
         self.save(data)
 
     def set_projects(self, projects: list[dict]) -> None:
-        """Set the projects list."""
+        """Set the projects list.md."""
         data = self.load()
         data["project"] = projects
         data["projects.numberOfItems"] = len(projects)
@@ -379,7 +379,7 @@ class WorkspaceInfo:
         self.save(data)
 
     def set_capabilities(self, capabilities: list[dict]) -> None:
-        """Set the capabilities list."""
+        """Set the capabilities list.md."""
         data = self.load()
         data["capability"] = capabilities
         data["capabilities.numberOfItems"] = len(capabilities)
@@ -389,7 +389,7 @@ class WorkspaceInfo:
     def set_outcomes(self, summary: dict) -> None:
         """Set outcome counts by stage."""
         data = self.load()
-        # Convert dict back to list format
+        # Convert dict back to list.md format
         stages = ["queued", "ready", "in-progress", "blocked", "completed"]
         data["outcomes.summary"] = [
             {"stage": stage, "count": summary.get(stage, {}).get("count", 0),
@@ -420,7 +420,7 @@ class WorkspaceInfo:
 
     # --- Convenience Methods for Collections ---
     def add_project(self, project: dict) -> None:
-        """Add a project to the projects list."""
+        """Add a project to the projects list.md."""
         projects = self.get_projects()
         # Check if project already exists by name
         existing = [p for p in projects if p.get("name") != project.get("name")]
@@ -434,7 +434,7 @@ class WorkspaceInfo:
         self.set_projects(filtered)
 
     def add_capability(self, capability: dict) -> None:
-        """Add a capability to the capabilities list."""
+        """Add a capability to the capabilities list.md."""
         capabilities = self.get_capabilities()
         # Check if capability already exists by identifier
         existing = [c for c in capabilities if c.get("identifier") != capability.get("identifier")]

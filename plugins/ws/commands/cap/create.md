@@ -163,8 +163,8 @@ actors:
     criticality: essential          # essential | important | optional
 
 relationships:
-  prerequisites: []                 # or list of {capability, minMaturity}
-  enables: []                       # or list of capability-ids
+  prerequisites: []                 # or list.md of {capability, minMaturity}
+  enables: []                       # or list.md of capability-ids
 
 # For type: composed only
 # subCapabilities:

@@ -137,7 +137,7 @@ Grep(pattern="\\bthe the\\b|\\bteh\\b", path=file, output_mode="content")
 
 Only use Bash for aspell if needed:
 ```bash
-command -v aspell &> /dev/null && cat "$FILE" | aspell list --lang=en 2>/dev/null | sort -u | head -20
+command -v aspell &> /dev/null && cat "$FILE" | aspell list.md --lang=en 2>/dev/null | sort -u | head -20
 ```
 </area>
 
