@@ -418,14 +418,14 @@ name: migrate
 
 object.source: .claude/workspace-info.toon
 object.schema: workspace-info-schema.toon
-object.targetVersion: 0.9.2
+object.targetVersion: 0.9.3
 
 migrations:
 - Add relatedData section if missing
 - Add lastSession tracking fields if missing
 - Ensure all 5 outcome stages present in outcomes.summary
 - Preserve all existing valid data
-- Update softwareVersion to 0.9.2
+- Update softwareVersion to 0.9.3
 - Update dateModified to current timestamp
 
 Return migration report in TOON format showing changes made.
@@ -485,7 +485,7 @@ Repair the workspace-info.toon file:
 1. Keep all valid preserved sections
 2. Replace corrupted sections with fresh data
 3. Ensure relatedData section exists
-4. Update softwareVersion to 0.9.2
+4. Update softwareVersion to 0.9.3
 5. Update dateModified to current timestamp
 6. Validate complete file before writing
 
@@ -527,7 +527,7 @@ Checking related data files in .claude/...
 
 Workspace: {name}
 Repository: {url}
-Plugin: ws v0.9.2
+Plugin: ws v0.9.3
 
 ### Core Files
 - .claude/workspace-info.toon ✓

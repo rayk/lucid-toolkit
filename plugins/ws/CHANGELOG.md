@@ -5,6 +5,17 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.3] - 2025-12-03
+
+### Added
+
+- `out:list` command for listing all outcomes in the workspace
+  - Reads workspace-info.toon and outcomes-info.toon for outcome data
+  - Displays summary with stage distribution and capability contributions
+  - Supports filters: `--filter stage:<stage>`, `--filter priority:<P1|P2|P3>`, `--filter capability:<id>`
+  - Auto-syncs via outcome-index-sync skill if index is stale or missing
+  - Shows current focus, parent/child hierarchy, and blocked outcomes
+
 ## [0.9.2] - 2025-12-03
 
 ### Added
