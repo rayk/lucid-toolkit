@@ -5,6 +5,33 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2025-12-03
+
+### Added
+
+- `outcome-checker` subagent for validating outcome definitions
+  - Parent/child/standalone outcome type detection from outcome_track.json
+  - Decomposition adequacy checks (contribution math = 100%, scope coverage)
+  - Capability alignment validation with proportionality checks
+  - Behavioral observable effects validation (Given-When-Then format required)
+  - Full cross-reference graph integrity validation (bidirectional links)
+  - Creates `outcome-check_failure_report.md` on INVALID status
+  - Updates statement footer with validation metadata
+
+### Changed
+
+- `capability-checker`: Major overhaul with autofix capabilities
+  - Upgraded model from haiku to sonnet (complex reasoning required)
+  - Added Write/Edit tools for applying safe corrections
+  - Autofix operations: spelling, grammar, markdown lint, broken links, formatting
+  - Removed toon-specialist dependency (self-contained validation)
+  - Creates `capability-check_failure_report.md` on INVALID status
+  - Updates statement footer with validation metadata
+- Standardized checker output behavior across both agents:
+  - VALID/NEEDS_ATTENTION: Concise TOON with autofix counts
+  - INVALID: TOON with issues summary + detailed failure report file
+  - Both use schema.org vocabulary (`schema:CapabilityValidationReport`, `schema:OutcomeValidationReport`)
+
 ## [0.5.0] - 2025-12-03
 
 ### Added

@@ -6,29 +6,30 @@ allowed-tools: []
 Display the following version information exactly as shown:
 
 ```
-ws Workspace Plugin v0.5.0
+ws Workspace Plugin v0.6.0
 
-## What's New (v0.5.0 - 2025-12-03)
+## What's New (v0.6.0 - 2025-12-03)
+
+### Added
+- outcome-checker subagent for validating outcome definitions
+  - Parent/child/standalone outcome type detection
+  - Decomposition adequacy checks (contribution math = 100%)
+  - Capability alignment and behavioral effects validation
+  - Creates outcome-check_failure_report.md on INVALID
+
+### Changed
+- capability-checker: Major overhaul with autofix capabilities
+  - Upgraded to sonnet model, added Write/Edit tools
+  - Autofix: spelling, grammar, markdown lint, broken links
+  - Creates capability-check_failure_report.md on INVALID
+- Standardized checker output (TOON with schema.org vocabulary)
+
+## Previous Release (v0.5.0 - 2025-12-03)
 
 ### Added
 - git-commits skill for extended semantic commit workflow
-  - Mandatory purpose section explaining WHY
-  - Architectural scope hierarchy (domain/component/subcomponent)
-  - Local commit squashing for clean remote history
 
 ### Changed
 - Consolidated capability tracking to YAML frontmatter
-  - Single source of truth (no separate capability_track.json)
-  - Scanners extract from YAML instead of JSON
 - Updated capability-checker, cap:create, cap:list for frontmatter
-
-### Removed
-- capability_track_schema.json (tracking now in frontmatter)
-
-## Previous Release (v0.4.2 - 2025-12-02)
-
-### Performance
-- Optimized /ws:enviro scanner prompts for parallel execution
-- Reduced scanner prompt size by ~75% (compact TOON templates)
-- All 4 Phase 2 scanners now launch in parallel
 ```
