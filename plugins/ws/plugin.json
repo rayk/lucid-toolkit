@@ -8,8 +8,8 @@
     "claudeCode": ">=1.0.0",
     "python": ">=3.10"
   },
-  "commands": ["ws:version", "ws:report", "ws:enviro", "cap:create", "cap:list", "cap:check", "cap:edit", "cap:delete", "cap:merge", "cap:split"],
-  "skills": ["git-commits", "capability-index-sync"],
+  "commands": ["ws:version", "ws:report", "ws:enviro", "cap:create", "cap:list", "cap:check", "cap:edit", "cap:delete", "cap:merge", "cap:split", "out:create", "out:check"],
+  "skills": ["git-commits", "capability-index-sync", "outcome-index-sync"],
   "agents": ["capability-checker", "outcome-checker", "toon-specialist"],
   "hooks": {
     "SessionStart": ["python3 hooks/session_start.py"],
@@ -23,7 +23,8 @@
     "data/execution-info-schema.toon",
     "data/core-values-schema.toon",
     "data/actor-registry-schema.toon",
-    "outputs/capability-statement-template.md"
+    "outputs/capability-statement-template.md",
+    "outputs/outcome-statement-template.md"
   ],
   "sharedLibraries": [
     "../../shared/cli-commons"
