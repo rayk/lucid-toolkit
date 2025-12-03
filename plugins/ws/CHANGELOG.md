@@ -5,6 +5,15 @@ All notable changes to the ws plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1] - 2025-12-03
+
+### Fixed
+
+- Corrected all file references from `project-info.toon` to `workspace-info.toon` across 9 files
+- Added argument normalization to `out/check` command for handling malformed inputs (e.g., `@outcomes/ready/005-name/`)
+- Added verification step to `outcome-index-sync` skill to confirm sync completed successfully
+- Added `allowed-tools` restriction to `out/check` command (Read, Glob, Task, Skill only)
+
 ## [0.9.0] - 2025-12-03
 
 ### Changed
