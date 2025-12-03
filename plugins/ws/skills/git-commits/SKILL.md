@@ -1,12 +1,33 @@
 ---
 name: git-commits
-description: Extended semantic commits with architectural scope, purpose documentation, and local commit squashing for clean remote history.
+description: Generates well-structured git commits with architectural scope and purpose documentation. Guides local commit squashing for clean remote history. Use when making commits, preparing to push, managing commit history, or writing commit messages.
 ---
 
-<skill_definition>
-<purpose>Create well-structured git commits that document WHY work was done, capture architectural scope, and maintain clean remote history through squashing</purpose>
-<trigger>When making commits, preparing for push, or managing local commit history</trigger>
-</skill_definition>
+<objective>
+Create well-structured git commits that document WHY work was done, capture architectural scope, and maintain clean remote history through squashing. Use when making commits, preparing for push, or managing local commit history.
+</objective>
+
+<quick_start>
+Basic commit with purpose:
+
+```bash
+git commit -m "feat(auth): add password reset flow
+
+Purpose: Users cannot recover locked accounts without admin intervention.
+This adds self-service password reset via email verification.
+
+- Add /auth/reset-password endpoint
+- Send reset tokens via email
+- Expire tokens after 1 hour"
+```
+
+Before pushing, squash WIP commits:
+
+```bash
+git log --oneline origin/main..HEAD
+git rebase -i origin/main  # Mark commits with 'squash' or 'fixup'
+```
+</quick_start>
 
 <core_principle>
 **Commits are documentation for future maintainers, not just version control checkpoints.**
@@ -19,8 +40,7 @@ Every commit should answer:
 </core_principle>
 
 <commit_format>
-## Extended Semantic Commit Format
-
+<format_template>
 ```
 <type>(<scope>): <subject>
 
@@ -30,9 +50,9 @@ Every commit should answer:
 
 <footer>
 ```
+</format_template>
 
-### Components
-
+<format_components>
 | Component | Required | Description |
 |-----------|----------|-------------|
 | type | Yes | Conventional commit type |
@@ -41,9 +61,9 @@ Every commit should answer:
 | purpose | Yes | WHY this work was done (1-2 sentences) |
 | body | Optional | Technical details, decisions made |
 | footer | Optional | Breaking changes, issue refs, co-authors |
+</format_components>
 
-### Example
-
+<format_example>
 ```
 feat(auth/tokens): add JWT refresh token rotation
 
@@ -57,11 +77,11 @@ single use, addressing security audit finding SEC-2024-003.
 
 Closes #142
 ```
+</format_example>
 </commit_format>
 
 <commit_types>
-## Commit Types
-
+<types_table>
 | Type | When to Use |
 |------|-------------|
 | feat | New feature or capability |
@@ -75,28 +95,26 @@ Closes #142
 | chore | Maintenance tasks |
 | style | Formatting, whitespace |
 | revert | Reverting previous commit |
+</types_table>
 
-### Type Selection
-
+<type_selection>
 Choose based on **intent**, not files changed:
 - Fixing a bug that adds code → `fix`
 - Adding tests for new feature → `feat` (include tests in feature commit)
 - Performance fix → `perf` (not `fix`)
+</type_selection>
 </commit_types>
 
 <architectural_scope>
-## Architectural Scope
-
 The scope MUST reflect the architectural area, not just the file or directory.
 
-### Scope Hierarchy
-
+<scope_hierarchy>
 ```
 <domain>[/<component>][/<subcomponent>]
 ```
+</scope_hierarchy>
 
-### Domain Examples
-
+<domain_examples>
 | Domain | Description | Example Scopes |
 |--------|-------------|----------------|
 | auth | Authentication/authorization | auth, auth/tokens, auth/oauth |
@@ -107,9 +125,9 @@ The scope MUST reflect the architectural area, not just the file or directory.
 | infra | Infrastructure concerns | infra/docker, infra/k8s, infra/terraform |
 | cli | Command-line interface | cli/commands, cli/output |
 | sdk | SDK and client libraries | sdk/python, sdk/typescript |
+</domain_examples>
 
-### Scope Selection Rules
-
+<scope_rules>
 1. **Use architectural domain, not file path**
    - Good: `auth/tokens`
    - Bad: `src/services/auth`
@@ -125,21 +143,19 @@ The scope MUST reflect the architectural area, not just the file or directory.
 4. **Cross-cutting concerns**: Use appropriate domain
    - Logging infrastructure → `infra/logging`
    - Logging in auth flow → `auth`
+</scope_rules>
 </architectural_scope>
 
 <purpose_section>
-## Writing the Purpose
-
 The purpose section explains WHY this work was done. It appears after the subject line, before the technical body.
 
-### Purpose Answers
-
+<purpose_answers>
 - What problem does this solve?
 - What goal does this advance?
 - What prompted this change?
+</purpose_answers>
 
-### Purpose Patterns
-
+<purpose_patterns>
 | Pattern | Template |
 |---------|----------|
 | Problem-Solution | "Fixes [problem] by [approach]" |
@@ -147,9 +163,9 @@ The purpose section explains WHY this work was done. It appears after the subjec
 | Audit-Response | "Addresses [finding] from [source]" |
 | Refactor-Reason | "Improves [quality] to enable [future work]" |
 | Debt-Payment | "Resolves technical debt in [area] accumulated from [cause]" |
+</purpose_patterns>
 
-### Examples
-
+<purpose_examples>
 ```
 Purpose: Users were experiencing 5-second delays on dashboard load due to
 N+1 queries. This optimization reduces load time to under 200ms.
@@ -164,15 +180,13 @@ This adds device tracking to enable per-device token revocation.
 Purpose: Preparing for the React 19 upgrade by removing deprecated lifecycle
 methods that will break in the new version.
 ```
+</purpose_examples>
 </purpose_section>
 
 <squashing>
-## Local Commit Squashing
-
 Before pushing to remote, related local commits should be squashed into cohesive, well-documented commits.
 
-### When to Squash
-
+<squash_scenarios>
 | Scenario | Action |
 |----------|--------|
 | WIP commits | Always squash |
@@ -180,9 +194,9 @@ Before pushing to remote, related local commits should be squashed into cohesive
 | Iterative refinements | Squash into feature commit |
 | Distinct features | Keep separate |
 | Breaking change + migration | Keep separate |
+</squash_scenarios>
 
-### Squash Workflow
-
+<squash_workflow>
 1. **Identify squash candidates**
    ```bash
    git log --oneline origin/main..HEAD
@@ -200,9 +214,9 @@ Before pushing to remote, related local commits should be squashed into cohesive
 
 4. **Write consolidated message**
    Use the extended semantic format with comprehensive purpose.
+</squash_workflow>
 
-### Squash Patterns
-
+<squash_patterns>
 **Pattern: Feature Development**
 ```
 pick abc1234 feat(auth): add login endpoint
@@ -227,9 +241,9 @@ pick abc1234 refactor(core): extract validation service
 pick def5678 refactor(api): use validation service
 ```
 Result: Keep separate - distinct logical changes that reviewers need to see independently.
+</squash_patterns>
 
-### Pre-Push Checklist
-
+<pre_push_checklist>
 Before pushing, verify:
 
 1. [ ] Each commit is a complete, logical unit
@@ -238,9 +252,9 @@ Before pushing, verify:
 4. [ ] Purpose sections explain WHY
 5. [ ] Scopes reflect architecture
 6. [ ] Tests pass at each commit (bisect-safe)
+</pre_push_checklist>
 
-### Squash Commands
-
+<squash_commands>
 ```bash
 # View commits to squash
 git log --oneline origin/main..HEAD
@@ -259,22 +273,20 @@ git commit
 # Abort if something goes wrong
 git rebase --abort
 ```
+</squash_commands>
 </squashing>
 
 <workflow>
-## Commit Workflow
-
-### During Development
-
+<during_development>
 1. **Commit frequently** with WIP messages
    - `wip: trying approach A`
    - `wip: validation working`
 
 2. **Use fixup commits** for corrections
    - `fixup! feat(auth): add login`
+</during_development>
 
-### Before Push
-
+<before_push>
 1. **Review local history**
    ```bash
    git log --oneline origin/main..HEAD
@@ -303,13 +315,11 @@ git rebase --abort
    ```bash
    git push origin <branch>
    ```
+</before_push>
 </workflow>
 
 <examples>
-## Complete Examples
-
-### Feature Implementation
-
+<example_feature>
 ```
 feat(api/webhooks): add webhook signature verification
 
@@ -327,9 +337,9 @@ See docs/webhooks.md for integration guide.
 
 Closes #89
 ```
+</example_feature>
 
-### Bug Fix
-
+<example_bugfix>
 ```
 fix(data/cache): prevent stale cache reads during failover
 
@@ -344,9 +354,9 @@ from a disconnected replica instead of failing fast to the database.
 Fixes production incident INC-2024-156 where users saw outdated pricing
 during the December 15th Redis maintenance window.
 ```
+</example_bugfix>
 
-### Refactor
-
+<example_refactor>
 ```
 refactor(core/validation): extract validation into dedicated service
 
@@ -361,9 +371,9 @@ consistent validation and simplifies the upcoming custom rules feature.
 
 No behavior changes. All existing tests pass unchanged.
 ```
+</example_refactor>
 
-### Performance
-
+<example_performance>
 ```
 perf(ui/dashboard): optimize widget rendering with virtualization
 
@@ -380,11 +390,10 @@ Measured improvements:
 - Memory usage: 450MB → 120MB
 - Lighthouse performance: 23 → 89
 ```
+</example_performance>
 </examples>
 
 <best_practices>
-## Best Practices
-
 1. **Commit Purpose First**: Write the purpose before the technical body - if you can't explain why, reconsider the change
 
 2. **Atomic Commits**: Each commit should be deployable independently where possible
@@ -403,10 +412,7 @@ Measured improvements:
 </best_practices>
 
 <validation>
-## Commit Message Validation
-
-### Quick Check
-
+<validation_checklist>
 Before committing, verify:
 
 1. Type matches intent (feat/fix/refactor/etc.)
@@ -415,9 +421,9 @@ Before committing, verify:
 4. Purpose explains WHY in 1-2 sentences
 5. Body provides technical details if needed
 6. Footer includes references and breaking changes
+</validation_checklist>
 
-### Common Issues
-
+<common_issues>
 | Issue | Problem | Fix |
 |-------|---------|-----|
 | File-based scope | `src/auth/token.ts` | Use `auth/tokens` |
@@ -425,4 +431,14 @@ Before committing, verify:
 | Vague subject | "update stuff" | Be specific: "add token rotation" |
 | Wrong type | Using `fix` for features | Match to intent table |
 | WIP in remote | "wip: trying" pushed | Squash before push |
+</common_issues>
 </validation>
+
+<success_criteria>
+- Commit message follows extended semantic format (type, scope, subject, purpose)
+- Purpose section clearly explains WHY the change was made
+- Scope reflects architectural domain, not file paths
+- WIP and fixup commits squashed before push to remote
+- Each commit represents complete, logical unit of work
+- Tests pass at each commit (bisect-safe)
+</success_criteria>
