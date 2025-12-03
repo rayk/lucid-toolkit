@@ -56,7 +56,7 @@ Extract the capability directory from the provided path and validate the stateme
 
 <reference_files>
 Read template BEFORE validating (use Read tool):
-- `@templates/outputs/capability-statement-template.md` - Expected YAML frontmatter structure
+- `@templates/capability-statement-template.md` - Expected YAML frontmatter structure
 
 Validation patterns (no file read needed):
 - Actor IDs: `^[a-z0-9]+(-[a-z0-9]+)*$`

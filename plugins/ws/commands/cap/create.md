@@ -33,9 +33,9 @@ This command creates a comprehensive capability definition that:
 
 | Purpose | Path |
 |---------|------|
-| Template structure | `@templates/outputs/capability-statement-template.md` |
-| Core values (34 values) | `@templates/data/core-values-schema.toon` |
-| Actor registry | `@templates/data/actor-registry-schema.toon` |
+| Template structure | `@templates/capability-statement-template.md` |
+| Core values (34 values) | `@shared/schemas/core-values-schema.toon` |
+| Actor registry | `@shared/schemas/actor-registry-schema.toon` |
 | Workspace config | `.claude/workspace-info.toon` (in workspace root) |
 
 **Note:** The `@templates/` paths are relative to the ws plugin directory. In the installed workspace, these resolve to the plugin's templates folder.
@@ -50,11 +50,11 @@ This command creates a comprehensive capability definition that:
    - Note existing capability IDs to validate uniqueness
 
 2. **Read the template** to understand exact YAML frontmatter structure
-   - `@templates/outputs/capability-statement-template.md`
+   - `@templates/capability-statement-template.md`
 
 3. **Read reference schemas** (if needed for actor/value selection):
-   - `@templates/data/core-values-schema.toon` - 34 core values by category
-   - `@templates/data/actor-registry-schema.toon` - actors by domain
+   - `@shared/schemas/core-values-schema.toon` - 34 core values by category
+   - `@shared/schemas/actor-registry-schema.toon` - actors by domain
 
 ## Phase 2: Gather Capability Identity
 

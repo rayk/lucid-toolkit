@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Renamed `/ws:report` to `/ws:report-bug` for clarity
+- Moved TOON schema files from `plugins/ws/templates/data/` to `shared/schemas/`
+  - Enables schema reuse across multiple plugins
+  - Updated all references in toon-specialist, commands, and plugin.json
 
 ## [0.7.0] - 2025-12-03
 
@@ -214,7 +217,7 @@ Access control now enforced:
 - Added Phase 4 to `/ws:enviro` for checking and generating missing related data files
 - All TOON instance files now stored in `.claude/` directory
 - Schema files organized in `plugins/ws/templates/data/`
-- Output templates organized in `plugins/ws/templates/outputs/`
+- Output templates organized in `plugins/ws/templates/`
 - REPORT, MIGRATE, and REPAIR modes now check and regenerate missing related files
 
 ## [0.2.2] - 2025-12-02

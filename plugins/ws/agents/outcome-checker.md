@@ -41,8 +41,7 @@ Determine outcome type from `outcome.type` field in outcome_track.json:
 
 <reference_files>
 Read these BEFORE validating:
-1. @plugins/outcome/schemas/outcome_track_schema.json - Schema definition for outcome_track.json
-2. @plugins/outcome/templates/outcome-statement-template.md - Expected structure for outcome-statement.md
+1. `@templates/outcome-statement-template.md` - Expected structure for outcome-statement.md
 
 For actor validation, use the actors array in outcome_track.json - actorId values follow pattern `^[a-z0-9]+(-[a-z0-9]+)*$`
 </reference_files>

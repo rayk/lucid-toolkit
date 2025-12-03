@@ -15,16 +15,19 @@
     "SessionStart": ["python3 hooks/session_start.py"],
     "PostToolUse": ["python3 hooks/focus_tracker.py", "python3 hooks/capability_sync.py"]
   },
-  "schemas": [],
+  "schemas": [
+    "../../shared/schemas/workspace-info-schema.toon",
+    "../../shared/schemas/capabilities-info-schema.toon",
+    "../../shared/schemas/outcomes-info-schema.toon",
+    "../../shared/schemas/execution-info-schema.toon",
+    "../../shared/schemas/core-values-schema.toon",
+    "../../shared/schemas/actor-registry-schema.toon"
+  ],
   "templates": [
-    "data/workspace-info-schema.toon",
-    "data/capabilities-info-schema.toon",
-    "data/outcomes-info-schema.toon",
-    "data/execution-info-schema.toon",
-    "data/core-values-schema.toon",
-    "data/actor-registry-schema.toon",
-    "outputs/capability-statement-template.md",
-    "outputs/outcome-statement-template.md"
+    "capability-statement-template.md",
+    "outcome-statement-template.md",
+    "execution-plan-template.md",
+    "execution-completion-template.md"
   ],
   "sharedLibraries": [
     "../../shared/cli-commons"

@@ -14,7 +14,7 @@ You are the TOON (Token-Optimized Object Notation) format specialist. You have d
 
 - **schema.org vocabulary** - Types, properties, and semantic relationships
 - **TOON syntax** - Line-oriented format combining schema.org with minimal overhead
-- **Workspace schemas** - All 6 schemas in `plugins/ws/templates/data/`
+- **Workspace schemas** - All 6 schemas in `shared/schemas/`
 - **Validation** - Syntax checking, schema compliance, type verification
 - **Production** - Generating valid TOON files from structured data
 
@@ -134,12 +134,12 @@ You know all workspace schemas. Read them dynamically when needed.
 
 | Schema | Location | Instance |
 |--------|----------|----------|
-| workspace-info | `plugins/ws/templates/data/workspace-info-schema.toon` | `.claude/workspace-info.toon` |
-| capabilities-info | `plugins/ws/templates/data/capabilities-info-schema.toon` | `.claude/capabilities-info.toon` |
-| outcomes-info | `plugins/ws/templates/data/outcomes-info-schema.toon` | `.claude/outcomes-info.toon` |
-| execution-info | `plugins/ws/templates/data/execution-info-schema.toon` | `.claude/execution-info.toon` |
-| core-values | `plugins/ws/templates/data/core-values-schema.toon` | (reference only) |
-| actor-registry | `plugins/ws/templates/data/actor-registry-schema.toon` | (reference only) |
+| workspace-info | `shared/schemas/workspace-info-schema.toon` | `.claude/workspace-info.toon` |
+| capabilities-info | `shared/schemas/capabilities-info-schema.toon` | `.claude/capabilities-info.toon` |
+| outcomes-info | `shared/schemas/outcomes-info-schema.toon` | `.claude/outcomes-info.toon` |
+| execution-info | `shared/schemas/execution-info-schema.toon` | `.claude/execution-info.toon` |
+| core-values | `shared/schemas/core-values-schema.toon` | (reference only) |
+| actor-registry | `shared/schemas/actor-registry-schema.toon` | (reference only) |
 
 When schema name is provided without path, resolve from this registry.
 </schema_registry>

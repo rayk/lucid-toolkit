@@ -4,9 +4,9 @@ argument-hint: <outcome-id>
 ---
 
 <objective>
-Validate an outcome statement for schema compliance, content quality, Given-When-Then format, and cross-reference integrity using the outcome-checker agent. After validation, sync workspace indexes to reflect any status changes.
+Validate an outcome statement for schema compliance, content quality, decomposition adequacy, and cross-reference integrity using the outcome-checker agent. After validation, sync workspace indexes (outcomes-info.toon and project-info.toon) to reflect any status changes.
 
-This ensures outcome statements meet workspace standards before being used in planning or execution.
+This ensures outcomes created by `/ws:out:create` meet workspace standards before execution.
 </objective>
 
 <context>
@@ -19,13 +19,14 @@ Outcome-checker agent: @agents/outcome-checker.md
 ## Phase 1: Locate Outcome
 
 1. **Read project-info.toon** to get `outcomes.path`
-2. **Search for outcome** across all stages:
-   - `{outcomes.path}/queued/$ARGUMENTS/outcome-statement.md`
-   - `{outcomes.path}/ready/$ARGUMENTS/outcome-statement.md`
-   - `{outcomes.path}/in-progress/$ARGUMENTS/outcome-statement.md`
-   - `{outcomes.path}/blocked/$ARGUMENTS/outcome-statement.md`
-   - `{outcomes.path}/completed/$ARGUMENTS/outcome-statement.md`
-3. **If not found**: Report error with available outcome IDs
+2. **Search for outcome** matching `$ARGUMENTS`:
+   - Check `{outcomes.path}/queued/$ARGUMENTS/outcome-statement.md`
+   - Check `{outcomes.path}/ready/$ARGUMENTS/outcome-statement.md`
+   - Check `{outcomes.path}/in-progress/$ARGUMENTS/outcome-statement.md`
+   - Check `{outcomes.path}/blocked/$ARGUMENTS/outcome-statement.md`
+   - Check `{outcomes.path}/completed/$ARGUMENTS/outcome-statement.md`
+   - Support child outcomes: search recursively for `$ARGUMENTS` pattern (e.g., `005.1-child-name`)
+3. **If not found**: Report error with available outcome IDs from all stages
 
 ## Phase 2: Run Validation
 
@@ -33,14 +34,14 @@ Outcome-checker agent: @agents/outcome-checker.md
    ```
    Task(
      subagent_type="ws:outcome-checker",
-     prompt="Validate outcome at {found-path}"
+     prompt="Validate outcome at {found-outcome-path}"
    )
    ```
 
 5. **Process validation result**:
-   - VALID ’ Report success
-   - NEEDS_ATTENTION ’ Show warnings, ask if user wants to fix
-   - INVALID ’ Show critical issues, offer to help fix
+   - VALID â†’ Report success with checks performed
+   - NEEDS_ATTENTION â†’ Show warnings, ask if user wants to fix
+   - INVALID â†’ Show critical issues, offer to help fix
 
 ## Phase 3: Sync Indexes
 
@@ -48,6 +49,9 @@ Outcome-checker agent: @agents/outcome-checker.md
    ```
    Skill("outcome-index-sync")
    ```
+   This updates:
+   - `outcomes-info.toon` - outcome registry with validation timestamp and status
+   - `project-info.toon` - workspace summary with current outcome counts by stage
 
 </process>
 
@@ -58,21 +62,35 @@ actionStatus: CompletedActionStatus
 @id: $ARGUMENTS
 
 validationStatus: {VALID|NEEDS_ATTENTION|INVALID}
-stage: {current stage}
-checksPerformed: 8
+outcomeType: {parent|atomic|child}
+stage: {queued|ready|in-progress|blocked|completed}
+checksPerformed: 10
 issues.critical: {count}
 issues.warning: {count}
 issues.info: {count}
 
 indexesSynced: true
+outcomesInfoUpdated: true
+projectInfoUpdated: true
 ```
 </output_format>
 
 <success_criteria>
-- Outcome located across stages and validated
-- All evaluation areas checked (file_structure, frontmatter, achievement, effects, contributions, actors, dependencies, placeholders)
-- Given-When-Then format validated for observable effects
+- Outcome located across all stage directories (including nested child outcomes)
+- All 10 evaluation areas checked:
+  - file_structure
+  - schema_validation
+  - achievement_focus
+  - observable_effects_behavioral (Given-When-Then format)
+  - capability_alignment (for parent/standalone)
+  - child_contribution_validation (for children)
+  - parent_decomposition (for parents - contribution math, scope coverage)
+  - cross_reference_integrity
+  - placeholder_detection
+  - actor_validation
 - Validation status clearly reported
+- If parent outcome: child decomposition validated
 - If INVALID: failure report created at outcome path
-- Workspace indexes synced to reflect current validation status
+- outcomes-info.toon updated with validation timestamp and status
+- project-info.toon synced to reflect current outcome state
 </success_criteria>

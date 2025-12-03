@@ -37,8 +37,8 @@ Outcomes are units of tactical work that BUILD capabilities. Each outcome:
 | Purpose | Path |
 |---------|------|
 | Workspace config | `.claude/project-info.toon` (in workspace root) |
-| Outcomes schema | `@templates/data/outcomes-info-schema.toon` |
-| Actor registry | `@templates/data/actor-registry-schema.toon` |
+| Outcomes schema | `@shared/schemas/outcomes-info-schema.toon` |
+| Actor registry | `@shared/schemas/actor-registry-schema.toon` |
 
 **Note:** The `@templates/` paths are relative to the ws plugin directory.
 </context>
@@ -53,8 +53,8 @@ Outcomes are units of tactical work that BUILD capabilities. Each outcome:
    - Get next sequence number
 
 2. **Read reference schemas** (if needed for actor selection):
-   - `@templates/data/actor-registry-schema.toon` - actors by domain
-   - `@templates/data/outcomes-info-schema.toon` - understand structure
+   - `@shared/schemas/actor-registry-schema.toon` - actors by domain
+   - `@shared/schemas/outcomes-info-schema.toon` - understand structure
 
 ## Phase 2: Determine Outcome Identity
 
@@ -93,27 +93,106 @@ Outcomes are units of tactical work that BUILD capabilities. Each outcome:
    - **Included**: 3-5 specific responsibilities
    - **Excluded**: 3-5 explicit non-goals
 
-10. **Token Budget Estimate**:
-    - very-low: <25K tokens
-    - low: 25-75K tokens
-    - average: 75-150K tokens
-    - high: 150-200K tokens
-    - If >200K: Must split into parent/child structure
+## Phase 4: Decomposition Decision
 
-## Phase 4: Generate and Sync
+10. **Evaluate decomposition need** using these criteria:
 
-11. **Create outcome directory**:
+**Decompose When (any apply):**
+
+Complexity signals:
+- Multiple distinct behaviors or acceptance criteria
+- Different parts could be implemented/tested independently
+- Multiple systems or domains touched
+- Uncertainty about scope or approach
+
+Practical signals:
+- You can't hold the whole thing in your head at once
+- Different skills/expertise needed for different parts
+- Parts have different risk profiles
+- Need to parallelize work
+- More than ~3-5 focused tool operations to complete
+
+**Don't Decompose When (cohesion signals):**
+- The requirement is atomic—splitting creates artificial seams
+- Parts are so interdependent that working on one without the other creates waste
+- The overhead of tracking multiple items exceeds the benefit
+- Already small enough to complete in one focused session
+
+**Decision Heuristics:**
+- "Can I verify this independently?" → If a piece can be meaningfully tested/validated on its own, it's a valid boundary
+- "What's the failure mode?" → Too coarse = context overload; Too fine = coordination overhead
+
+**Anti-patterns:**
+- Decomposing for the sake of "looking organized"
+- Creating items so small they become noise
+- Splitting things that will always be changed together
+
+11. **If decomposition required**:
+    - This outcome becomes a **parent outcome**
+    - Continue to Phase 5 (Sub-Outcome Creation)
+    - Maximum nesting depth: 5 levels (e.g., `005.1.2.3.4-name`)
+
+12. **If no decomposition needed**:
+    - Skip to Phase 6 (Generate and Sync)
+
+## Phase 5: Sub-Outcome Creation (if decomposing)
+
+13. **Identify sub-outcomes**:
+    - Break parent into logical child outcomes
+    - Each child must be independently verifiable
+    - Assign `parentContribution` percentages (must sum to 100%)
+
+14. **Establish dependency tree between sub-outcomes**:
+    - Analyze which sub-outcomes must complete before others can start
+    - Identify parallel tracks (sub-outcomes with no dependencies on each other)
+    - For each sub-outcome, populate:
+      - `dependsOn`: sibling outcome IDs that must complete first
+      - `enables`: sibling outcome IDs unlocked when this completes
+    - Validate: no circular dependencies, graph is acyclic
+
+    **Dependency Analysis Questions:**
+    - Does this sub-outcome need artifacts/state from another?
+    - Can this be worked on independently or in parallel?
+    - What's the natural execution order?
+
+    **Example dependency tree:**
+    ```
+    005.1-data-model (no dependencies - can start immediately)
+        ↓ enables
+    005.2-api-layer (dependsOn: 005.1-data-model)
+        ↓ enables
+    005.3-ui-integration (dependsOn: 005.2-api-layer)
+
+    005.4-documentation (dependsOn: 005.1-data-model) ← parallel track
+    ```
+
+15. **For each sub-outcome**, recursively apply Phase 3-5:
+    - Generate child ID: `{parent-id}.{child-sequence}-{name}`
+    - Gather details (achievement, effects, actors)
+    - Set `dependsOn` and `enables` based on dependency analysis
+    - Evaluate if further decomposition needed (up to 5 levels)
+    - Create child directory inside parent: `{parent-dir}/{child-id}/`
+
+16. **Parent outcome adjustments**:
+    - Parent's `capabilityContributions` remain on parent only
+    - Children have `parentOutcome` and `parentContribution` fields
+    - Parent achievement describes the aggregate goal
+    - Parent `enables` field lists all root sub-outcomes (those with no `dependsOn`)
+
+## Phase 6: Generate and Sync
+
+17. **Create outcome directory**:
     ```
     {outcomes.path}/queued/{outcome-id}/
     ```
-    - Create subdirectories: `reports/`, `evidence/`
+    - Subdirectories are only for child outcomes (sub-outcomes)
 
-12. **Generate outcome-statement.md**:
+18. **Generate outcome-statement.md**:
     - Start with YAML frontmatter (see template below)
     - Follow with markdown body sections
     - Save to `{outcome-dir}/outcome-statement.md`
 
-13. **Sync workspace indexes**:
+19. **Sync workspace indexes**:
     ```
     Skill("outcome-index-sync")
     ```
@@ -135,8 +214,6 @@ achievement: |
 
 purpose: |
   Why this outcome is needed and what problem it solves.
-
-tokenBudget: average               # very-low | low | average | high
 
 capabilityContributions:
   - capabilityId: capability-id
@@ -195,15 +272,18 @@ Then [observable outcome]
 | Implementation artifacts ("Tests pass") | Behavioral effects ("Invalid requests rejected") |
 | Title Case actor IDs (`Lot Owner`) | Kebab-case (`lot-owner`) |
 | Capability dependencies | Outcome dependencies only (outcomes BUILD capabilities) |
-| Token budget >200K without splitting | Create parent with child outcomes |
+| Decomposing atomic requirements | Keep cohesive work together |
+| Over-decomposing into noise | Only split when independently verifiable |
+| Circular dependencies between sub-outcomes | Ensure acyclic dependency graph |
+| Missing dependency relationships | Analyze and populate `dependsOn`/`enables` |
 | Leave empty sections | Populate or state "Not applicable" |
 </anti_patterns>
 
 <output>
 **Files created:**
 - `{outcomes.path}/queued/{outcome-id}/outcome-statement.md`
-- `{outcomes.path}/queued/{outcome-id}/reports/` (directory)
-- `{outcomes.path}/queued/{outcome-id}/evidence/` (directory)
+
+**Note:** Subdirectories are only created for child outcomes (sub-outcomes), not for reports or evidence.
 </output>
 
 <output_format>
@@ -216,7 +296,6 @@ actionStatus: CompletedActionStatus
 result: Created outcome for [capability] with [contribution]% contribution
 
 filesCreated[1]: outcome-statement.md
-dirsCreated[2]: reports,evidence
 stage: queued
 ```
 </output_format>
@@ -239,6 +318,9 @@ This ensures outcomes-info.toon and project-info.toon reflect the new outcome.
 - At least 1 actor involvement with valid actor ID
 - Achievement description is behavioral (not implementation-focused)
 - No placeholder text (TBD, TODO, etc.)
-- Token budget within acceptable range
+- Decomposition applied when complexity warrants (not over/under-decomposed)
+- Sub-outcomes nested max 5 levels deep
+- Dependency tree established between sub-outcomes (no circular dependencies)
+- Each sub-outcome has valid `dependsOn` and `enables` fields
 - Workspace indexes synced via outcome-index-sync skill
 </success_criteria>
