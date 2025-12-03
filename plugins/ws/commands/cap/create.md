@@ -6,162 +6,213 @@ argument-hint: [capability-name or description]
 <objective>
 Produce a complete capability statement that complies with the workspace schema and template requirements.
 
-This command guides you through creating a comprehensive capability definition that:
+This command creates a comprehensive capability definition that:
 - Maps to 1-3 core business values from the 34-value framework
-- Follows the capability statement template structure with YAML frontmatter
+- Uses YAML frontmatter as the single source of truth for tracking data
 - Captures strategic context, maturity milestones, and measurement criteria
 </objective>
 
+<critical_constraints>
+**FORMAT REQUIREMENTS - MUST FOLLOW:**
+
+1. **YAML Frontmatter is MANDATORY** - The capability-statement.md MUST start with proper YAML frontmatter between `---` delimiters. Do NOT use markdown metadata sections.
+
+2. **NO capability_track.json** - This file is DEPRECATED. All tracking data goes in YAML frontmatter only.
+
+3. **NO Placeholder Text** - NEVER write "TBD", "TODO", "[placeholder]", or empty sections. If information is unknown, write a concrete statement like "No outcomes currently assigned" or "None identified".
+
+4. **Actor IDs MUST be kebab-case** - Pattern: `^[a-z0-9]+(-[a-z0-9]+)*$`
+   - CORRECT: `lot-owner`, `strata-manager`, `platform-developers`
+   - WRONG: `Lot Owner`, `StrataManager`, `Platform Developers`
+
+5. **Single File Output** - Only create `capability-statement.md`. No other files.
+</critical_constraints>
+
 <context>
-Template reference: @templates/outputs/capability-statement-template.md
-Core values: Retrieved via toon-specialist (core-values-schema.toon)
-Actor registry: Retrieved via toon-specialist (actor-registry-schema.toon)
-Workspace info: Read workspace-info.toon from workspace root for capabilities.path
+**Files to Read** (read these directly, do NOT use toon-specialist):
+
+| Purpose | Path |
+|---------|------|
+| Template structure | `@templates/outputs/capability-statement-template.md` |
+| Core values (34 values) | `@templates/data/core-values-schema.toon` |
+| Actor registry | `@templates/data/actor-registry-schema.toon` |
+| Workspace config | `.claude/workspace-info.toon` (in workspace root) |
+
+**Note:** The `@templates/` paths are relative to the ws plugin directory. In the installed workspace, these resolve to the plugin's templates folder.
 </context>
 
 <process>
-1. **Load Workspace Context**:
-   - Read workspace-info.toon from workspace root
+
+## Phase 1: Load Context (2-3 Read calls max)
+
+1. **Read workspace-info.toon** from workspace root (`.claude/workspace-info.toon`)
    - Extract `capabilities.path` for output location
-   - Note existing capabilities from `capability{...}` entries to validate ID uniqueness
+   - Note existing capability IDs to validate uniqueness
 
-2. **Gather Capability Identity**:
-   - If $ARGUMENTS provided: Use as starting point for capability name/description
-   - Otherwise: Ask user what capability they want to define
-   - Generate capability ID following pattern: `^[a-z0-9]+(-[a-z0-9]+)*$`
-   - Validate ID uniqueness against existing capabilities
+2. **Read the template** to understand exact YAML frontmatter structure
+   - `@templates/outputs/capability-statement-template.md`
 
-3. **Capture Strategic Foundation**:
-   - **Purpose**: What does this capability enable the system to DO? (action-oriented: "Enable the system to...")
-   - **Type**: Atomic (built from outcomes) or Composed (built from sub-capabilities)?
-   - **Domain**: Strategic category (e.g., "Data Security & Privacy", "Product Lifecycle")
-   - **Target Maturity**: What percentage makes this "good enough"? (typically 60-100%)
+3. **Read reference schemas** (if needed for actor/value selection):
+   - `@templates/data/core-values-schema.toon` - 34 core values by category
+   - `@templates/data/actor-registry-schema.toon` - actors by domain
 
-4. **Identify Actor Involvement** (REQUIRED):
-   - Load actors from `status/actor_summary.json`
-   - Present actors organized by domain (invoke toon-specialist to parse actor-registry-schema.toon)
-   - User selects 1+ actors this capability involves/impacts
-   - For each selected actor capture:
-     - **Relationship type**: requires | provides | consumes | enables | governs
-     - **Criticality**: essential | important | optional
-     - **Description**: How the actor relates to this capability
-   - Validate selected actor IDs exist in the registry
+## Phase 2: Gather Capability Identity
 
-5. **Map Core Business Values** (REQUIRED):
-   - Present the 34 core values framework (invoke toon-specialist to parse core-values-schema.toon)
-   - User selects 1-3 primary values this capability delivers
-   - For each value:
-     - Contribution percentage (must sum to d100%)
+4. **Determine capability name and ID**:
+   - If `$ARGUMENTS` provided: Use as starting point
+   - Otherwise: Ask user what capability to define
+   - Generate ID: `^[a-z0-9]+(-[a-z0-9]+)*$` pattern
+   - Validate ID is unique (not in existing capabilities)
+
+5. **Capture strategic foundation**:
+   - **Purpose**: Action-oriented ("Enable the system to...")
+   - **Type**: `atomic` (built from outcomes) or `composed` (built from sub-capabilities)
+   - **Domain**: Strategic category
+   - **Target Maturity**: 60-100% typically
+
+## Phase 3: Gather Details (Ask user or infer from context)
+
+6. **Actor Involvement** (REQUIRED - at least 1 actor):
+   - Present actors from registry organized by domain
+   - For each selected actor:
+     - `id`: kebab-case identifier (e.g., `lot-owner`, `strata-manager`)
+     - `relationship`: requires | provides | consumes | enables | governs
+     - `criticality`: essential | important | optional
+
+7. **Core Business Values** (REQUIRED - 1-3 primary values):
+   - Present 34 values from core-values-schema.toon
+   - For each selected value:
+     - Contribution percentage (must sum to 100%)
      - Rationale with measurable business impact
-   - Optional: 0-2 secondary values with rationale
+   - Optional: 0-2 secondary values
 
-6. **Define Value Proposition**:
-   - Risk Mitigation: Quantified security/compliance/reliability improvements
-   - User Experience: Measurable UX improvements
-   - Development Velocity: Time/effort savings for developers
-   - Compliance: Standards/regulations met
+8. **Value Proposition** (categorized benefits):
+   - Risk Mitigation: Quantified improvements
+   - User Experience: Measurable UX gains
+   - Development Velocity: Time/effort savings
+   - Compliance: Standards met
 
-7. **Establish Boundaries**:
-   - **Included**: 3-5 specific responsibilities (what IS this capability?)
-   - **Excluded**: 3-5 explicit non-goals (prevent scope creep)
+9. **Scope Boundaries**:
+   - **Included**: 3-5 specific responsibilities
+   - **Excluded**: 3-5 explicit non-goals
 
-8. **Define Maturity Milestones**:
-   For each threshold (30%, 60%, 80%, 100%):
-   - Status description
-   - Concrete deliverables
-   - What becomes possible at this maturity level
+10. **Maturity Milestones** (all 4 required with concrete deliverables):
+    - 30% Experimental: Proof of concept validated
+    - 60% Tactical: Usable in constrained production
+    - 80% Production: Reliable, well-documented
+    - 100% Comprehensive: Industry-leading
 
-   Follow progressive complexity:
-   - 30%: Experimental (proof of concept validated)
-   - 60%: Tactical (usable in constrained production)
-   - 80%: Production (reliable, well-documented)
-   - 100%: Comprehensive (industry-leading)
+11. **Measurement Criteria**:
+    - Criteria: 3-5 assessment methods
+    - Evidence: 3-5 observable artifacts
+    - Metrics: Table with Target/Current/Gap
 
-9. **Establish Measurement Criteria**:
-   - **Criteria**: 3-5 assessment methods (How do we assess current maturity?)
-   - **Evidence**: 3-5 observable artifacts (What demonstrates progress?)
-   - **Metrics**: 3-5 quantified thresholds with target/current/gap table
+12. **Dependencies**:
+    - Prerequisites: Capabilities needed first (with min maturity)
+    - Enables: Capabilities unlocked by this one
 
-10. **Map Dependencies**:
-    - **Prerequisites**: Capabilities that MUST exist before this can progress (with minimum maturity)
-    - **Enables**: Capabilities that are UNLOCKED by this capability
-    - Note: Circular dependency detection is performed by capability-checker in step 13
+13. **Composition** (based on type):
+    - Atomic: Note that outcomes will be added later (NO TBD!)
+    - Composed: Sub-capabilities with weights (must sum to 100%)
 
-11. **Define Composition** (based on type):
-    - **For Atomic**: List required outcomes with maturity contribution percentages
-    - **For Composed**: List sub-capabilities with weights (should sum to 1.0 / 100%)
-    - Note: Weight sum validation is performed by capability-checker in step 13
+## Phase 4: Generate and Validate
 
-12. **Generate Complete Statement**:
-    - Populate YAML frontmatter with tracking data (identifier, name, type, status, domain, maturity, coreValues, actors, relationships)
-    - Populate template body with all gathered information
+14. **Generate capability-statement.md**:
+    - Start with YAML frontmatter (see template below)
+    - Follow with markdown body sections
     - Save to `{capabilities.path}/[capability-id]/capability-statement.md`
 
-13. **Validate with Capability Checker**:
-    - Call the `capability-checker` subagent with the capability directory path
-    - Review the TOON validation report returned
-    - If `overallStatus: INVALID` - fix critical issues and re-run checker
-    - If `overallStatus: NEEDS_ATTENTION` - review warnings with user, fix as needed
-    - If `overallStatus: VALID` - proceed to completion
+15. **Validate with capability-checker**:
+    ```
+    Task(
+      subagent_type="ws:capability-checker",
+      prompt="Validate capability at {path}"
+    )
+    ```
+    - VALID → Complete
+    - NEEDS_ATTENTION → Review warnings with user
+    - INVALID → Fix critical issues, re-validate
+
 </process>
 
-<validation>
-After saving files, invoke the capability-checker subagent:
+<yaml_frontmatter_template>
+The YAML frontmatter MUST follow this exact structure:
 
+```yaml
+---
+identifier: capability-id           # kebab-case, matches directory name
+name: Human-Readable Name           # Display name
+type: atomic                        # atomic | composed
+status: active                      # active | deprecated | planned
+domain: strategic-domain            # e.g., security, infrastructure
+
+maturity:
+  current: 0                        # 0-100, starts at 0 for new capabilities
+  target: 80                        # 0-100, strategic goal
+
+coreValues:
+  primary:
+    - value: Value Name
+      contribution: 60
+    - value: Another Value
+      contribution: 40
+
+actors:
+  - id: actor-id                    # MUST be kebab-case
+    relationship: requires          # requires | provides | consumes | enables | governs
+    criticality: essential          # essential | important | optional
+
+relationships:
+  prerequisites: []                 # or list of {capability, minMaturity}
+  enables: []                       # or list of capability-ids
+
+# For type: composed only
+# subCapabilities:
+#   - id: sub-cap-id
+#     weight: 40                    # Must sum to 100
+
+validation:
+  lastChecked: null
+  status: UNCHECKED
+---
 ```
-Task(
-  subagent_type="capability-checker",
-  prompt="Validate capability at {capabilities.path}/[capability-id]/"
-)
-```
+</yaml_frontmatter_template>
 
-The checker validates:
-- Schema compliance and required fields
-- Content completeness (all sections populated)
-- No placeholder text (TBD, TODO)
-- Cross-reference integrity (no circular dependencies)
-- Spelling, grammar, and markdown formatting
+<anti_patterns>
+**NEVER DO THESE:**
 
-**Handle validation results:**
-- INVALID → Fix critical issues, re-run validation
-- NEEDS_ATTENTION → Present warnings to user, fix if requested
-- VALID → Capability creation complete
-</validation>
+| Anti-Pattern | Correct Approach |
+|--------------|------------------|
+| Create `capability_track.json` | All tracking in YAML frontmatter |
+| Write "TBD" or "TODO" anywhere | Write concrete content or "None identified" |
+| Use Title Case actor IDs (`Lot Owner`) | Use kebab-case (`lot-owner`) |
+| Markdown metadata section (`## Metadata`) | YAML frontmatter between `---` |
+| Glob/search for template files | Read from known paths directly |
+| Invoke toon-specialist to read schemas | Read TOON files directly with Read tool |
+| Leave empty sections | Populate or state "None" / "Not applicable" |
+</anti_patterns>
 
 <output>
-File created:
-- `{capabilities.path}/[capability-id]/capability-statement.md` - Complete capability definition with YAML frontmatter
+**File created:**
+- `{capabilities.path}/[capability-id]/capability-statement.md`
 
 The file contains:
-- YAML frontmatter with machine-parseable tracking data (identifier, maturity, actors, relationships, etc.)
-- Markdown body following the workspace template structure
+- YAML frontmatter with machine-parseable tracking data
+- Markdown body following workspace template structure
 </output>
 
 <output_format>
-When returning capability creation results to the main conversation or as a subagent response, use TOON format:
+When returning results, use TOON format:
 
-**Capability Creation Result:**
 ```toon
 @type: CreateAction
 actionStatus: CompletedActionStatus
-@id: authentication-system
+@id: capability-id
 result: Created capability with initial maturity 0%
 
 filesCreated[1]: capability-statement.md
-crossRefsUpdated[1]: capability_summary.json
+validationStatus: VALID
 ```
 
-**Format Details:**
-- `@type: CreateAction` - Artifact creation action
-- `@id` - The capability ID that was created
-- `result` - Human-readable summary of what was created
-- `filesCreated[]` - Inline array of files created (no paths, just filenames)
-- `crossRefsUpdated[]` - Inline array of summary/index files updated
-- `actionStatus: CompletedActionStatus` - Always completed for successful creation
-
-**Usage:**
-- Use TOON when this command is invoked by a subagent
-- Allows calling agent to parse results efficiently
-- Provides structured confirmation of filesystem changes
-- Keep detailed verification output in markdown for human users
+**No `crossRefsUpdated` field** - we no longer update capability_track.json or summary files.
 </output_format>
