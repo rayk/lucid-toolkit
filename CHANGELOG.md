@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-12-04
+
+### Added
+- **specialize plugin** - New `architect` agent for translating requirements into implementation-ready design documents
+  - Produces validated `design.md` with complete API signatures, data structures, file layouts, and dependency specifications
+  - 6-phase workflow: input validation → project discovery → external contract validation → structure design → data flow design → verification
+  - Input validation with failure reports for incomplete/contradictory requirements
+  - LLM Decomposition Test success criteria ensuring designs are consumable by implementing models
+  - Explicit EXISTS/CREATE markers for all file paths
+  - Implementation discretion annotations for areas where implementer judgment is expected
+  - Prompt optimized for Claude Opus 4.5: removed impossible introspection asks, concrete tool mappings, reduced template verbosity
+
+### Changed
+- **specialize plugin** bumped to v1.2.0
+
 ## [2.2.0] - 2025-12-01
 
 ### Changed

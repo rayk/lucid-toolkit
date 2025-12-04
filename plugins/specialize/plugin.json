@@ -2,13 +2,14 @@
   "name": "specialize",
   "displayName": "Specialist Agents",
   "description": "Technology-specialized subagents with MCP server integrations for Neo4j, Firecrawl web research, and other specialized tools",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0",
     "uv": ">=0.1.0"
   },
   "agents": [
+    "architect",
     "neo4j",
     "research",
     "debugger",

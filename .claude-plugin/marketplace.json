@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.0.0",
+    "version": "2.3.0",
     "description": "Capability-driven development tools for Claude Code"
   },
   "plugins": [
@@ -62,7 +62,7 @@
       "name": "specialize",
       "source": "./plugins/specialize",
       "description": "Technology-specialized subagents with MCP server integrations",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "category": "development",
       "tags": ["subagents", "mcp", "neo4j", "specialist"]
     },
