@@ -10,7 +10,7 @@ import subprocess
 from pathlib import Path
 
 # Workspace root
-workspace_root = Path("/Users/rayk/Projects/lucid_stack")
+workspace_root = Path("/Users/rayk/Projects/lucid-toolkit")
 
 # Add to path for SessionManager import
 sys.path.insert(0, str(workspace_root / ".claude/shared/hook_scripts"))
