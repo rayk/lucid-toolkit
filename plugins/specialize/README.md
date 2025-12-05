@@ -15,6 +15,7 @@ Each specialist agent is assigned an intuitive color based on its function categ
 
 | Color | Category | Meaning | Agents |
 |-------|----------|---------|--------|
+| 🔵 **Blue** | Architecture | Design, structure, planning | `architect` |
 | 🔴 **Red** | Diagnostic | Problems, errors, investigation | `debugger` |
 | 🔵 **Blue** | Construction | Building, generating, creating | `flutter-coder` |
 | 🟢 **Green** | Construction | Building, generating, creating | `python-coder` |
@@ -24,7 +25,7 @@ Each specialist agent is assigned an intuitive color based on its function categ
 
 **Color Philosophy:**
 - **Red** signals attention-requiring work (debugging, fixing)
-- **Blue** represents Flutter/Dart code generation
+- **Blue** represents design and construction (architecture, Flutter/Dart)
 - **Green** represents Python code generation
 - **Purple** denotes intellectual/analytical work (research)
 - **Cyan** indicates data-centric operations (databases)
@@ -35,6 +36,50 @@ Colors appear in the Claude Code CLI when agents are invoked, making it easy to 
 ---
 
 ## Agents
+
+### Architect (`architect`) 🔵
+
+Architectural design specialist that produces detailed, validated design documents from requirements.
+
+**Core Principles:**
+- Designs specify WHAT to build (interfaces, contracts) not HOW (algorithms, method bodies)
+- Minimal designs: no abstraction layers or future-proofing unless explicitly required
+- Complete validation before design work begins
+
+**Workflow Phases:**
+1. **Validate Inputs** - Check requirements for completeness, consistency, feasibility
+2. **Discover Context** - Map project structure, find patterns, identify integration points
+3. **Validate Contracts** - Verify external APIs and library versions
+4. **Design Structure** - Define components, data structures, requirements tracing
+5. **Design Data Flow** - Trace complete paths through the system
+6. **Cross-Check** - Verify every requirement maps to design elements
+7. **Write Output** - Generate `design.md` with XML-structured format
+
+**Design Principles Applied:**
+- **Simplicity** - Standard patterns, fewer components, explicit over implicit
+- **Testability** - Dependencies as parameters, no hidden state, pure functions
+- **Buildability** - Interfaces before implementations, no circular dependencies
+- **Low Coupling** - Stable interfaces, events over direct calls
+- **High Cohesion** - Single purpose per component
+
+**Output Format:** XML-structured `design.md` with:
+- Requirements cross-check (every requirement traced to components)
+- Complete API signatures with types
+- Data flow diagrams with transformations
+- Testability analysis per component
+- Implementation discretion markers
+
+**Usage:**
+```
+Task tool with subagent_type: specialize:architect
+```
+
+**Example Prompts:**
+> "Design the authentication system based on these requirements"
+> "Create an architectural design for the payment processing feature"
+> "Translate these user stories into an implementation-ready design"
+
+---
 
 ### Debugger (`debugger`) 🔴
 
