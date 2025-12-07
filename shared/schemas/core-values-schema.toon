@@ -8,7 +8,7 @@
 # SCHEMA METADATA
 # ═══════════════════════════════════════════════════════════════════════════
 #
-# $schema: plugins/ws/templates/data/core-values-schema.toon
+# $schema: shared/schemas/core-values-schema.toon
 # $instance: (none - this is reference data, schema IS the instance)
 # $type: reference-data
 # $version: 0.2.2

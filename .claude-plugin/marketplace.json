@@ -6,34 +6,10 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.3.0",
-    "description": "Capability-driven development tools for Claude Code"
+    "version": "3.0.0",
+    "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
-    {
-      "name": "capability",
-      "source": "./plugins/capability",
-      "description": "Strategic capability management with maturity tracking",
-      "version": "1.0.0",
-      "category": "workflow",
-      "tags": ["capability", "maturity", "strategic-planning"]
-    },
-    {
-      "name": "outcome",
-      "source": "./plugins/outcome",
-      "description": "Outcome lifecycle management (create, focus, complete)",
-      "version": "1.0.0",
-      "category": "workflow",
-      "tags": ["outcome", "lifecycle", "task-management"]
-    },
-    {
-      "name": "context",
-      "source": "./plugins/context",
-      "description": "Context window conservation with delegation protocols and payload storage",
-      "version": "1.1.0",
-      "category": "productivity",
-      "tags": ["context", "delegation", "token-optimization", "payload-store"]
-    },
     {
       "name": "think",
       "source": "./plugins/think",
@@ -41,14 +17,6 @@
       "version": "1.0.0",
       "category": "analysis",
       "tags": ["mental-models", "decision-making", "analysis"]
-    },
-    {
-      "name": "workspace",
-      "source": "./plugins/workspace",
-      "description": "Multi-project management with validation and cross-reference integrity",
-      "version": "1.0.0",
-      "category": "development",
-      "tags": ["workspace", "multi-project", "validation"]
     },
     {
       "name": "plan",
@@ -73,6 +41,46 @@
       "version": "0.2.2",
       "category": "workflow",
       "tags": ["workspace", "environment", "capability-driven"]
+    },
+    {
+      "name": "pj",
+      "source": "./plugins/pj",
+      "description": "Project management tools for Claude Code",
+      "version": "1.0.0",
+      "category": "workflow",
+      "tags": ["project", "management"]
+    },
+    {
+      "name": "designer",
+      "source": "./plugins/designer",
+      "description": "Design and architecture tools for Claude Code",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["design", "architecture", "planning"]
+    },
+    {
+      "name": "implementer",
+      "source": "./plugins/implementer",
+      "description": "Implementation and coding tools for Claude Code",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["implementation", "coding", "tdd"]
+    },
+    {
+      "name": "analyst",
+      "source": "./plugins/analyst",
+      "description": "Analysis and research tools for Claude Code",
+      "version": "1.0.0",
+      "category": "analysis",
+      "tags": ["analysis", "research", "requirements"]
+    },
+    {
+      "name": "orchestrator",
+      "source": "./plugins/orchestrator",
+      "description": "Workflow orchestration tools for Claude Code",
+      "version": "1.0.0",
+      "category": "workflow",
+      "tags": ["orchestration", "workflow", "coordination"]
     }
   ]
 }

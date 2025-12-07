@@ -63,7 +63,7 @@ flutter doctor -v                    # Comprehensive SDK and toolchain state
 flutter --version                    # SDK version and channel
 dart --version                       # Dart SDK version
 which flutter && which dart          # Binary resolution (detects FVM issues)
-fvm list                             # Installed FVM versions
+fvm list.md                             # Installed FVM versions
 fvm current                          # Project-active version
 cat .fvm/fvm_config.json            # FVM project config
 ```
@@ -443,7 +443,7 @@ jobs:
 **Verification:**
 ```bash
 melos bootstrap
-melos list                    # Should show all detected packages
+melos list.md                    # Should show all detected packages
 git diff --name-only origin/main  # See what files changed
 melos test:diff               # Should only test affected packages
 ```
@@ -572,7 +572,7 @@ flutter run --flavor dev        # Should install as "MyApp Dev" with .dev suffix
 flutter run --flavor prod       # Should install as "MyApp" without suffix
 
 # Both can be installed side-by-side (different package IDs)
-adb shell pm list packages | grep myapp
+adb shell pm list.md packages | grep myapp
 ```
 </gradle_flavor_setup>
 

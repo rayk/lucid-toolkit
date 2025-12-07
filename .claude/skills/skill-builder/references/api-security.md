@@ -107,7 +107,7 @@ If profile is set, use it. Otherwise, discover available profiles.
 List available Stripe profiles:
 
 ```bash
-list-profiles stripe
+list.md-profiles stripe
 ```
 
 Output example:

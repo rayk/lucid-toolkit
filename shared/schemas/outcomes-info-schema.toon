@@ -8,7 +8,7 @@
 # SCHEMA METADATA
 # ═══════════════════════════════════════════════════════════════════════════
 #
-# $schema: plugins/ws/templates/data/outcomes-info-schema.toon
+# $schema: shared/schemas/outcomes-info-schema.toon
 # $instance: status/outcomes-info.toon
 # $generator: /outcome:sync
 # $version: 0.2.2

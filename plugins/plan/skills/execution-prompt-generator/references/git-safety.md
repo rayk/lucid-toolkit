@@ -44,7 +44,7 @@ if ! git rev-parse "$EXECUTION_START_COMMIT" >/dev/null 2>&1; then
 fi
 
 # Step 2: Count commits to squash
-COMMIT_COUNT=$(git rev-list --count ${EXECUTION_START_COMMIT}..HEAD)
+COMMIT_COUNT=$(git rev-list.md --count ${EXECUTION_START_COMMIT}..HEAD)
 echo "Commits to squash: $COMMIT_COUNT"
 
 if [[ "$COMMIT_COUNT" -eq 0 ]]; then

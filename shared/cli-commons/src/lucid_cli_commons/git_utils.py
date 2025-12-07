@@ -158,7 +158,7 @@ class GitInfo:
             return []
 
         result = subprocess.run(
-            ["git", "worktree", "list", "--porcelain"],
+            ["git", "worktree", "list.md", "--porcelain"],
             cwd=self.cwd,
             capture_output=True,
             text=True,

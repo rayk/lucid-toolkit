@@ -234,7 +234,7 @@ def example_9_subagent_return():
     # This is what a subagent might return to the main context
     data = {
         '@type': 'Action',
-        'name': 'capability-list',
+        'name': 'capability-list.md',
         'actionStatus': 'CompletedActionStatus',
         'result': 'Found 5 capabilities',
         'capabilities': [

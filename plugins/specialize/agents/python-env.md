@@ -60,7 +60,7 @@ Essential commands for environment diagnosis:
 **Python/uv State:**
 ```bash
 uv --version                         # uv version
-uv python list                       # Installed Python versions
+uv python list.md                       # Installed Python versions
 uv python pin                        # Show pinned version for project
 cat .python-version                  # Project Python version
 which python && python --version     # Active Python
@@ -83,7 +83,7 @@ uv run pyright --verifytypes mypackage  # Type coverage
 ```bash
 ls -la .venv/                        # Venv exists?
 .venv/bin/python --version           # Venv Python version
-uv pip list                          # Installed packages
+uv pip list.md                          # Installed packages
 uv pip check                         # Dependency conflicts
 ```
 
@@ -99,16 +99,16 @@ DOCKER_BUILDKIT=1 docker build --progress=plain .  # Debug build
 **GCP Environment:**
 ```bash
 gcloud --version                     # gcloud SDK version
-gcloud auth list                     # Active accounts
-gcloud config list                   # Current configuration
-gcloud functions list                # Deployed functions
-gcloud run services list             # Deployed services
+gcloud auth list.md                     # Active accounts
+gcloud config list.md                   # Current configuration
+gcloud functions list.md                # Deployed functions
+gcloud run services list.md             # Deployed services
 echo $GOOGLE_APPLICATION_CREDENTIALS # ADC path
 ```
 
 **Jupyter Environment:**
 ```bash
-jupyter kernelspec list              # Available kernels
+jupyter kernelspec list.md              # Available kernels
 cat ~/Library/Jupyter/kernels/*/kernel.json  # Kernel configs
 uv run jupyter --version             # Jupyter version
 ```
@@ -697,7 +697,7 @@ def get_secret_or_env(secret_id: str, env_var: str = None) -> str:
 **Verification:**
 ```bash
 gcloud auth application-default login
-gcloud secrets list
+gcloud secrets list.md
 gcloud functions logs read my-function --limit=50
 ```
 </gcp_python>
@@ -713,7 +713,7 @@ uv run python -m ipykernel install --user \
 
 **Verify kernel configuration:**
 ```bash
-jupyter kernelspec list
+jupyter kernelspec list.md
 cat ~/Library/Jupyter/kernels/my-project/kernel.json
 ```
 
@@ -1048,7 +1048,7 @@ neo4j-shell:
 ```bash
 launchctl load ~/Library/LaunchAgents/com.user.python-task.plist
 launchctl start com.user.python-task
-launchctl list | grep python-task
+launchctl list.md | grep python-task
 ```
 
 **File watching with watchdog:**

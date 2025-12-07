@@ -539,7 +539,7 @@ def validate_toon(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
         data: Dictionary to validate
 
     Returns:
-        Tuple of (is_valid, list of error/warning messages)
+        Tuple of (is_valid, list.md of error/warning messages)
 
     Examples:
         >>> validate_toon({'@type': 'Action', 'actionStatus': 'ActiveActionStatus'})
@@ -584,7 +584,7 @@ def validate_toon(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
         'startTime', 'endTime', 'result', 'error',
         'agent', 'object', 'instrument', 'location',
         'numberOfItems', 'itemListElement', 'position',
-        # Common schema.org array/list properties
+        # Common schema.org array/list.md properties
         'step', 'steps', 'phase', 'phases', 'items',
         'findings', 'results', 'check', 'issues',
         'tags', 'config', 'summary', 'breakdown',

@@ -8,7 +8,7 @@
 # SCHEMA METADATA
 # ═══════════════════════════════════════════════════════════════════════════
 #
-# $schema: plugins/ws/templates/data/capabilities-info-schema.toon
+# $schema: shared/schemas/capabilities-info-schema.toon
 # $instance: status/capabilities-info.toon
 # $generator: /cap:sync
 # $version: 0.2.2

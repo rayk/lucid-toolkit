@@ -1,1 +1,0 @@
-"""Capability snapshot hooks."""

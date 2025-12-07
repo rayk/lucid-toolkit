@@ -8,7 +8,7 @@
 # SCHEMA METADATA
 # ═══════════════════════════════════════════════════════════════════════════
 #
-# $schema: plugins/ws/templates/data/workspace-info-schema.toon
+# $schema: shared/schemas/workspace-info-schema.toon
 # $instance: .claude/workspace-info.toon
 # $generator: /ws:enviro
 # $version: 0.2.2
@@ -21,11 +21,11 @@
 #
 # | Schema | Schema Location | Instance Location |
 # |--------|-----------------|-------------------|
-# | capabilities-info | plugins/ws/templates/data/capabilities-info-schema.toon | status/capabilities-info.toon |
-# | outcomes-info | plugins/ws/templates/data/outcomes-info-schema.toon | status/outcomes-info.toon |
-# | execution-info | plugins/ws/templates/data/execution-info-schema.toon | status/execution-info.toon |
-# | core-values | plugins/ws/templates/data/core-values-schema.toon | (reference data, no instance) |
-# | actor-registry | plugins/ws/templates/data/actor-registry-schema.toon | (reference data, no instance) |
+# | capabilities-info | shared/schemas/capabilities-info-schema.toon | status/capabilities-info.toon |
+# | outcomes-info | shared/schemas/outcomes-info-schema.toon | status/outcomes-info.toon |
+# | execution-info | shared/schemas/execution-info-schema.toon | status/execution-info.toon |
+# | core-values | shared/schemas/core-values-schema.toon | (reference data, no instance) |
+# | actor-registry | shared/schemas/actor-registry-schema.toon | (reference data, no instance) |
 #
 # ═══════════════════════════════════════════════════════════════════════════
 # TYPE NOTATION

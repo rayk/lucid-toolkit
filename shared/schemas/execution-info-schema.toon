@@ -8,7 +8,7 @@
 # SCHEMA METADATA
 # ═══════════════════════════════════════════════════════════════════════════
 #
-# $schema: plugins/ws/templates/data/execution-info-schema.toon
+# $schema: shared/schemas/execution-info-schema.toon
 # $instance: status/execution-info.toon
 # $generator: /plan:execute
 # $version: 0.2.2
