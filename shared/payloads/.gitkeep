@@ -1,2 +1,0 @@
-# This file ensures the payloads directory exists in git
-# Session directories are created dynamically and cleaned up automatically

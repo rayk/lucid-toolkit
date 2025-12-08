@@ -1,0 +1,23 @@
+{
+  "name": "luc",
+  "displayName": "Luc",
+  "description": "Luc tools for Claude Code",
+  "version": "1.0.0",
+  "author": "rayk",
+  "dependencies": {
+    "claudeCode": ">=1.0.0"
+  },
+  "commands": ["setup", "version"],
+  "skills": ["manage-markdown-docs", "never-guess", "render-output", "resolve-ambiguity"],
+  "hooks": [],
+  "schemas": [
+    "actor-registry-schema.toon",
+    "capabilities-info-schema.toon",
+    "core-values-schema.toon",
+    "execution-info-schema.toon",
+    "outcomes-info-schema.toon",
+    "project-info-schema.toon",
+    "workspace-info-schema.toon"
+  ],
+  "templates": []
+}

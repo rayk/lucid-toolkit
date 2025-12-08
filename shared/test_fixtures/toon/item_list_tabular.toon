@@ -1,9 +1,0 @@
-@type: ItemList
-name: capabilities
-numberOfItems: 3
-x-avgMaturity: 52
-
-itemListElement[3]{name,x-maturity,x-target,actionStatus,x-domain|tab}:
-auth-system	47	80	ActiveActionStatus	Security
-api-gateway	60	75	ActiveActionStatus	Integration
-admin-portal	100	80	CompletedActionStatus	Product

@@ -11,44 +11,12 @@
   },
   "plugins": [
     {
-      "name": "think",
-      "source": "./plugins/think",
-      "description": "Structured analysis using mental models",
-      "version": "1.0.0",
+      "name": "analyst",
+      "source": "./plugins/analyst",
+      "description": "Analysis, research, and structured thinking tools with 14 mental models, multi-agent problem solving, and rigorous fact-checking",
+      "version": "2.0.0",
       "category": "analysis",
-      "tags": ["mental-models", "decision-making", "analysis"]
-    },
-    {
-      "name": "plan",
-      "source": "./plugins/plan",
-      "description": "TDD execution prompt generator with cost-efficient model delegation",
-      "version": "1.0.0",
-      "category": "development",
-      "tags": ["tdd", "execution", "prompt-generation"]
-    },
-    {
-      "name": "specialize",
-      "source": "./plugins/specialize",
-      "description": "Technology-specialized subagents with MCP server integrations",
-      "version": "1.2.0",
-      "category": "development",
-      "tags": ["subagents", "mcp", "neo4j", "specialist"]
-    },
-    {
-      "name": "ws",
-      "source": "./plugins/ws",
-      "description": "Capability-based workspace management with environment snapshots",
-      "version": "0.2.2",
-      "category": "workflow",
-      "tags": ["workspace", "environment", "capability-driven"]
-    },
-    {
-      "name": "pj",
-      "source": "./plugins/pj",
-      "description": "Project management tools for Claude Code",
-      "version": "1.0.0",
-      "category": "workflow",
-      "tags": ["project", "management"]
+      "tags": ["analysis", "research", "mental-models", "decision-making", "fact-checking"]
     },
     {
       "name": "designer",
@@ -59,36 +27,36 @@
       "tags": ["design", "architecture", "planning"]
     },
     {
-      "name": "implementer",
-      "source": "./plugins/implementer",
-      "description": "Implementation and coding tools for Claude Code",
-      "version": "1.0.0",
-      "category": "development",
-      "tags": ["implementation", "coding", "tdd"]
-    },
-    {
-      "name": "analyst",
-      "source": "./plugins/analyst",
-      "description": "Analysis and research tools for Claude Code",
-      "version": "1.0.0",
-      "category": "analysis",
-      "tags": ["analysis", "research", "requirements"]
-    },
-    {
-      "name": "orchestrator",
-      "source": "./plugins/orchestrator",
-      "description": "Workflow orchestration tools for Claude Code",
-      "version": "1.0.0",
-      "category": "workflow",
-      "tags": ["orchestration", "workflow", "coordination"]
-    },
-    {
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
       "description": "Flutter implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
       "version": "1.1.0",
       "category": "development",
       "tags": ["flutter", "dart", "mobile", "implementation", "tdd", "riverpod", "fpdart"]
+    },
+    {
+      "name": "impl-python",
+      "source": "./plugins/impl-python",
+      "description": "Python implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, API development, releases, and environment management",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["python", "fastapi", "pydantic", "implementation", "tdd", "sqlalchemy"]
+    },
+    {
+      "name": "luc",
+      "source": "./plugins/luc",
+      "description": "Luc tools for Claude Code with schemas, output rendering, and workspace utilities",
+      "version": "1.0.0",
+      "category": "workflow",
+      "tags": ["schemas", "toon", "output", "workspace"]
+    },
+    {
+      "name": "plan",
+      "source": "./plugins/plan",
+      "description": "TDD execution prompt generator with cost-efficient model delegation",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["tdd", "execution", "prompt-generation"]
     }
   ]
 }
