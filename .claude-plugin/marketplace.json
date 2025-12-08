@@ -86,7 +86,7 @@
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
       "description": "Flutter implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "development",
       "tags": ["flutter", "dart", "mobile", "implementation", "tdd", "riverpod", "fpdart"]
     }
