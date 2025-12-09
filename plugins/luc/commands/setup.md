@@ -1,12 +1,12 @@
 ---
 description: Idempotent project setup - detects state and generates project-info.toon
-allowed-tools: [Task, Read, Bash, Write, Glob, AskUserQuestion]
+allowed-tools: [Task, Read, Bash, Write, Glob, AskUserQuestion, Edit]
 ---
 
 <objective>
 Configure foundational Claude Code settings for any project through an idempotent command that detects current state and performs the appropriate action: initialize, repair, or report.
 
-This is the base-level setup that works with any project structure. It establishes the `.claude/` directory and generates `project-info.toon` following the schema.org-based TOON format.
+This is the base-level setup that works with any project structure. It establishes the `.claude/` directory, generates `project-info.toon` following the schema.org-based TOON format, and configures the Claude Code status line.
 </objective>
 
 <schema_reference>
@@ -172,7 +172,34 @@ lastSession.timestamp: null
 lastSession.event: null
 ```
 
-### Step 3: Offer CLAUDE.md creation
+### Step 3: Configure Status Line
+
+Configure Claude Code to use the luc status line script. This provides a rich status display with:
+- Focus indicator, context window usage, cache stats
+- Git branch, worktree, lines changed, commits today
+- Current working directory
+
+**Status Line Script Location**: `~/.claude/plugins/luc@lucid-toolkit/scripts/status_line.py`
+
+The script reads `workspace.project_dir` from stdin and looks for `.claude/project-info.toon` or `.claude/workspace-info.toon` to get project context.
+
+**Configuration Steps:**
+
+1. Read current settings from `~/.claude/settings.json`
+2. Check if `statusLine` is already configured
+3. If not configured or different, update to use the luc status line script:
+
+```json
+{
+  "statusLine": "~/.claude/plugins/luc@lucid-toolkit/scripts/status_line.py"
+}
+```
+
+4. Use Edit tool to update settings.json (preserve existing settings)
+
+**Idempotency**: If statusLine already points to the luc script, skip this step and report "Status line: already configured".
+
+### Step 4: Offer CLAUDE.md creation
 
 If no `CLAUDE.md` exists at project root, ask user if they want one created with basic structure.
 
@@ -189,6 +216,9 @@ Repository: {url or "local only"}
 ### Generated
 - .claude/project-info.toon
 
+### Configured
+- Status line: {configured|already configured|skipped}
+
 Schema: project-info-schema.toon v1.1.0
 
 Would you like me to create a CLAUDE.md file with project instructions? [Y/n]
@@ -199,7 +229,8 @@ Would you like me to create a CLAUDE.md file with project instructions? [Y/n]
 For REPORT state (healthy project-info.toon exists):
 
 1. Read .claude/project-info.toon
-2. Display formatted summary:
+2. Check status line configuration in ~/.claude/settings.json
+3. Display formatted summary:
 
 ```
 ## Project Status
@@ -210,6 +241,7 @@ Last modified: {relative-time from dateModified}
 
 ### Configuration
 - .claude/project-info.toon: valid (v{softwareVersion})
+- Status line: {configured|not configured}
 - CLAUDE.md: {exists|missing}
 
 ### Repository
@@ -264,6 +296,7 @@ Starting project setup scan...
 Repository: {url or "local only"}
 
 Generated: .claude/project-info.toon
+Configured: Status line
 Schema: project-info-schema.toon v1.1.0
 
 Project is ready for Claude Code.
@@ -278,6 +311,7 @@ Technology: {technology}
 Modified: {relative-time}
 
 Configuration valid.
+Status line: {configured|not configured}
 ```
 
 **MIGRATE Complete**:
@@ -302,6 +336,7 @@ Project is ready for Claude Code.
 - Running multiple times produces same result
 - Existing valid configuration preserved
 - Only regenerates when needed
+- Status line only configured if not already set to luc script
 
 **TOON Validity:**
 - Output follows project-info-schema.toon exactly
@@ -313,6 +348,11 @@ Project is ready for Claude Code.
 - Correctly identifies virgin/healthy/outdated/corrupted states
 - Appropriate action taken for each state
 
+**Status Line:**
+- Configured in ~/.claude/settings.json
+- Points to luc status line script
+- Preserves existing settings when updating
+
 **Minimal Impact:**
 - Does not modify existing valid files
 - Does not require specialized project structure
@@ -322,4 +362,5 @@ Project is ready for Claude Code.
 - Clear progress indication
 - Summary of actions taken
 - Schema version displayed
+- Status line configuration status reported
 </success_criteria>

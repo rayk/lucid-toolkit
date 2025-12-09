@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "3.0.0",
+    "version": "2.0.0",
     "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
@@ -22,7 +22,7 @@
       "name": "designer",
       "source": "./plugins/designer",
       "description": "Design and architecture tools for Claude Code",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "category": "development",
       "tags": ["design", "architecture", "planning"]
     },
@@ -30,7 +30,7 @@
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
       "description": "Flutter implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
-      "version": "1.1.0",
+      "version": "2.0.0",
       "category": "development",
       "tags": ["flutter", "dart", "mobile", "implementation", "tdd", "riverpod", "fpdart"]
     },
@@ -38,23 +38,23 @@
       "name": "impl-python",
       "source": "./plugins/impl-python",
       "description": "Python implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, API development, releases, and environment management",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "category": "development",
       "tags": ["python", "fastapi", "pydantic", "implementation", "tdd", "sqlalchemy"]
     },
     {
       "name": "luc",
       "source": "./plugins/luc",
-      "description": "Luc tools for Claude Code with schemas, output rendering, and workspace utilities",
-      "version": "1.0.0",
+      "description": "Luc tools for Claude Code with status line, schemas, output rendering, and workspace utilities",
+      "version": "2.1.0",
       "category": "workflow",
-      "tags": ["schemas", "toon", "output", "workspace"]
+      "tags": ["schemas", "toon", "output", "workspace", "status-line"]
     },
     {
       "name": "plan",
       "source": "./plugins/plan",
       "description": "TDD execution prompt generator with cost-efficient model delegation",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "category": "development",
       "tags": ["tdd", "execution", "prompt-generation"]
     }
