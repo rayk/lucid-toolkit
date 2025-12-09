@@ -1,89 +1,41 @@
 {
   "name": "analyst",
-  "displayName": "Analyst",
   "description": "Analysis, research, and structured thinking tools with 14 mental models, multi-agent problem solving, and rigorous fact-checking",
   "version": "2.0.0",
-  "author": "rayk",
-  "dependencies": {
-    "claudeCode": ">=1.0.0"
-  },
-  "optionalDependencies": {
-    "mcp": {
-      "memory": {
-        "package": "@modelcontextprotocol/server-memory",
-        "description": "Persistent knowledge graph for cross-session learning",
-        "tools": [
-          "create_entities",
-          "create_relations",
-          "add_observations",
-          "delete_entities",
-          "delete_observations",
-          "delete_relations",
-          "read_graph",
-          "search_nodes",
-          "open_nodes"
-        ]
-      },
-      "firecrawl": {
-        "package": "@anthropic/firecrawl-mcp",
-        "description": "Web scraping and research capabilities",
-        "tools": [
-          "firecrawl_scrape",
-          "firecrawl_batch_scrape",
-          "firecrawl_search",
-          "firecrawl_map",
-          "firecrawl_crawl",
-          "firecrawl_extract"
-        ]
-      }
-    }
+  "author": {
+    "name": "rayk"
   },
   "commands": [
-    "think:consider",
-    "think:assess",
-    "think:reflect",
-    "think:debate",
-    "think:swarm"
+    "./commands/consider.md",
+    "./commands/assess.md",
+    "./commands/reflect.md",
+    "./commands/debate.md",
+    "./commands/swarm.md"
   ],
   "skills": [
-    "consider"
+    "./skills/consider"
   ],
   "agents": [
-    "research",
-    "model-5-whys",
-    "model-10-10-10",
-    "model-eisenhower",
-    "model-first-principles",
-    "model-inversion",
-    "model-occams-razor",
-    "model-one-thing",
-    "model-opportunity-cost",
-    "model-pareto",
-    "model-second-order",
-    "model-six-hats",
-    "model-swot",
-    "model-toc",
-    "model-via-negativa",
-    "think-classifier",
-    "think-clr-validator",
-    "think-orchestrator",
-    "think-synthesizer",
-    "think-validator"
+    "./agents/research.md",
+    "./agents/model-5-whys.md",
+    "./agents/model-10-10-10.md",
+    "./agents/model-eisenhower.md",
+    "./agents/model-first-principles.md",
+    "./agents/model-inversion.md",
+    "./agents/model-occams-razor.md",
+    "./agents/model-one-thing.md",
+    "./agents/model-opportunity-cost.md",
+    "./agents/model-pareto.md",
+    "./agents/model-second-order.md",
+    "./agents/model-six-hats.md",
+    "./agents/model-swot.md",
+    "./agents/model-toc.md",
+    "./agents/model-via-negativa.md",
+    "./agents/think-classifier.md",
+    "./agents/think-clr-validator.md",
+    "./agents/think-orchestrator.md",
+    "./agents/think-synthesizer.md",
+    "./agents/think-validator.md"
   ],
-  "templates": [
-    "capability-statement-template.md",
-    "outcome-statement-template.md",
-    "mental-models.md",
-    "assessment-framework.md"
-  ],
-  "mcp": [
-    "memory-schema.md"
-  ],
-  "benchmarks": {
-    "harness": "benchmarks/harness.py",
-    "testCases": "benchmarks/test_cases.json",
-    "runner": "benchmarks/run_benchmarks.md"
-  },
-  "hooks": [],
-  "schemas": []
+  "hooks": []
 }
