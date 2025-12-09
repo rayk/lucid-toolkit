@@ -2,13 +2,13 @@
   "name": "luc",
   "displayName": "Luc",
   "description": "Luc tools for Claude Code with status line, schemas, and workspace utilities",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "rayk",
   "dependencies": {
     "claudeCode": ">=1.0.0"
   },
   "commands": ["setup", "version"],
-  "skills": ["fork-context", "manage-markdown-docs", "never-guess", "render-output", "resolve-ambiguity"],
+  "skills": ["fork-context", "manage-markdown-docs", "never-guess", "render-output", "resolve-ambiguity", "use-toon"],
   "hooks": [],
   "scripts": ["status_line.py"],
   "schemas": [
