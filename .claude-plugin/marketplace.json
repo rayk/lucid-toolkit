@@ -54,7 +54,7 @@
       "name": "luc",
       "source": "./plugins/luc",
       "description": "Luc tools for Claude Code with status line, schemas, output rendering, and workspace utilities",
-      "version": "2.3.0",
+      "version": "2.4.0",
       "category": "workflow",
       "tags": ["schemas", "toon", "output", "workspace", "status-line"]
     },
