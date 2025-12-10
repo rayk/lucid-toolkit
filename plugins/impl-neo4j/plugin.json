@@ -1,23 +1,21 @@
 {
   "name": "impl-neo4j",
-  "displayName": "Neo4j Implementation",
   "description": "Neo4j graph database specialist plugin with 6 specialized agents for graph modeling, Cypher queries, data import/export, performance tuning, driver integration, and environment management",
   "version": "1.0.0",
-  "author": "rayk",
-  "dependencies": {
-    "claudeCode": ">=1.0.0"
+  "author": {
+    "name": "rayk"
   },
-  "agents": [
-    "neo4j-modeler",
-    "neo4j-query",
-    "neo4j-data",
-    "neo4j-perf",
-    "neo4j-driver",
-    "neo4j-env"
-  ],
   "commands": [],
-  "skills": ["neo4j-cypher"],
-  "hooks": [],
-  "schemas": [],
-  "templates": []
+  "skills": [
+    "./skills/neo4j-cypher"
+  ],
+  "agents": [
+    "./agents/neo4j-modeler.md",
+    "./agents/neo4j-query.md",
+    "./agents/neo4j-data.md",
+    "./agents/neo4j-perf.md",
+    "./agents/neo4j-driver.md",
+    "./agents/neo4j-env.md"
+  ],
+  "hooks": []
 }
