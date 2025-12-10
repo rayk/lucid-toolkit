@@ -43,6 +43,14 @@
       "tags": ["python", "fastapi", "pydantic", "implementation", "tdd", "sqlalchemy"]
     },
     {
+      "name": "impl-neo4j",
+      "source": "./plugins/impl-neo4j",
+      "description": "Neo4j graph database specialist with 6 specialized agents for graph modeling, Cypher queries, data import/export, performance tuning, driver integration, and environment management",
+      "version": "1.0.0",
+      "category": "development",
+      "tags": ["neo4j", "graph", "cypher", "database", "mcp", "apoc", "gds"]
+    },
+    {
       "name": "luc",
       "source": "./plugins/luc",
       "description": "Luc tools for Claude Code with status line, schemas, output rendering, and workspace utilities",
