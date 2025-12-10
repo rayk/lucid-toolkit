@@ -1,7 +1,7 @@
 {
   "name": "luc",
   "description": "Luc tools for Claude Code with status line, schemas, and workspace utilities",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "author": {
     "name": "rayk"
   },
