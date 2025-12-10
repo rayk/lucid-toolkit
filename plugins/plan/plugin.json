@@ -1,34 +1,18 @@
 {
   "name": "plan",
-  "displayName": "Planner",
   "description": "TDD execution prompt generator with cost-efficient model delegation",
   "version": "1.1.0",
-  "author": "rayk",
-  "dependencies": {
-    "claudeCode": ">=1.0.0",
-    "python": ">=3.11"
-  },
-  "externalDependencies": {
-    "skills": ["context:payload-store"]
+  "author": {
+    "name": "rayk"
   },
   "commands": [
-    "planner:generate",
-    "planner:analyze",
-    "planner:validate"
+    "./commands/generate.md",
+    "./commands/analyze.md",
+    "./commands/validate.md"
   ],
   "skills": [
-    "execution-prompt-generator"
+    "./skills/execution-prompt-generator"
   ],
-  "hooks": [],
-  "schemas": [
-    "execution_result_schema.json",
-    "audit_trail_schema.json",
-    "checkpoint_schema.json"
-  ],
-  "templates": [
-    "design-document-template.md"
-  ],
-  "sharedLibraries": [
-    "../../shared/cli-commons"
-  ]
+  "agents": [],
+  "hooks": []
 }

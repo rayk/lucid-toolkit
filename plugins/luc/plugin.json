@@ -1,24 +1,21 @@
 {
   "name": "luc",
-  "displayName": "Luc",
   "description": "Luc tools for Claude Code with status line, schemas, and workspace utilities",
   "version": "1.2.0",
-  "author": "rayk",
-  "dependencies": {
-    "claudeCode": ">=1.0.0"
+  "author": {
+    "name": "rayk"
   },
-  "commands": ["setup", "version"],
-  "skills": ["fork-context", "manage-markdown-docs", "never-guess", "render-output", "resolve-ambiguity", "use-toon"],
-  "hooks": [],
-  "scripts": ["status_line.py"],
-  "schemas": [
-    "actor-registry-schema.toon",
-    "capabilities-info-schema.toon",
-    "core-values-schema.toon",
-    "execution-info-schema.toon",
-    "outcomes-info-schema.toon",
-    "project-info-schema.toon",
-    "workspace-info-schema.toon"
+  "commands": [
+    "./commands/setup.md",
+    "./commands/version.md"
   ],
-  "templates": []
+  "skills": [
+    "./skills/manage-markdown-docs",
+    "./skills/never-guess",
+    "./skills/render-output",
+    "./skills/resolve-ambiguity",
+    "./skills/use-toon"
+  ],
+  "agents": [],
+  "hooks": []
 }

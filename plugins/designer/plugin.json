@@ -1,15 +1,12 @@
 {
   "name": "designer",
-  "displayName": "Designer",
   "description": "Design and architecture tools for Claude Code",
   "version": "1.0.0",
-  "author": "rayk",
-  "dependencies": {
-    "claudeCode": ">=1.0.0"
+  "author": {
+    "name": "rayk"
   },
   "commands": [],
   "skills": [],
-  "hooks": [],
-  "schemas": [],
-  "templates": []
+  "agents": [],
+  "hooks": []
 }

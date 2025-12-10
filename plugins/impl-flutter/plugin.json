@@ -1,25 +1,23 @@
 {
   "name": "impl-flutter",
-  "displayName": "Flutter Implementation",
   "description": "Flutter implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
   "version": "1.1.0",
-  "author": "rayk",
-  "dependencies": {
-    "claudeCode": ">=1.0.0"
+  "author": {
+    "name": "rayk"
   },
-  "agents": [
-    "flutter-coder",
-    "flutter-tester",
-    "flutter-debugger",
-    "flutter-env",
-    "flutter-data",
-    "flutter-platform",
-    "flutter-release",
-    "flutter-ux"
+  "commands": [],
+  "skills": [
+    "./skills/dart-flutter-mcp"
   ],
-  "commands": ["planner"],
-  "skills": ["dart-flutter-mcp"],
-  "hooks": [],
-  "schemas": [],
-  "templates": []
+  "agents": [
+    "./agents/flutter-coder.md",
+    "./agents/flutter-tester.md",
+    "./agents/flutter-debugger.md",
+    "./agents/flutter-env.md",
+    "./agents/flutter-data.md",
+    "./agents/flutter-platform.md",
+    "./agents/flutter-release.md",
+    "./agents/flutter-ux.md"
+  ],
+  "hooks": []
 }

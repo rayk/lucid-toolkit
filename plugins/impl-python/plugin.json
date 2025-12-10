@@ -1,25 +1,23 @@
 {
   "name": "impl-python",
-  "displayName": "Python Implementation",
   "description": "Python implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, API development, releases, and environment management",
   "version": "1.0.0",
-  "author": "rayk",
-  "dependencies": {
-    "claudeCode": ">=1.0.0"
+  "author": {
+    "name": "rayk"
   },
-  "agents": [
-    "python-coder",
-    "python-tester",
-    "python-debugger",
-    "python-env",
-    "python-data",
-    "python-platform",
-    "python-release",
-    "python-api"
+  "commands": [],
+  "skills": [
+    "./skills/python-dev-tools"
   ],
-  "commands": ["planner"],
-  "skills": ["python-dev-tools"],
-  "hooks": [],
-  "schemas": [],
-  "templates": []
+  "agents": [
+    "./agents/python-coder.md",
+    "./agents/python-tester.md",
+    "./agents/python-debugger.md",
+    "./agents/python-env.md",
+    "./agents/python-data.md",
+    "./agents/python-platform.md",
+    "./agents/python-release.md",
+    "./agents/python-api.md"
+  ],
+  "hooks": []
 }
