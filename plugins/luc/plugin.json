@@ -1,13 +1,13 @@
 {
   "name": "luc",
   "description": "Luc tools for Claude Code with status line, schemas, and workspace utilities",
-  "version": "1.2.0",
+  "version": "2.2.0",
   "author": {
     "name": "rayk"
   },
   "commands": [
     "./commands/setup.md",
-    "./commands/version.md"
+    "./commands/about.md"
   ],
   "skills": [
     "./skills/manage-markdown-docs",
@@ -16,6 +16,5 @@
     "./skills/resolve-ambiguity",
     "./skills/use-toon"
   ],
-  "agents": [],
-  "hooks": []
+  "agents": []
 }

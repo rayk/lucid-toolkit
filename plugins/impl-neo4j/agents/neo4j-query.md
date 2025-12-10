@@ -8,8 +8,9 @@ tools:
   - Bash
   - Grep
   - Glob
-  - mcp__neo4j__execute_query
-  - mcp__neo4j__get_schema
+  - mcp__neo4j-cypher__read_neo4j_cypher
+  - mcp__neo4j-cypher__write_neo4j_cypher
+  - mcp__neo4j-cypher__get_neo4j_schema
 model: sonnet
 ---
 
@@ -21,13 +22,14 @@ You write Cypher queries for Neo4j databases. You own all query writing includin
 
 **ALWAYS use Neo4j MCP tools when available:**
 
-1. **Before writing queries**: Call `mcp__neo4j__get_schema` to understand the database structure
-2. **Execute queries**: Use `mcp__neo4j__execute_query` instead of manual driver code
-3. **Verify results**: Check query output matches expected structure
+1. **Before writing queries**: Call `mcp__neo4j-cypher__get_neo4j_schema` to understand the database structure
+2. **Execute read queries**: Use `mcp__neo4j-cypher__read_neo4j_cypher` for MATCH/RETURN queries
+3. **Execute write queries**: Use `mcp__neo4j-cypher__write_neo4j_cypher` for CREATE/MERGE/DELETE operations
+4. **Verify results**: Check query output matches expected structure
 
 ```
 Workflow:
-mcp__neo4j__get_schema → [write query] → mcp__neo4j__execute_query → [verify]
+mcp__neo4j-cypher__get_neo4j_schema → [write query] → mcp__neo4j-cypher__read/write_neo4j_cypher → [verify]
 ```
 
 ## Cypher Fundamentals

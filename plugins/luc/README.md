@@ -46,7 +46,7 @@ The status line is automatically configured when running `/luc:setup`. It dynami
 | Command | Description |
 |---------|-------------|
 | `/luc:setup` | Idempotent project setup - generates project-info.toon and configures status line |
-| `/luc:version` | Display plugin version and marketplace info |
+| `/luc:about` | Display plugin info, session details, and marketplace info |
 
 ## Features
 
