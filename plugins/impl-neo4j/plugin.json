@@ -16,6 +16,5 @@
     "./agents/neo4j-perf.md",
     "./agents/neo4j-driver.md",
     "./agents/neo4j-env.md"
-  ],
-  "hooks": []
+  ]
 }

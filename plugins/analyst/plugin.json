@@ -36,6 +36,5 @@
     "./agents/think-orchestrator.md",
     "./agents/think-synthesizer.md",
     "./agents/think-validator.md"
-  ],
-  "hooks": []
+  ]
 }
