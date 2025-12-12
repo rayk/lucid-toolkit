@@ -1,35 +1,18 @@
 # Lucid Toolkit
 
-A Claude Code plugin marketplace for capability-driven development. Build strategic capabilities through tactical outcomes with context-aware workflows.
-
-## What is Capability-Driven Development?
-
-Capability-driven development structures work around **capabilities** (strategic goals with maturity percentages) that are built through **outcomes** (tactical work units with observable effects). This approach:
-
-- Connects daily work to strategic objectives
-- Tracks progress through measurable maturity metrics
-- Preserves context across sessions for seamless work resumption
-- Optimizes AI token usage through systematic delegation
+A Claude Code plugin marketplace providing development, analysis, and architecture tools.
 
 ## Plugins
 
-The Lucid Toolkit provides six modular plugins that can be installed independently or together.
-
-### Core Workflow Plugins
-
-| Plugin | Description | Details |
-|--------|-------------|---------|
-| **[capability](plugins/capability/README.md)** | Strategic capability management with maturity tracking. Create, delete, and snapshot capabilities with business value mapping and actor involvement. | 3 commands, 1 hook |
-| **[outcome](plugins/outcome/README.md)** | Outcome lifecycle management through queued → ready → in-progress → completed states. Supports parent-child hierarchies and capability contribution tracking. | 9 commands, 1 skill, 5 templates |
-| **[context](plugins/context/README.md)** | Context window conservation with delegation protocols. Automatic session tracking, work resumption, and token budget management. | 6 commands, 4 skills, session hooks |
-
-### Analysis & Development Plugins
-
-| Plugin | Description | Details |
-|--------|-------------|---------|
-| **[think](plugins/think/README.md)** | Structured analysis using 12 mental models (5-Whys, First Principles, SWOT, etc.). Intelligent model selection based on problem type. | 3 commands, 1 skill, 12 frameworks |
-| **[workspace](plugins/workspace/README.md)** | Multi-project management with shared registry, health validation, and cross-reference integrity checking. | 10 commands, pre-commit hooks |
-| **[plan](plugins/plan/README.md)** | TDD execution prompt generator. Analyzes design docs and generates autonomous implementation prompts with cost-efficient model delegation. | 3 commands, 1 skill |
+| Plugin | Category | Description |
+|--------|----------|-------------|
+| **[architect](plugins/architect/README.md)** | Architecture | Architecture design and documentation following Lucid Composite Architecture (LCA) principles with hierarchy consistency checking, ADRs, and platform documentation |
+| **[analyst](plugins/analyst/README.md)** | Analysis | Analysis, research, and structured thinking tools with 14 mental models, multi-agent problem solving, and rigorous fact-checking |
+| **[luc](plugins/luc/README.md)** | Workflow | Core tools with status line, TOON schemas, output rendering, and workspace utilities |
+| **[plan](plugins/plan/README.md)** | Development | TDD execution prompt generator with cost-efficient model delegation |
+| **[impl-python](plugins/impl-python/README.md)** | Development | Python implementation specialist with 8 specialized agents for code generation, testing, debugging, and API development |
+| **[impl-flutter](plugins/impl-flutter/README.md)** | Development | Flutter implementation specialist with 8 specialized agents for mobile development with Riverpod and fpdart |
+| **[impl-neo4j](plugins/impl-neo4j/README.md)** | Development | Neo4j graph database specialist with 6 specialized agents for graph modeling, Cypher, and performance tuning |
 
 ## Quick Start
 
@@ -39,13 +22,13 @@ The Lucid Toolkit provides six modular plugins that can be installed independent
 # Add the Lucid Toolkit marketplace
 /plugin marketplace add rayk/lucid-toolkit
 
-# Install all plugins interactively
+# Install plugins interactively
 /plugin
 
 # Or install specific plugins
-/plugin install context@lucid-toolkit
-/plugin install capability@lucid-toolkit
-/plugin install outcome@lucid-toolkit
+/plugin install architect@lucid-toolkit
+/plugin install analyst@lucid-toolkit
+/plugin install luc@lucid-toolkit
 ```
 
 ### Install Shared Library (Required for Hooks)
@@ -54,106 +37,45 @@ The Lucid Toolkit provides six modular plugins that can be installed independent
 cd shared/cli-commons && pip install -e .
 ```
 
-### Verify Installation
+## Key Features
 
-```bash
-# Check context conservation is active
-/context:info
+### Architecture (architect plugin)
 
-# Create your first capability
-/capability:create
+- **Lucid Composite Architecture (LCA)** - Structural hierarchy with Atoms, Composites, Conduits, Deployable Units
+- **Three-tier abstraction** - Platform → Repository → Component documentation hierarchy
+- **Consistency checking** - Lower levels can extend but never override higher levels
+- **ADR management** - Architecture Decision Records with lifecycle tracking
+- **Platform templates** - Complete documentation structure for platform-level architecture
 
-# Start working on an outcome
-/outcome:focus
-```
+### Analysis (analyst plugin)
 
-## Core Concepts
+- **14 mental models** - 5-Whys, First Principles, SWOT, Eisenhower, Pareto, and more
+- **Multi-agent problem solving** - Parallel analysis with voting and synthesis
+- **Research integration** - Rigorous fact-checking with source attribution
 
-### Capabilities
+### Implementation Specialists
 
-Strategic goals measured by maturity percentage (0-100%). Each capability:
-- Maps to 1-3 core business values
-- Has defined maturity milestones (30%, 60%, 80%, 100%)
-- Is built by one or more outcomes
-- Tracks actor involvement and dependencies
-
-### Outcomes
-
-Tactical work units that build capabilities. Each outcome:
-- Describes WHAT to achieve (not HOW)
-- Specifies observable behavioral effects
-- Contributes a percentage to capability maturity
-- Moves through lifecycle states: queued → ready → in-progress → completed
-
-### Context Conservation
-
-The main Claude context window is precious. The context plugin enforces:
-- **Delegation by default**: 3+ tool calls → delegate to subagent
-- **Token budgets**: Right-sized model selection (haiku/sonnet/opus)
-- **Session tracking**: Automatic work resumption across sessions
-
-## Installation Options
-
-### Option 1: Marketplace (Recommended)
-
-```bash
-/plugin marketplace add rayk/lucid-toolkit
-/plugin install context@lucid-toolkit
-```
-
-### Option 2: Team Configuration
-
-Add to `.claude/settings.json`:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "lucid-toolkit": {
-      "source": {
-        "source": "github",
-        "repo": "rayk/lucid-toolkit"
-      }
-    }
-  }
-}
-```
-
-### Option 3: Manual Clone
-
-```bash
-git clone https://github.com/rayk/lucid-toolkit.git ~/.claude/plugins/lucid-toolkit
-cd ~/.claude/plugins && ln -s lucid-toolkit/plugins/* .
-```
+- **Python** - FastAPI, Pydantic, SQLAlchemy patterns with TDD
+- **Flutter** - Riverpod, fpdart, mobile-specific patterns
+- **Neo4j** - Graph modeling, Cypher optimization, APOC/GDS integration
 
 ## Plugin Structure
-
-Each plugin follows the official Claude Code plugin structure:
 
 ```
 plugins/{name}/
 ├── plugin.json          # Plugin manifest
-├── settings.json        # Hook configurations (if applicable)
 ├── commands/            # Slash commands (*.md)
-├── skills/              # Skills (SKILL.md)
-├── hooks/               # Python lifecycle scripts
-├── templates/           # File templates
-└── schemas/             # JSON validation schemas
+├── skills/              # Skills (SKILL.md + references/)
+├── agents/              # Specialized subagents (*.md)
+├── schemas/             # TOON schemas (*.toon)
+└── templates/           # File templates
 ```
 
 ## Requirements
 
 - Claude Code CLI (latest)
-- Python 3.11+
+- Python 3.11+ (for hooks)
 - Git
-
-## Documentation
-
-- [Capability Plugin](plugins/capability/README.md) - Strategic capability management
-- [Outcome Plugin](plugins/outcome/README.md) - Outcome lifecycle and parent-child hierarchies
-- [Context Plugin](plugins/context/README.md) - Session tracking and delegation protocols
-- [Think Plugin](plugins/think/README.md) - Mental models and structured analysis
-- [Workspace Plugin](plugins/workspace/README.md) - Multi-project management
-- [Plan Plugin](plugins/plan/README.md) - TDD execution prompt generation
 
 ## License
 

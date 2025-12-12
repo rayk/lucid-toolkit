@@ -27,14 +27,6 @@
       "tags": ["analysis", "research", "mental-models", "decision-making", "fact-checking"]
     },
     {
-      "name": "designer",
-      "source": "./plugins/designer",
-      "description": "Design and architecture tools for Claude Code",
-      "version": "2.0.0",
-      "category": "development",
-      "tags": ["design", "architecture", "planning"]
-    },
-    {
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
       "description": "Flutter implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
