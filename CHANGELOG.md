@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-12-12
+
+### Added
+- **architect plugin** (v1.0.0) - New architecture design and documentation plugin based on Lucid Composite Architecture (LCA) principles
+  - 3 commands: `/architect:init`, `/architect:adr`, `/architect:review`
+  - 2 skills: `manage-architecture`, `create-adr`
+  - 4 agents: `component-analyzer`, `architecture-reviewer`, `adr-writer`, `consistency-checker`
+  - Three-tier abstraction model (Platform → Repository → Component)
+  - Document type hierarchy with trust levels (ARCHITECTURE.md, architecture.md, {topic}.md, adr-NNN-*.md)
+  - Platform documentation templates (overview, shared-concepts, protocols, integration-patterns, data-residency, cross-cutting-concerns)
+  - Hierarchy resolution model enforcing inheritance rules (lower levels extend, never override)
+  - Consistency checker validates architecture files don't violate higher-level constraints or LCA principles
+  - 8 immutable LCA principles enforcement
+  - ADR lifecycle management with supersession chains
+  - Maturity status tracking (Draft → InProgress → Stable → Locked)
+  - TOON schemas for component inventory and ADR indexing
+
+### Removed
+- **designer plugin** - Removed empty placeholder plugin (functionality now in architect plugin)
+
+### Changed
+- Updated README.md to reflect current 7 plugins
+- Marketplace version bumped to 2.2.0
+
 ## [2.3.0] - 2025-12-04
 
 ### Added
