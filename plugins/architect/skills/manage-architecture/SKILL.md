@@ -1,6 +1,18 @@
 ---
 name: manage-architecture
-description: Create and maintain architecture documentation following Lucid Composite Architecture (LCA) principles. Use when documenting system structure, creating ARCHITECTURE.md files, defining component hierarchies (Atoms, Composites, Conduits), or establishing data strategies with Schema.org boundaries.
+description: |
+  Create and maintain architecture documentation following Lucid Composite Architecture (LCA) principles.
+
+  INVOKE THIS SKILL when user:
+  - Asks an "architect" to review or analyze anything
+  - Mentions "architecture review", "structural review", or "design review"
+  - Requests documentation of system structure or component hierarchies
+  - Wants to create, update, or review ARCHITECTURE.md files
+  - Discusses Atoms, Composites, Conduits, or Deployable Units
+  - Asks about LCA principles or architectural patterns
+  - Needs data strategy with Schema.org at boundaries
+
+  Trigger keywords: architect, architecture, structural, LCA, component hierarchy, ARCHITECTURE.md
 allowed-tools:
   - Read
   - Write

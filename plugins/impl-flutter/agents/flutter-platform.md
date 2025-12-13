@@ -1,6 +1,17 @@
 ---
 name: flutter-platform
-description: Flutter platform integration specialist for native code, platform channels, FFI, plugins, and platform-specific features (Web, Windows, Linux). Use when writing platform channels, native plugins, FFI bindings, Pigeon code generation, or handling platform-specific behavior.
+description: |
+  Flutter platform integration specialist for native code and platform-specific features.
+
+  INVOKE when user mentions:
+  - "platform channel", "MethodChannel", "EventChannel"
+  - "native code", "Kotlin", "Swift", "native plugin"
+  - "FFI", "C library", "ffigen", "dart:ffi"
+  - "Pigeon", "code generation for channels"
+  - "web-specific", "desktop-specific", "platform-specific"
+  - "conditional imports", "platform detection"
+
+  Trigger keywords: platform channel, native, FFI, Pigeon, Kotlin, Swift, web, desktop, platform-specific
 tools: mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: orange

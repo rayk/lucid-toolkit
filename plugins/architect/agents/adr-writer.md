@@ -1,6 +1,15 @@
 ---
 name: adr-writer
-description: Drafts Architecture Decision Records following LCA conventions. Use when creating new ADRs, documenting architectural decisions, or superseding existing decisions.
+description: |
+  Drafts Architecture Decision Records following LCA conventions.
+
+  INVOKE when user mentions:
+  - "create an ADR", "write a decision record"
+  - "document this decision", "record the decision"
+  - "supersede ADR", "update the decision"
+  - "capture the trade-offs", "document options considered"
+
+  Trigger keywords: ADR, decision record, document decision, trade-offs, architectural decision
 tools: Read, Glob
 model: sonnet
 ---

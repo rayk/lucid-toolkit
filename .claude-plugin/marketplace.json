@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
@@ -14,7 +14,7 @@
       "name": "architect",
       "source": "./plugins/architect",
       "description": "Architecture design and documentation following Lucid Composite Architecture (LCA) principles with hierarchy consistency checking, ADRs, and platform documentation",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "architecture",
       "tags": ["architecture", "documentation", "lca", "adr", "design", "hierarchy"]
     },
@@ -30,7 +30,7 @@
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
       "description": "Flutter implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "category": "development",
       "tags": ["flutter", "dart", "mobile", "implementation", "tdd", "riverpod", "fpdart"]
     },
@@ -62,7 +62,7 @@
       "name": "plan",
       "source": "./plugins/plan",
       "description": "TDD execution prompt generator with cost-efficient model delegation",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "category": "development",
       "tags": ["tdd", "execution", "prompt-generation"]
     }

@@ -1,6 +1,15 @@
 ---
 name: component-analyzer
-description: Analyzes codebase to identify LCA structural components (Atoms, Composites, Conduits, Deployable Units). Use when mapping existing code to LCA architecture or documenting component hierarchy.
+description: |
+  Analyzes codebase to identify LCA structural components (Atoms, Composites, Conduits, Deployable Units).
+
+  INVOKE when user mentions:
+  - "analyze components", "identify atoms/composites/conduits"
+  - "map code to architecture", "component hierarchy"
+  - "what are the structural components", "classify components"
+  - "document the architecture from code"
+
+  Trigger keywords: analyze components, component hierarchy, atoms, composites, conduits, structural analysis
 tools: Read, Grep, Glob
 model: sonnet
 ---

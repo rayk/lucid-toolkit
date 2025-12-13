@@ -1,6 +1,16 @@
 ---
 name: create-adr
-description: Create Architecture Decision Records (ADRs) following LCA conventions. Use when documenting architectural decisions, recording trade-offs, or superseding previous decisions. ADRs are append-only and capture context, options, and explicit consequences.
+description: |
+  Create Architecture Decision Records (ADRs) following LCA conventions.
+
+  INVOKE THIS SKILL when user:
+  - Asks to "document a decision" or "record a decision"
+  - Mentions "ADR", "decision record", or "architectural decision"
+  - Wants to capture trade-offs or options considered
+  - Needs to supersede or update an existing decision
+  - Asks about decision history or rationale
+
+  Trigger keywords: ADR, decision record, architectural decision, trade-offs, options, rationale
 allowed-tools:
   - Read
   - Write

@@ -1,6 +1,18 @@
 ---
 name: flutter-coder
-description: Generates Flutter/Dart code with fpdart functional patterns, Riverpod 3.0, and Clean Architecture. Use for NEW feature implementation with built-in TDD. Do NOT use for retrofitting tests to existing code, test infrastructure, integration tests, or e2e tests—use flutter-tester instead.
+description: |
+  Generates Flutter/Dart code with fpdart functional patterns, Riverpod 3.0, and Clean Architecture.
+
+  INVOKE when user mentions:
+  - "implement this feature", "write the code", "generate flutter code"
+  - "create a new widget/screen/service/repository"
+  - "implement with TDD", "write with tests"
+  - "add Riverpod provider", "create use case"
+  - Working on NEW feature implementation (not retrofitting tests)
+
+  Do NOT use for: integration tests, e2e tests, test infrastructure—use flutter-tester instead.
+
+  Trigger keywords: implement feature, generate code, new widget, new screen, Riverpod, fpdart, Clean Architecture
 tools: mcp__dart__*, mcp__ide__*, Write, Edit
 model: opus
 color: blue

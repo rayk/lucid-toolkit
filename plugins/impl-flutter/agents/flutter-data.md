@@ -1,6 +1,17 @@
 ---
 name: flutter-data
-description: Flutter data persistence specialist for Isar, Firebase (Firestore/RTDB), offline-first patterns, sync strategies, and secure storage. Use when implementing local databases, cloud sync, offline support, conflict resolution, or secure credential storage.
+description: |
+  Flutter data persistence specialist for databases, sync, and secure storage.
+
+  INVOKE when user mentions:
+  - "database", "Isar", "local storage", "persist data"
+  - "Firebase", "Firestore", "Realtime Database", "cloud sync"
+  - "offline-first", "offline support", "sync strategy"
+  - "conflict resolution", "merge conflicts"
+  - "secure storage", "store credentials", "encryption"
+  - "cache", "data layer", "repository pattern"
+
+  Trigger keywords: database, Isar, Firebase, Firestore, offline, sync, secure storage, cache
 tools: mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: teal

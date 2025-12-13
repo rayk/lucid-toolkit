@@ -1,6 +1,15 @@
 ---
 name: consistency-checker
-description: Checks architecture documentation hierarchy for conflicts and inconsistencies. Enforces that lower-level docs can only extend/elaborate higher levels, never override. Validates project architecture against LCA principles.
+description: |
+  Checks architecture documentation hierarchy for conflicts and inconsistencies.
+
+  INVOKE when user mentions:
+  - "check consistency", "validate hierarchy"
+  - "find conflicts in architecture docs"
+  - "does this override the parent architecture"
+  - "check for LCA violations", "validate against LCA"
+
+  Trigger keywords: consistency check, hierarchy validation, architecture conflicts, LCA violations
 tools: Read, Grep, Glob
 model: sonnet
 ---

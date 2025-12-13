@@ -1,6 +1,19 @@
 ---
 name: flutter-release
-description: Flutter release and distribution specialist for PREPARING and DEPLOYING releases. Use when configuring App Store/Play Store submissions, publishing packages to pub.dev, setting up Crashlytics/analytics, or automating release pipelines. Do NOT use for fixing broken builds or CI issues—use flutter-env instead.
+description: |
+  Flutter release and distribution specialist for PREPARING and DEPLOYING releases.
+
+  INVOKE when user mentions:
+  - "release build", "app store", "Play Store", "App Store Connect"
+  - "TestFlight", "internal testing", "beta release"
+  - "publish to pub.dev", "package publishing"
+  - "Crashlytics setup", "analytics", "Firebase analytics"
+  - "version bump", "changelog", "release notes"
+  - "Fastlane", "release pipeline", "automated deployment"
+
+  Do NOT use for: fixing broken builds or CI issues—use flutter-env instead.
+
+  Trigger keywords: release, app store, Play Store, TestFlight, pub.dev, Crashlytics, version, Fastlane
 tools: mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: cyan

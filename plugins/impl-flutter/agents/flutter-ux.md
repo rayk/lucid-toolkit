@@ -1,6 +1,17 @@
 ---
 name: flutter-ux
-description: Flutter UX specialist for navigation, animations, theming, internationalization, and accessibility. Use when implementing routing (GoRouter), page transitions, animations (flutter_animate), theme systems (Material 3), i18n/l10n (ARB files), or accessibility (semantics, screen readers).
+description: |
+  Flutter UX specialist for navigation, animations, theming, internationalization, and accessibility.
+
+  INVOKE when user mentions:
+  - "implement theme", "add dark mode", "brand colors", "Material 3"
+  - "add navigation", "GoRouter", "routing", "deep links"
+  - "add animation", "page transitions", "flutter_animate"
+  - "internationalization", "i18n", "localization", "ARB files"
+  - "accessibility", "screen reader", "semantics", "a11y"
+  - "UI component", "widget design", "visual design"
+
+  Trigger keywords: theme, dark mode, navigation, GoRouter, animation, i18n, l10n, accessibility, Material 3, UX
 tools: mcp__dart__*, mcp__ide__*, Read, Write, Edit, Grep, Glob
 model: opus
 color: purple

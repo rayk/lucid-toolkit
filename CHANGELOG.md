@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-12-13
+
+### Changed
+- **architect plugin** (v1.0.0 → v1.1.0) - Enhanced skill and agent descriptions with explicit INVOKE triggers
+  - `manage-architecture` skill: Added "INVOKE THIS SKILL when user:" section with 7 trigger conditions and keywords
+  - `create-adr` skill: Added "INVOKE THIS SKILL when user:" section with 5 trigger conditions and keywords
+  - `architecture-reviewer` agent: Added "INVOKE when user mentions:" with 5 trigger phrases
+  - `component-analyzer` agent: Added "INVOKE when user mentions:" with 4 trigger phrases
+  - `adr-writer` agent: Added "INVOKE when user mentions:" with 4 trigger phrases
+  - `consistency-checker` agent: Added "INVOKE when user mentions:" with 4 trigger phrases
+- **plan plugin** (v2.0.0 → v2.1.0) - Enhanced skill description with explicit INVOKE triggers
+  - `execution-prompt-generator` skill: Added "INVOKE THIS SKILL when user:" section with 6 trigger conditions and keywords
+- **impl-flutter plugin** (v2.0.0 → v2.1.0) - Enhanced all 8 agent descriptions with explicit INVOKE triggers
+  - `flutter-coder`: Added triggers for feature implementation, code generation, Riverpod, fpdart
+  - `flutter-tester`: Added triggers for all testing needs (unit, widget, integration, e2e, golden, coverage)
+  - `flutter-debugger`: Added triggers for runtime debugging, layout issues, performance, DevTools
+  - `flutter-env`: Added triggers for build failures, CI issues, signing, environment setup
+  - `flutter-data`: Added triggers for database, Firebase, offline-first, sync, secure storage
+  - `flutter-platform`: Added triggers for platform channels, FFI, native code, Pigeon
+  - `flutter-release`: Added triggers for app store releases, pub.dev, Crashlytics, versioning
+  - `flutter-ux`: Added triggers for theming, navigation, animations, i18n, accessibility
+- Marketplace version bumped to 2.3.0
+
+### Fixed
+- **Plugin invocation recognition** - Session analysis revealed 0% delegation rate due to missing trigger keywords in plugin descriptions. All affected plugins now include explicit "INVOKE when:" sections with user intent phrases and trigger keywords to improve automatic invocation matching.
+
 ## [2.2.0] - 2025-12-12
 
 ### Added

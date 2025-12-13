@@ -1,6 +1,19 @@
 ---
 name: flutter-tester
-description: Flutter testing specialist and the GO-TO agent for integration tests, e2e tests, and test infrastructure. Use when writing ANY tests (unit, widget, integration, golden), retrofitting tests to existing code, setting up mocks/fixtures, debugging failing tests, improving coverage, or configuring test automation. This is the primary testing agent—flutter-coder only handles inline TDD for new features.
+description: |
+  Flutter testing specialist—GO-TO agent for ALL testing needs.
+
+  INVOKE when user mentions:
+  - "write tests", "add tests", "test this", "improve coverage"
+  - "integration test", "e2e test", "widget test", "golden test"
+  - "retrofit tests", "add tests to existing code"
+  - "mock", "fixture", "test infrastructure"
+  - "failing test", "debug test", "flaky test"
+  - "coverage report", "test automation"
+
+  This is the PRIMARY testing agent—flutter-coder only handles inline TDD for new features.
+
+  Trigger keywords: test, coverage, mock, fixture, integration test, e2e, golden test, widget test
 tools: mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: green

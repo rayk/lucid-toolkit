@@ -1,6 +1,19 @@
 ---
 name: flutter-debugger
-description: Flutter debugging specialist for RUNTIME issues using MCP dart/flutter server tools and DevTools. Use when the app IS RUNNING and needs live inspection—runtime errors, layout issues, widget tree problems, performance jank, or hot reload failures. Do NOT use for build failures (flutter-env) or writing tests (flutter-tester).
+description: |
+  Flutter debugging specialist for RUNTIME issues—app must be RUNNING.
+
+  INVOKE when user mentions:
+  - "debug this", "runtime error", "app is crashing"
+  - "layout issue", "overflow", "RenderFlex"
+  - "widget tree", "inspect widget", "DevTools"
+  - "performance", "jank", "slow", "frame drops"
+  - "hot reload not working", "changes not showing"
+  - "null check", "setState after dispose"
+
+  Do NOT use for: build failures (flutter-env), writing tests (flutter-tester).
+
+  Trigger keywords: debug, runtime error, crash, layout issue, widget tree, hot reload, performance, DevTools
 tools: mcp__dart__*, mcp__ide__*, Bash
 model: opus
 color: red
