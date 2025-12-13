@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "pattern-discovery-state.schema.json",
+  "title": "Pattern Discovery State",
+  "description": "Tracks pattern discovery runs and indexes discovered patterns for plugin enhancement analysis",
+  "type": "object",
+  "properties": {
+    "analysisMetadata": {
+      "type": "object",
+      "description": "Information about analysis progress",
+      "properties": {
+        "lastAnalyzedTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of last session analyzed"
+        },
+        "lastRunTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When pattern discovery was last executed"
+        },
+        "totalSessionsAnalyzed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Cumulative count of sessions processed"
+        },
+        "totalPatternsDiscovered": {
+          "type": "object",
+          "description": "Cumulative pattern counts by category",
+          "properties": {
+            "workflows": { "type": "integer", "minimum": 0 },
+            "anti_patterns": { "type": "integer", "minimum": 0 },
+            "enhancements": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["workflows", "anti_patterns", "enhancements"]
+        }
+      },
+      "required": ["lastAnalyzedTimestamp", "lastRunTimestamp", "totalSessionsAnalyzed", "totalPatternsDiscovered"]
+    },
+    "runHistory": {
+      "type": "array",
+      "description": "History of pattern discovery runs",
+      "items": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "description": "Unique identifier for this run"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this run executed"
+          },
+          "sessions_analyzed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of sessions analyzed in this run"
+          },
+          "patterns_found": {
+            "type": "object",
+            "properties": {
+              "workflows": { "type": "integer", "minimum": 0 },
+              "anti_patterns": { "type": "integer", "minimum": 0 },
+              "enhancements": { "type": "integer", "minimum": 0 }
+            },
+            "required": ["workflows", "anti_patterns", "enhancements"]
+          },
+          "checkpoint_before": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Checkpoint used to start this run"
+          },
+          "checkpoint_after": {
+            "type": "string",
+            "format": "date-time",
+            "description": "New checkpoint after this run"
+          }
+        },
+        "required": ["run_id", "timestamp", "sessions_analyzed", "patterns_found"]
+      }
+    },
+    "patternIndex": {
+      "type": "object",
+      "description": "Index of pattern files by category",
+      "properties": {
+        "workflows": {
+          "type": "array",
+          "description": "Files in raw-usage-patterns/workflows/",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": { "type": "string", "description": "Filename" },
+              "plugin": { "type": "string", "description": "Primary plugin involved" },
+              "discovered_at": { "type": "string", "format": "date-time" },
+              "behaviors": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Behaviors in the workflow sequence"
+              },
+              "session_count": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "How many sessions exhibited this pattern"
+              }
+            },
+            "required": ["file", "plugin", "discovered_at"]
+          }
+        },
+        "anti_patterns": {
+          "type": "array",
+          "description": "Files in raw-usage-patterns/anti-patterns/",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": { "type": "string", "description": "Filename" },
+              "plugin": { "type": "string", "description": "Plugin with the anti-pattern" },
+              "discovered_at": { "type": "string", "format": "date-time" },
+              "violation": {
+                "type": "string",
+                "description": "Which exclusion test was violated"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["high", "medium", "low"],
+                "description": "How severe the violation is"
+              }
+            },
+            "required": ["file", "plugin", "discovered_at", "violation"]
+          }
+        },
+        "enhancements": {
+          "type": "array",
+          "description": "Files in raw-usage-patterns/enhancements/",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": { "type": "string", "description": "Filename" },
+              "plugin": { "type": "string", "description": "Plugin that could be enhanced" },
+              "discovered_at": { "type": "string", "format": "date-time" },
+              "opportunity": {
+                "type": "string",
+                "description": "Brief description of the enhancement"
+              },
+              "elevation_mode": {
+                "type": "string",
+                "enum": ["strategic_abstraction", "cognitive_offloading", "decision_elevation"],
+                "description": "Which elevation mode this enhancement supports"
+              }
+            },
+            "required": ["file", "plugin", "discovered_at", "opportunity"]
+          }
+        }
+      },
+      "required": ["workflows", "anti_patterns", "enhancements"]
+    },
+    "pluginPatternSummary": {
+      "type": "object",
+      "description": "Pattern counts aggregated by plugin",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "workflows": { "type": "integer", "minimum": 0 },
+          "anti_patterns": { "type": "integer", "minimum": 0 },
+          "enhancements": { "type": "integer", "minimum": 0 },
+          "last_pattern_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "required": ["analysisMetadata", "runHistory", "patternIndex"]
+}

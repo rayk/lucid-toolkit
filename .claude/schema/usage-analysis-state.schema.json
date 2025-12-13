@@ -1,0 +1,231 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "usage-analysis-state.schema.json",
+  "title": "Usage Analysis State",
+  "description": "Tracks analysis progress and plugin usage metrics across Claude Code sessions",
+  "type": "object",
+  "properties": {
+    "analysisMetadata": {
+      "type": "object",
+      "description": "Information about the analysis run",
+      "properties": {
+        "lastAnalyzedTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of last session analyzed"
+        },
+        "lastAnalyzedSessionId": {
+          "type": "string",
+          "description": "Session ID where analysis last stopped"
+        },
+        "lastRunTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this analysis was last executed"
+        },
+        "totalSessionsAnalyzed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Cumulative count of sessions processed"
+        },
+        "dateRangeStart": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Earliest session in analysis window"
+        },
+        "dateRangeEnd": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Latest session in analysis window"
+        }
+      },
+      "required": ["lastAnalyzedTimestamp", "lastRunTimestamp", "totalSessionsAnalyzed"]
+    },
+    "pluginInventory": {
+      "type": "object",
+      "description": "Plugins tracked and their versions per session",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Plugin name from marketplace.json"
+          },
+          "versions": {
+            "type": "array",
+            "description": "Version history observed",
+            "items": {
+              "type": "object",
+              "properties": {
+                "version": { "type": "string" },
+                "firstSeen": { "type": "string", "format": "date-time" },
+                "lastSeen": { "type": "string", "format": "date-time" },
+                "sessionCount": { "type": "integer", "minimum": 0 }
+              },
+              "required": ["version", "firstSeen", "sessionCount"]
+            }
+          },
+          "behaviors": {
+            "type": "object",
+            "description": "Behaviors defined by this plugin",
+            "properties": {
+              "commands": { "type": "array", "items": { "type": "string" } },
+              "skills": { "type": "array", "items": { "type": "string" } },
+              "agents": { "type": "array", "items": { "type": "string" } },
+              "hooks": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "required": ["name", "versions", "behaviors"]
+      }
+    },
+    "invocationMetrics": {
+      "type": "object",
+      "description": "Counts and performance metrics per behavior",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["command", "skill", "agent", "hook"],
+            "description": "Behavior type"
+          },
+          "plugin": {
+            "type": "string",
+            "description": "Parent plugin name"
+          },
+          "totalInvocations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "successCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "executionPatterns": {
+            "type": "object",
+            "description": "How behavior was executed",
+            "properties": {
+              "foreground": { "type": "integer", "minimum": 0 },
+              "background": { "type": "integer", "minimum": 0 },
+              "parallel": { "type": "integer", "minimum": 0 },
+              "sequential": { "type": "integer", "minimum": 0 }
+            }
+          },
+          "performanceMetrics": {
+            "type": "object",
+            "description": "Resource consumption metrics",
+            "properties": {
+              "totalTokensInput": { "type": "integer", "minimum": 0 },
+              "totalTokensOutput": { "type": "integer", "minimum": 0 },
+              "totalCacheReads": { "type": "integer", "minimum": 0 },
+              "totalCacheWrites": { "type": "integer", "minimum": 0 },
+              "totalExecutionTimeMs": { "type": "integer", "minimum": 0 },
+              "avgExecutionTimeMs": { "type": "number", "minimum": 0 }
+            }
+          },
+          "sessionsUsedIn": {
+            "type": "array",
+            "description": "Session IDs where this behavior was invoked",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["type", "plugin", "totalInvocations"]
+      }
+    },
+    "sessionSummaries": {
+      "type": "array",
+      "description": "Summary of each analyzed session",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sessionId": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "project": { "type": "string" },
+          "pluginsInstalled": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "version": { "type": "string" }
+              },
+              "required": ["name", "version"]
+            }
+          },
+          "behaviorsInvoked": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "totalTokens": { "type": "integer", "minimum": 0 },
+          "cacheHitRate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "durationMs": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["sessionId", "timestamp", "project"]
+      }
+    },
+    "findings": {
+      "type": "object",
+      "description": "Categorized issues discovered during analysis",
+      "properties": {
+        "category1_missed": {
+          "type": "array",
+          "description": "Behaviors that should have triggered but didn't",
+          "items": {
+            "type": "object",
+            "properties": {
+              "behavior": { "type": "string" },
+              "sessionId": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "trigger": { "type": "string", "description": "What should have triggered it" },
+              "evidence": { "type": "string" },
+              "recommendation": { "type": "string" }
+            },
+            "required": ["behavior", "sessionId", "trigger", "evidence"]
+          }
+        },
+        "category2_suboptimal": {
+          "type": "array",
+          "description": "Behaviors that ran but underperformed",
+          "items": {
+            "type": "object",
+            "properties": {
+              "behavior": { "type": "string" },
+              "sessionId": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "expected": { "type": "string" },
+              "actual": { "type": "string" },
+              "evidence": { "type": "string" },
+              "rootCause": { "type": "string" },
+              "recommendation": { "type": "string" }
+            },
+            "required": ["behavior", "sessionId", "expected", "actual", "evidence"]
+          }
+        },
+        "category3_unused": {
+          "type": "array",
+          "description": "Behaviors with no detected use cases",
+          "items": {
+            "type": "object",
+            "properties": {
+              "behavior": { "type": "string" },
+              "plugin": { "type": "string" },
+              "sessionsAvailable": { "type": "integer", "minimum": 0 },
+              "possibleReasons": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "recommendation": { "type": "string" }
+            },
+            "required": ["behavior", "plugin", "sessionsAvailable"]
+          }
+        }
+      }
+    }
+  },
+  "required": ["analysisMetadata", "pluginInventory", "invocationMetrics"]
+}

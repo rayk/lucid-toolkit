@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(sub-agent-builder)",
+      "Skill(command-builder)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

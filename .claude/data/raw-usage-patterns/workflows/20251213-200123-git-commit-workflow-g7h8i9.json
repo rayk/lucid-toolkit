@@ -1,0 +1,38 @@
+{
+  "discovered_at": "2025-12-13T09:01:23Z",
+  "run_id": "pd-20251213-200123",
+  "pattern": {
+    "type": "workflow",
+    "session_id": "a88d2791-1510-493c-8815-5f0bc52a783f",
+    "tool_sequence": [
+      {"tool": "Bash", "parameters": {"command": "git status", "description": "Check current git status"}, "timestamp": "2025-12-13T06:20:22.359Z"},
+      {"tool": "Bash", "parameters": {"command": "git diff --staged --stat", "description": "Check staged changes"}, "timestamp": "2025-12-13T06:20:23.358Z"},
+      {"tool": "Bash", "parameters": {"command": "git log --oneline -5", "description": "Check recent commit style"}, "timestamp": "2025-12-13T06:20:24.167Z"},
+      {"tool": "Bash", "parameters": {"command": "git add -A && git diff --cached --stat | head -40", "description": "Stage all and show summary"}, "timestamp": "2025-12-13T06:20:36.900Z"},
+      {"tool": "Bash", "parameters": {"command": "git commit -m \"$(cat <<'EOF'\nfeat(openscheme): Refactor theme system...\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\""}, "timestamp": "2025-12-13T06:20:50.058Z"},
+      {"tool": "Bash", "parameters": {"command": "git push", "description": "Push to remote"}, "timestamp": "2025-12-13T06:20:54.017Z"}
+    ],
+    "files_involved": [],
+    "commands_executed": [
+      "git status",
+      "git diff --staged --stat",
+      "git log --oneline -5",
+      "git add -A && git diff --cached --stat | head -40",
+      "git commit -m \"...\"",
+      "git push"
+    ],
+    "urls_fetched": [],
+    "timing_gaps_ms": [999, 809, 12733, 13158, 3959],
+    "context_summary": "Standard git commit workflow - check status, review staged changes, check commit style, stage all, commit with detailed message, push. All sequential Bash commands in rapid succession.",
+    "commonality_markers": [
+      "git status first",
+      "git log for style reference",
+      "git add before commit",
+      "HEREDOC for commit message",
+      "Sequential git operations"
+    ],
+    "interpretation": "Mechanical git workflow that follows Claude Code commit protocol. Could be a candidate for automation into a single commit operation, but currently follows proper protocol with status checks."
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

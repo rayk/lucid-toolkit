@@ -1,0 +1,55 @@
+{
+  "analysisMetadata": {
+    "lastAnalyzedTimestamp": "2025-12-13T12:22:27.920Z",
+    "lastRunTimestamp": "2025-12-13T23:24:25Z",
+    "totalSessionsAnalyzed": 27,
+    "totalPatternsDiscovered": {
+      "workflows": 6,
+      "anti_patterns": 3,
+      "enhancements": 4
+    }
+  },
+  "runHistory": [
+    {
+      "run_id": "pd-20251213-200123",
+      "timestamp": "2025-12-13T09:01:23Z",
+      "sessions_analyzed": 20,
+      "patterns_found": {
+        "workflows": 3,
+        "anti_patterns": 2,
+        "enhancements": 2
+      }
+    },
+    {
+      "run_id": "pd-20251213-232425",
+      "timestamp": "2025-12-13T23:24:25Z",
+      "sessions_analyzed": 7,
+      "patterns_found": {
+        "workflows": 3,
+        "anti_patterns": 1,
+        "enhancements": 2
+      }
+    }
+  ],
+  "patternIndex": {
+    "workflows": [
+      "20251213-200123-research-to-documentation-a1b2c3.json",
+      "20251213-200123-parallel-refactor-d4e5f6.json",
+      "20251213-200123-git-commit-workflow-g7h8i9.json",
+      "20251213-232425-impl-flutter-multi-agent-sequence-a1b2c3.json",
+      "20251213-232425-explore-then-implement-d4e5f6.json",
+      "20251213-232425-background-orchestration-g7h8i9.json"
+    ],
+    "anti_patterns": [
+      "20251213-200123-repeated-verification-p7q8r9.json",
+      "20251213-200123-env-exploration-s1t2u3.json",
+      "20251213-232425-sequential-only-execution-j1k2l3.json"
+    ],
+    "enhancements": [
+      "20251213-200123-research-orchestration-j1k2l3.json",
+      "20251213-200123-decision-elevation-m4n5o6.json",
+      "20251213-232425-agent-handoff-protocol-m4n5o6.json",
+      "20251213-232425-parallel-execution-guidance-p7q8r9.json"
+    ]
+  }
+}

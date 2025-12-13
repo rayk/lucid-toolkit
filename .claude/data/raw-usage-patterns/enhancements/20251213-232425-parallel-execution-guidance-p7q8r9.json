@@ -1,0 +1,22 @@
+{
+  "discovered_at": "2025-12-13T23:24:25Z",
+  "run_id": "pd-20251213-232425",
+  "pattern": {
+    "pattern_type": "enhancement",
+    "session_id": "multiple",
+    "current_behavior": "Sequential tool execution in all observed sessions",
+    "plugin": "all impl-* plugins",
+    "opportunity": "Add parallel execution guidance to agent prompts for independent operations",
+    "elevation_mode": "cognitive_offloading",
+    "proposed_change": "Enhance agent definitions to explicitly instruct parallel execution patterns: (1) multiple file reads in same message, (2) multiple Glob patterns in same message, (3) background Task spawning for independent work units. This reduces session time and token usage."
+  },
+  "raw_evidence": {
+    "sessions_affected": 7,
+    "sequential_total": 328,
+    "parallel_total": 0,
+    "description": "No observed parallel tool execution despite Claude Code supporting parallel calls. Sessions with multiple independent Read operations (e.g., session 281ffece with 191 calls) executed them sequentially.",
+    "philosophy_gap": "Underutilizes 'Claude handles how' in strategic abstraction - execution strategy is suboptimal"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

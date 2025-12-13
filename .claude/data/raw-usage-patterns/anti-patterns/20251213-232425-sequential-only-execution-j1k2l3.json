@@ -1,0 +1,20 @@
+{
+  "discovered_at": "2025-12-13T23:24:25Z",
+  "run_id": "pd-20251213-232425",
+  "pattern": {
+    "pattern_type": "anti_pattern",
+    "session_id": "multiple",
+    "violation": "Cognitive offloading incomplete - human/Claude doing work that could be parallelized",
+    "behavior_involved": "all agent invocations",
+    "plugin": "impl-flutter, context",
+    "recommendation": "Implement parallel tool call patterns where independent operations (multiple Reads, Globs, or agent Tasks) can execute concurrently"
+  },
+  "raw_evidence": {
+    "sessions_analyzed": 7,
+    "parallel_execution_count": 0,
+    "sequential_execution_count": 328,
+    "description": "All 7 sessions with behaviors showed parallel=0 in execution_patterns. Even session 281ffece with 191 tool calls executed entirely sequentially despite having multiple independent file reads and agent invocations."
+  },
+  "classification_confidence": "high",
+  "requires_review": true
+}

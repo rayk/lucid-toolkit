@@ -1,0 +1,20 @@
+{
+  "discovered_at": "2025-12-13T23:24:25Z",
+  "run_id": "pd-20251213-232425",
+  "pattern": {
+    "pattern_type": "enhancement",
+    "session_id": "281ffece-bf4d-4368-afd2-6ae72eb8f756",
+    "current_behavior": "Multi-agent sequence with implicit handoffs",
+    "plugin": "impl-flutter",
+    "opportunity": "Formalize agent handoff protocol with explicit context passing between agents",
+    "elevation_mode": "strategic_abstraction",
+    "proposed_change": "Add structured handoff outputs: each agent returns a handoff schema with (1) work completed, (2) context for next agent, (3) validation criteria. This makes implicit handoffs explicit and enables human to see/redirect between agents."
+  },
+  "raw_evidence": {
+    "tool_sequence": ["flutter-ux", "flutter-coder", "flutter-env", "flutter-tester"],
+    "description": "Session shows 4 agents invoked in sequence but handoff context is implicit in session state, not explicit in agent outputs. Human cannot easily verify what context was passed between agents.",
+    "philosophy_gap": "Violates 'makes implicit context explicit' inclusion criterion"
+  },
+  "classification_confidence": "medium",
+  "requires_review": true
+}

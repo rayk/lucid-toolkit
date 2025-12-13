@@ -1,0 +1,889 @@
+{
+  "$schema": "../schema/usage-analysis-state.schema.json",
+  "analysisMetadata": {
+    "lastAnalyzedTimestamp": "2025-12-13T12:18:12.307Z",
+    "lastAnalyzedSessionId": null,
+    "lastRunTimestamp": "2025-12-13T12:20:14.879920+00:00",
+    "totalSessionsAnalyzed": 30,
+    "dateRangeStart": "2025-12-11T06:23:34.268Z",
+    "dateRangeEnd": "2025-12-13T12:18:12.307Z"
+  },
+  "pluginInventory": {
+    "plugins": {
+      "architect": {
+        "name": "architect",
+        "version": "1.0.0",
+        "behaviors": {
+          "commands": [
+            "init",
+            "adr",
+            "review"
+          ],
+          "skills": [
+            "manage-architecture",
+            "create-adr"
+          ],
+          "agents": [
+            "component-analyzer",
+            "architecture-reviewer",
+            "adr-writer",
+            "consistency-checker"
+          ],
+          "hooks": []
+        }
+      },
+      "analyst": {
+        "name": "analyst",
+        "version": "2.0.0",
+        "behaviors": {
+          "commands": [
+            "consider",
+            "assess",
+            "reflect",
+            "debate",
+            "swarm"
+          ],
+          "skills": [
+            "consider"
+          ],
+          "agents": [
+            "research",
+            "model-5-whys",
+            "model-10-10-10",
+            "model-eisenhower",
+            "model-first-principles",
+            "model-inversion",
+            "model-occams-razor",
+            "model-one-thing",
+            "model-opportunity-cost",
+            "model-pareto",
+            "model-second-order",
+            "model-six-hats",
+            "model-swot",
+            "model-toc",
+            "model-via-negativa",
+            "think-classifier",
+            "think-clr-validator",
+            "think-orchestrator",
+            "think-synthesizer",
+            "think-validator"
+          ],
+          "hooks": []
+        }
+      },
+      "impl-flutter": {
+        "name": "impl-flutter",
+        "version": "2.0.0",
+        "behaviors": {
+          "commands": [],
+          "skills": [
+            "dart-flutter-mcp"
+          ],
+          "agents": [
+            "flutter-coder",
+            "flutter-tester",
+            "flutter-debugger",
+            "flutter-env",
+            "flutter-data",
+            "flutter-platform",
+            "flutter-release",
+            "flutter-ux"
+          ],
+          "hooks": []
+        }
+      },
+      "impl-python": {
+        "name": "impl-python",
+        "version": "2.0.0",
+        "behaviors": {
+          "commands": [],
+          "skills": [
+            "python-dev-tools"
+          ],
+          "agents": [
+            "python-coder",
+            "python-tester",
+            "python-debugger",
+            "python-env",
+            "python-data",
+            "python-platform",
+            "python-release",
+            "python-api"
+          ],
+          "hooks": []
+        }
+      },
+      "impl-neo4j": {
+        "name": "impl-neo4j",
+        "version": "1.1.0",
+        "behaviors": {
+          "commands": [],
+          "skills": [
+            "neo4j-cypher"
+          ],
+          "agents": [
+            "neo4j-modeler",
+            "neo4j-query",
+            "neo4j-data",
+            "neo4j-perf",
+            "neo4j-driver",
+            "neo4j-env"
+          ],
+          "hooks": []
+        }
+      },
+      "luc": {
+        "name": "luc",
+        "version": "2.4.0",
+        "behaviors": {
+          "commands": [
+            "setup",
+            "about"
+          ],
+          "skills": [
+            "manage-markdown-docs",
+            "never-guess",
+            "render-output",
+            "resolve-ambiguity",
+            "use-toon"
+          ],
+          "agents": [],
+          "hooks": []
+        }
+      },
+      "plan": {
+        "name": "plan",
+        "version": "2.0.0",
+        "behaviors": {
+          "commands": [
+            "generate",
+            "analyze",
+            "validate"
+          ],
+          "skills": [
+            "execution-prompt-generator"
+          ],
+          "agents": [],
+          "hooks": []
+        }
+      }
+    },
+    "behaviors": {
+      "architect:init": {
+        "name": "init",
+        "type": "command",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./commands/init.md"
+      },
+      "architect:adr": {
+        "name": "adr",
+        "type": "command",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./commands/adr.md"
+      },
+      "architect:review": {
+        "name": "review",
+        "type": "command",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./commands/review.md"
+      },
+      "architect:manage-architecture": {
+        "name": "manage-architecture",
+        "type": "skill",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./skills/manage-architecture"
+      },
+      "architect:create-adr": {
+        "name": "create-adr",
+        "type": "skill",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./skills/create-adr"
+      },
+      "architect:component-analyzer": {
+        "name": "component-analyzer",
+        "type": "agent",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./agents/component-analyzer.md"
+      },
+      "architect:architecture-reviewer": {
+        "name": "architecture-reviewer",
+        "type": "agent",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./agents/architecture-reviewer.md"
+      },
+      "architect:adr-writer": {
+        "name": "adr-writer",
+        "type": "agent",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./agents/adr-writer.md"
+      },
+      "architect:consistency-checker": {
+        "name": "consistency-checker",
+        "type": "agent",
+        "plugin": "architect",
+        "version": "1.0.0",
+        "path": "./agents/consistency-checker.md"
+      },
+      "analyst:consider": {
+        "name": "consider",
+        "type": "skill",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./skills/consider"
+      },
+      "analyst:assess": {
+        "name": "assess",
+        "type": "command",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./commands/assess.md"
+      },
+      "analyst:reflect": {
+        "name": "reflect",
+        "type": "command",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./commands/reflect.md"
+      },
+      "analyst:debate": {
+        "name": "debate",
+        "type": "command",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./commands/debate.md"
+      },
+      "analyst:swarm": {
+        "name": "swarm",
+        "type": "command",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./commands/swarm.md"
+      },
+      "analyst:research": {
+        "name": "research",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/research.md"
+      },
+      "analyst:model-5-whys": {
+        "name": "model-5-whys",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-5-whys.md"
+      },
+      "analyst:model-10-10-10": {
+        "name": "model-10-10-10",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-10-10-10.md"
+      },
+      "analyst:model-eisenhower": {
+        "name": "model-eisenhower",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-eisenhower.md"
+      },
+      "analyst:model-first-principles": {
+        "name": "model-first-principles",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-first-principles.md"
+      },
+      "analyst:model-inversion": {
+        "name": "model-inversion",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-inversion.md"
+      },
+      "analyst:model-occams-razor": {
+        "name": "model-occams-razor",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-occams-razor.md"
+      },
+      "analyst:model-one-thing": {
+        "name": "model-one-thing",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-one-thing.md"
+      },
+      "analyst:model-opportunity-cost": {
+        "name": "model-opportunity-cost",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-opportunity-cost.md"
+      },
+      "analyst:model-pareto": {
+        "name": "model-pareto",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-pareto.md"
+      },
+      "analyst:model-second-order": {
+        "name": "model-second-order",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-second-order.md"
+      },
+      "analyst:model-six-hats": {
+        "name": "model-six-hats",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-six-hats.md"
+      },
+      "analyst:model-swot": {
+        "name": "model-swot",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-swot.md"
+      },
+      "analyst:model-toc": {
+        "name": "model-toc",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-toc.md"
+      },
+      "analyst:model-via-negativa": {
+        "name": "model-via-negativa",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/model-via-negativa.md"
+      },
+      "analyst:think-classifier": {
+        "name": "think-classifier",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/think-classifier.md"
+      },
+      "analyst:think-clr-validator": {
+        "name": "think-clr-validator",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/think-clr-validator.md"
+      },
+      "analyst:think-orchestrator": {
+        "name": "think-orchestrator",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/think-orchestrator.md"
+      },
+      "analyst:think-synthesizer": {
+        "name": "think-synthesizer",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/think-synthesizer.md"
+      },
+      "analyst:think-validator": {
+        "name": "think-validator",
+        "type": "agent",
+        "plugin": "analyst",
+        "version": "2.0.0",
+        "path": "./agents/think-validator.md"
+      },
+      "impl-flutter:dart-flutter-mcp": {
+        "name": "dart-flutter-mcp",
+        "type": "skill",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./skills/dart-flutter-mcp"
+      },
+      "impl-flutter:flutter-coder": {
+        "name": "flutter-coder",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-coder.md"
+      },
+      "impl-flutter:flutter-tester": {
+        "name": "flutter-tester",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-tester.md"
+      },
+      "impl-flutter:flutter-debugger": {
+        "name": "flutter-debugger",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-debugger.md"
+      },
+      "impl-flutter:flutter-env": {
+        "name": "flutter-env",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-env.md"
+      },
+      "impl-flutter:flutter-data": {
+        "name": "flutter-data",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-data.md"
+      },
+      "impl-flutter:flutter-platform": {
+        "name": "flutter-platform",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-platform.md"
+      },
+      "impl-flutter:flutter-release": {
+        "name": "flutter-release",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-release.md"
+      },
+      "impl-flutter:flutter-ux": {
+        "name": "flutter-ux",
+        "type": "agent",
+        "plugin": "impl-flutter",
+        "version": "2.0.0",
+        "path": "./agents/flutter-ux.md"
+      },
+      "impl-python:python-dev-tools": {
+        "name": "python-dev-tools",
+        "type": "skill",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./skills/python-dev-tools"
+      },
+      "impl-python:python-coder": {
+        "name": "python-coder",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-coder.md"
+      },
+      "impl-python:python-tester": {
+        "name": "python-tester",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-tester.md"
+      },
+      "impl-python:python-debugger": {
+        "name": "python-debugger",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-debugger.md"
+      },
+      "impl-python:python-env": {
+        "name": "python-env",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-env.md"
+      },
+      "impl-python:python-data": {
+        "name": "python-data",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-data.md"
+      },
+      "impl-python:python-platform": {
+        "name": "python-platform",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-platform.md"
+      },
+      "impl-python:python-release": {
+        "name": "python-release",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-release.md"
+      },
+      "impl-python:python-api": {
+        "name": "python-api",
+        "type": "agent",
+        "plugin": "impl-python",
+        "version": "2.0.0",
+        "path": "./agents/python-api.md"
+      },
+      "impl-neo4j:neo4j-cypher": {
+        "name": "neo4j-cypher",
+        "type": "skill",
+        "plugin": "impl-neo4j",
+        "version": "1.1.0",
+        "path": "./skills/neo4j-cypher"
+      },
+      "impl-neo4j:neo4j-modeler": {
+        "name": "neo4j-modeler",
+        "type": "agent",
+        "plugin": "impl-neo4j",
+        "version": "1.1.0",
+        "path": "./agents/neo4j-modeler.md"
+      },
+      "impl-neo4j:neo4j-query": {
+        "name": "neo4j-query",
+        "type": "agent",
+        "plugin": "impl-neo4j",
+        "version": "1.1.0",
+        "path": "./agents/neo4j-query.md"
+      },
+      "impl-neo4j:neo4j-data": {
+        "name": "neo4j-data",
+        "type": "agent",
+        "plugin": "impl-neo4j",
+        "version": "1.1.0",
+        "path": "./agents/neo4j-data.md"
+      },
+      "impl-neo4j:neo4j-perf": {
+        "name": "neo4j-perf",
+        "type": "agent",
+        "plugin": "impl-neo4j",
+        "version": "1.1.0",
+        "path": "./agents/neo4j-perf.md"
+      },
+      "impl-neo4j:neo4j-driver": {
+        "name": "neo4j-driver",
+        "type": "agent",
+        "plugin": "impl-neo4j",
+        "version": "1.1.0",
+        "path": "./agents/neo4j-driver.md"
+      },
+      "impl-neo4j:neo4j-env": {
+        "name": "neo4j-env",
+        "type": "agent",
+        "plugin": "impl-neo4j",
+        "version": "1.1.0",
+        "path": "./agents/neo4j-env.md"
+      },
+      "luc:setup": {
+        "name": "setup",
+        "type": "command",
+        "plugin": "luc",
+        "version": "2.4.0",
+        "path": "./commands/setup.md"
+      },
+      "luc:about": {
+        "name": "about",
+        "type": "command",
+        "plugin": "luc",
+        "version": "2.4.0",
+        "path": "./commands/about.md"
+      },
+      "luc:manage-markdown-docs": {
+        "name": "manage-markdown-docs",
+        "type": "skill",
+        "plugin": "luc",
+        "version": "2.4.0",
+        "path": "./skills/manage-markdown-docs"
+      },
+      "luc:never-guess": {
+        "name": "never-guess",
+        "type": "skill",
+        "plugin": "luc",
+        "version": "2.4.0",
+        "path": "./skills/never-guess"
+      },
+      "luc:render-output": {
+        "name": "render-output",
+        "type": "skill",
+        "plugin": "luc",
+        "version": "2.4.0",
+        "path": "./skills/render-output"
+      },
+      "luc:resolve-ambiguity": {
+        "name": "resolve-ambiguity",
+        "type": "skill",
+        "plugin": "luc",
+        "version": "2.4.0",
+        "path": "./skills/resolve-ambiguity"
+      },
+      "luc:use-toon": {
+        "name": "use-toon",
+        "type": "skill",
+        "plugin": "luc",
+        "version": "2.4.0",
+        "path": "./skills/use-toon"
+      },
+      "plan:generate": {
+        "name": "generate",
+        "type": "command",
+        "plugin": "plan",
+        "version": "2.0.0",
+        "path": "./commands/generate.md"
+      },
+      "plan:analyze": {
+        "name": "analyze",
+        "type": "command",
+        "plugin": "plan",
+        "version": "2.0.0",
+        "path": "./commands/analyze.md"
+      },
+      "plan:validate": {
+        "name": "validate",
+        "type": "command",
+        "plugin": "plan",
+        "version": "2.0.0",
+        "path": "./commands/validate.md"
+      },
+      "plan:execution-prompt-generator": {
+        "name": "execution-prompt-generator",
+        "type": "skill",
+        "plugin": "plan",
+        "version": "2.0.0",
+        "path": "./skills/execution-prompt-generator"
+      }
+    }
+  },
+  "invocationMetrics": {
+    "behaviors": {
+      "agent:Explore": {
+        "invocations": 5,
+        "sessions": [
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "01b2cf12-d715-4a60-88c5-b4ee1e53bfd7",
+          "aedf036b-11b1-47d6-91ed-1f1e56e99280",
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
+          "76533dc7-fb48-4c37-b97c-46082a83a773"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 5
+      },
+      "agent:impl-flutter:flutter-tester": {
+        "invocations": 2,
+        "sessions": [
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 2
+      },
+      "agent:impl-flutter:flutter-env": {
+        "invocations": 3,
+        "sessions": [
+          "76533dc7-fb48-4c37-b97c-46082a83a773",
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 3
+      },
+      "agent:impl-flutter:flutter-ux": {
+        "invocations": 2,
+        "sessions": [
+          "2072867e-3f96-4580-a7bd-e58fd9c85415",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 2
+      },
+      "agent:impl-flutter:flutter-coder": {
+        "invocations": 3,
+        "sessions": [
+          "496021e9-78e1-480d-a0cd-b67538e78ddf",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756",
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 3
+      },
+      "agent:general-purpose": {
+        "invocations": 1,
+        "sessions": [
+          "76533dc7-fb48-4c37-b97c-46082a83a773"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 1
+      },
+      "skill:impl-flutter:dart-flutter-mcp": {
+        "invocations": 1,
+        "sessions": [
+          "84da288d-9666-457c-92d2-5d4bbe85a608"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 1
+      }
+    },
+    "plugins": {
+      "impl-flutter": {
+        "sessions": [
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756",
+          "84da288d-9666-457c-92d2-5d4bbe85a608",
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
+          "76533dc7-fb48-4c37-b97c-46082a83a773",
+          "496021e9-78e1-480d-a0cd-b67538e78ddf",
+          "2072867e-3f96-4580-a7bd-e58fd9c85415"
+        ],
+        "behaviors_used": [
+          "agent:impl-flutter:flutter-env",
+          "agent:impl-flutter:flutter-coder",
+          "agent:Explore",
+          "agent:impl-flutter:flutter-ux",
+          "agent:impl-flutter:flutter-tester",
+          "skill:impl-flutter:dart-flutter-mcp",
+          "agent:general-purpose"
+        ],
+        "session_count": 7
+      }
+    },
+    "totals": {
+      "sessions": 30,
+      "tool_calls": 1147,
+      "tokens_input": 276314,
+      "tokens_output": 482393,
+      "cache_reads": 180769470,
+      "behaviors_invoked": 17
+    }
+  },
+  "sessionSummaries": [],
+  "findings": {
+    "category1_missed": [
+      {
+        "behavior": "plan:*",
+        "trigger": "plan file operations",
+        "occurrences": 244,
+        "priority": "critical"
+      },
+      {
+        "behavior": "impl-python:*",
+        "trigger": "python file operations",
+        "occurrences": 33,
+        "priority": "high"
+      },
+      {
+        "behavior": "analyst:*",
+        "trigger": "analysis task prompts",
+        "occurrences": 5,
+        "priority": "medium"
+      },
+      {
+        "behavior": "architect:*",
+        "trigger": "adr/architecture files",
+        "occurrences": 4,
+        "priority": "medium"
+      }
+    ],
+    "category2_suboptimal": [
+      {
+        "pattern": "sequential_execution",
+        "expected": "mixed",
+        "actual": "100% sequential",
+        "priority": "medium"
+      },
+      {
+        "pattern": "background_utilization",
+        "expected": ">10%",
+        "actual": "0.3%",
+        "priority": "low"
+      }
+    ],
+    "category3_unused": [
+      {
+        "plugin": "architect",
+        "behaviors": 9,
+        "sessions": 0
+      },
+      {
+        "plugin": "analyst",
+        "behaviors": 26,
+        "sessions": 0
+      },
+      {
+        "plugin": "impl-python",
+        "behaviors": 9,
+        "sessions": 0
+      },
+      {
+        "plugin": "impl-neo4j",
+        "behaviors": 7,
+        "sessions": 0
+      },
+      {
+        "plugin": "luc",
+        "behaviors": 7,
+        "sessions": 0
+      },
+      {
+        "plugin": "plan",
+        "behaviors": 4,
+        "sessions": 0
+      }
+    ]
+  }
+}

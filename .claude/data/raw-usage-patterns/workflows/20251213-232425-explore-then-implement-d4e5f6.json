@@ -1,0 +1,29 @@
+{
+  "discovered_at": "2025-12-13T23:24:25Z",
+  "run_id": "pd-20251213-232425",
+  "pattern": {
+    "pattern_type": "workflow",
+    "session_id": "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+    "behaviors": [
+      "agent:Explore",
+      "agent:impl-flutter:flutter-env",
+      "agent:impl-flutter:flutter-tester"
+    ],
+    "interpretation": "Discovery-first pattern where Explore agent understands codebase structure before implementation agents execute. Shows strategic abstraction: human directs high-level goal, Claude explores to understand context, then specialized agents implement.",
+    "plugin_involved": "impl-flutter",
+    "elevation_mode": "strategic_abstraction"
+  },
+  "raw_evidence": {
+    "tool_count": 38,
+    "execution_patterns": {
+      "foreground": 6,
+      "background": 0,
+      "parallel": 0,
+      "sequential": 38
+    },
+    "project": "lucid-apps",
+    "tool_sequence_highlight": ["Task(Explore)", "mcp__dart__analyze_files", "Task(flutter-env)", "Task(flutter-tester)"]
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

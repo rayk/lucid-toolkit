@@ -1,0 +1,30 @@
+{
+  "discovered_at": "2025-12-13T23:24:25Z",
+  "run_id": "pd-20251213-232425",
+  "pattern": {
+    "pattern_type": "workflow",
+    "session_id": "281ffece-bf4d-4368-afd2-6ae72eb8f756",
+    "behaviors": [
+      "agent:impl-flutter:flutter-ux",
+      "agent:impl-flutter:flutter-coder",
+      "agent:impl-flutter:flutter-env",
+      "agent:impl-flutter:flutter-tester"
+    ],
+    "interpretation": "Complete Flutter feature implementation using all four specialized agents in natural task order: UX design -> code implementation -> environment setup -> testing. This represents the full cognitive offloading mode where human defines what to build and agents handle specialized execution domains.",
+    "plugin_involved": "impl-flutter",
+    "elevation_mode": "cognitive_offloading"
+  },
+  "raw_evidence": {
+    "tool_count": 191,
+    "execution_patterns": {
+      "foreground": 17,
+      "background": 4,
+      "parallel": 0,
+      "sequential": 191
+    },
+    "project": "lucid-apps",
+    "notable_tools": ["Task", "TaskOutput", "Write", "Edit", "Bash", "mcp__dart__run_tests"]
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

@@ -1,0 +1,30 @@
+{
+  "discovered_at": "2025-12-13T23:24:25Z",
+  "run_id": "pd-20251213-232425",
+  "pattern": {
+    "pattern_type": "workflow",
+    "session_id": "281ffece-bf4d-4368-afd2-6ae72eb8f756",
+    "behaviors": [
+      "agent:impl-flutter:flutter-ux",
+      "agent:impl-flutter:flutter-coder",
+      "agent:impl-flutter:flutter-env",
+      "agent:impl-flutter:flutter-tester"
+    ],
+    "interpretation": "Parallel background task execution with TaskOutput polling. Session shows 4 background tasks launched with subsequent TaskOutput calls to monitor completion. This enables async agent coordination without blocking main context.",
+    "plugin_involved": "impl-flutter",
+    "elevation_mode": "cognitive_offloading"
+  },
+  "raw_evidence": {
+    "background_tasks": 4,
+    "task_output_calls": 10,
+    "tool_sequence_fragment": [
+      "Task", "Task", "Task", "Task",
+      "TaskOutput", "TaskOutput", "TaskOutput", "TaskOutput",
+      "TaskOutput", "TaskOutput", "TaskOutput", "TaskOutput",
+      "TaskOutput", "TaskOutput"
+    ],
+    "project": "lucid-apps"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

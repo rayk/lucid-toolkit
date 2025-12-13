@@ -1,0 +1,33 @@
+{
+  "discovered_at": "2025-12-13T09:01:23Z",
+  "run_id": "pd-20251213-200123",
+  "pattern": {
+    "type": "enhancement",
+    "session_id": "0605ff08-d991-43bd-ad70-d95800ceb09d",
+    "current_behavior": "positive_example_decision_elevation",
+    "tool_sequence": [
+      {"tool": "AskUserQuestion", "parameters": {
+        "questions": [
+          {"question": "What is the relationship between Profile and Role?", "header": "Profile scope", "options": ["Profile per Scheme", "Single global Profile", "Profile per Role Type"]},
+          {"question": "What should ContactPoint contain?", "header": "ContactPoint", "options": ["Email addresses", "Phone numbers", "Postal addresses", "Verification status"], "multiSelect": true},
+          {"question": "Should UserAccount be stored in Firestore only, or synced to local Isar as well?", "header": "Storage", "options": ["Firestore + Isar cache (Recommended)", "Firestore only", "Isar primary, Firestore sync"]}
+        ]
+      }, "timestamp": "2025-12-13T01:48:58.070Z"}
+    ],
+    "urls_fetched": [],
+    "files_involved": ["/Users/rayk/Projects/lucid-apps/apps/openscheme/plans/01-auth-onboarding/plan.md"],
+    "context_summary": "Positive example: Claude surfacing architectural decisions to human with clear options and trade-offs. During domain modeling, Claude identified three key decisions that required human input and presented them as structured multi-select questions.",
+    "elevation_mode": "decision_elevation",
+    "current_gap": "This is a POSITIVE example - already implements decision elevation correctly. Could be codified as a pattern for domain modeling.",
+    "proposed_enhancement": "Domain modeling skill that automatically identifies decision points (storage strategy, relationship cardinality, data ownership) and surfaces them as structured questions before proceeding with implementation",
+    "commonality_markers": [
+      "Domain modeling context",
+      "Storage strategy decisions",
+      "Relationship cardinality questions",
+      "Structured options with descriptions",
+      "Multi-select for additive features"
+    ]
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}
