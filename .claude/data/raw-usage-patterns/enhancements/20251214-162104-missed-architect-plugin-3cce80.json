@@ -1,0 +1,46 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.306466",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "missed-architect-plugin",
+    "session_id": "0cb101e2-89e0-4e32-b34f-bbdfacb23434",
+    "current_behavior": "manual_adr_work",
+    "tool_sequence": [
+      {
+        "tool": "Read",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/architecture/decisions/adr-000-template.md",
+        "timestamp": "2025-12-14T00:03:59.033Z"
+      },
+      {
+        "tool": "Read",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/architecture/decisions/adr-001-upgrade-flutter-3-38-3.md",
+        "timestamp": "2025-12-14T00:03:59.931Z"
+      },
+      {
+        "tool": "Read",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/architecture/decisions/README.md",
+        "timestamp": "2025-12-14T00:04:22.015Z"
+      },
+      {
+        "tool": "Write",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/architecture/decisions/adr-007-local-development-environment.md",
+        "timestamp": "2025-12-14T00:05:13.790Z"
+      },
+      {
+        "tool": "Edit",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/architecture/decisions/README.md",
+        "timestamp": "2025-12-14T00:05:19.323Z"
+      }
+    ],
+    "elevation_mode": "cognitive_offloading",
+    "current_gap": "Manual ADR creation without architect plugin automation",
+    "proposed_enhancement": "Trigger /architect adr command when ADR file patterns detected",
+    "commonality_markers": [
+      "adr-*.md files",
+      "architecture/decisions/",
+      "Write/Edit ADR"
+    ]
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

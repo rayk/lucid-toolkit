@@ -223,6 +223,216 @@
             },
             "required": ["behavior", "plugin", "sessionsAvailable"]
           }
+        },
+        "category4_attribution": {
+          "type": "array",
+          "description": "Sessions where Claude acted autonomously without clear human direction",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sessionId": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "autonomousPct": { "type": "number", "minimum": 0, "maximum": 100 },
+              "flaggedActions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tool": { "type": "string" },
+                    "reason": { "type": "string" }
+                  }
+                }
+              },
+              "recommendation": { "type": "string" }
+            },
+            "required": ["sessionId", "autonomousPct"]
+          }
+        },
+        "category5_leverage": {
+          "type": "array",
+          "description": "Sessions with inverted leverage (human did more work than Claude)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sessionId": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "tokenLeverageRatio": { "type": "number" },
+              "actionLeverageRatio": { "type": "number" },
+              "humanEffortIndicators": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "recommendation": { "type": "string" }
+            },
+            "required": ["sessionId", "tokenLeverageRatio", "actionLeverageRatio"]
+          }
+        },
+        "category6_recovery": {
+          "type": "array",
+          "description": "Sessions with recovery failures or abandoned workflows",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sessionId": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "interruptCount": { "type": "integer", "minimum": 0 },
+              "rollbackCommands": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "redirectSuccessRate": { "type": "number", "minimum": 0, "maximum": 1 },
+              "abandoned": { "type": "boolean" },
+              "recommendation": { "type": "string" }
+            },
+            "required": ["sessionId", "interruptCount"]
+          }
+        }
+      }
+    },
+    "decisionAttribution": {
+      "type": "object",
+      "description": "Aggregated decision attribution metrics across all sessions",
+      "properties": {
+        "totalHumanDirected": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total actions that followed explicit user direction"
+        },
+        "totalClaudeAutonomous": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total actions in autonomous multi-tool chains"
+        },
+        "totalAmbiguous": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Actions where attribution was unclear"
+        },
+        "autonomyRatio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Ratio of autonomous to total actions"
+        },
+        "sessionsWithHighAutonomy": {
+          "type": "array",
+          "description": "Sessions where autonomous actions exceeded 70%",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "leverageMetrics": {
+      "type": "object",
+      "description": "Asymmetric leverage measurements across sessions",
+      "properties": {
+        "averageTokenLeverage": {
+          "type": "number",
+          "description": "Average claude_output_tokens / human_input_tokens"
+        },
+        "averageActionLeverage": {
+          "type": "number",
+          "description": "Average claude_tool_calls / human_decisions"
+        },
+        "invertedSessions": {
+          "type": "array",
+          "description": "Sessions where leverage ratio < 1.0 (human did more)",
+          "items": { "type": "string" }
+        },
+        "highLeverageSessions": {
+          "type": "array",
+          "description": "Sessions with leverage ratio > 10.0",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "recoveryAnalysis": {
+      "type": "object",
+      "description": "User recovery and redirect capability analysis",
+      "properties": {
+        "totalInterrupts": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total user interruptions across sessions"
+        },
+        "totalRollbackCommands": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total rollback/undo commands detected"
+        },
+        "rollbackCommandList": {
+          "type": "array",
+          "description": "All unique rollback commands observed",
+          "items": { "type": "string" }
+        },
+        "redirectSuccessRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Proportion of redirects that led to successful outcomes"
+        },
+        "sessionsWithRecoveryIssues": {
+          "type": "array",
+          "description": "Sessions that had recovery problems",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "contextSufficiency": {
+      "type": "object",
+      "description": "Context sufficiency analysis - does Claude have enough info",
+      "properties": {
+        "totalAskUserQuestions": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total AskUserQuestion tool invocations"
+        },
+        "averageQuestionsPerSession": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average clarification questions per session"
+        },
+        "clarificationLoops": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sessions with multiple questions on same topic"
+        },
+        "sessionsNeedingClarification": {
+          "type": "array",
+          "description": "Sessions where AskUserQuestion was used",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "subagentMetrics": {
+      "type": "object",
+      "description": "Sub-agent delegation quality metrics",
+      "properties": {
+        "totalDelegations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total Task tool invocations"
+        },
+        "delegationsByType": {
+          "type": "object",
+          "description": "Breakdown by subagent_type",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "averageDelegationsPerSession": {
+          "type": "number",
+          "minimum": 0
+        },
+        "averagePromptLength": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average prompt length in delegated tasks"
+        },
+        "sessionsWithDelegation": {
+          "type": "array",
+          "description": "Sessions that used Task tool",
+          "items": { "type": "string" }
         }
       }
     }

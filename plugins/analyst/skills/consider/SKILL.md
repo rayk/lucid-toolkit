@@ -1,6 +1,7 @@
 ---
 name: consider
-description: Structured problem-solving using mental models with intelligent approach selection. Use when analyzing problems, making decisions, or answering complex questions that benefit from systematic thinking frameworks.
+description: |
+  Selects and applies mental models for structured problem analysis. Triggers when user asks "why", "what if", "how should we", needs systematic problem-solving, or mentions analyzing a situation. MUST BE USED when comparing options, making decisions, or evaluating trade-offs.
 ---
 
 <objective>

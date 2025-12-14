@@ -1,0 +1,107 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.305568",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "no-delegation-high-complexity",
+    "session_id": "aa092a90-6bc2-42f9-a0df-f9c419bf9da8",
+    "violation_type": "context_exhaustion_risk",
+    "tool_sequence": [
+      {
+        "tool": "Glob",
+        "timestamp": "2025-12-13T23:36:59.280Z"
+      },
+      {
+        "tool": "Glob",
+        "timestamp": "2025-12-13T23:36:59.592Z"
+      },
+      {
+        "tool": "Glob",
+        "timestamp": "2025-12-13T23:37:00.063Z"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-13T23:37:00.337Z",
+        "file_path": "/Users/rayk/.ideavimrc"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-13T23:37:06.049Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/.idea/ideavimrc-flutter-additions.vim"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-13T23:37:06.591Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/.idea/terminal.xml"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:37:07.152Z"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:37:39.809Z"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:37:40.235Z"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:37:40.859Z"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:38:05.220Z"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:38:05.852Z"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:38:06.264Z"
+      },
+      {
+        "tool": "WebSearch",
+        "timestamp": "2025-12-13T23:38:33.030Z"
+      },
+      {
+        "tool": "WebFetch",
+        "timestamp": "2025-12-13T23:38:34.554Z"
+      },
+      {
+        "tool": "TodoWrite",
+        "timestamp": "2025-12-13T23:41:48.760Z"
+      },
+      {
+        "tool": "Edit",
+        "timestamp": "2025-12-13T23:41:53.608Z",
+        "file_path": "/Users/rayk/.ideavimrc"
+      },
+      {
+        "tool": "TodoWrite",
+        "timestamp": "2025-12-13T23:42:04.073Z"
+      },
+      {
+        "tool": "Edit",
+        "timestamp": "2025-12-13T23:42:05.676Z",
+        "file_path": "/Users/rayk/.ideavimrc"
+      },
+      {
+        "tool": "TodoWrite",
+        "timestamp": "2025-12-13T23:42:16.184Z"
+      }
+    ],
+    "total_tool_calls": 75,
+    "context_summary": "75 tool calls with no Task delegation - context exhaustion risk",
+    "commonality_markers": [
+      "50+ tool calls",
+      "no Task tool",
+      "sequential execution"
+    ],
+    "ideal_approach": "Delegate sub-tasks to preserve main context",
+    "improvement_hypothesis": "CLAUDE.md should emphasize delegation for complex work"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

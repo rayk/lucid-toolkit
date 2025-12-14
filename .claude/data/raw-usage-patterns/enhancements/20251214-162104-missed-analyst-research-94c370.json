@@ -1,0 +1,57 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.306897",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "missed-analyst-research",
+    "session_id": "aa092a90-6bc2-42f9-a0df-f9c419bf9da8",
+    "current_behavior": "manual_research",
+    "tool_sequence": [
+      {
+        "tool": "WebSearch",
+        "query": "IdeaVim best practices 2024 2025 macOS sethandler escape terminal",
+        "timestamp": "2025-12-13T23:37:07.152Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IdeaVim clipboard+=unnamed macOS not working set clipboard",
+        "timestamp": "2025-12-13T23:37:39.809Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IdeaVim quickscope plugin 2024 set quickscope",
+        "timestamp": "2025-12-13T23:37:40.235Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IdeaVim sethandler Escape terminal Claude Code CLI",
+        "timestamp": "2025-12-13T23:37:40.859Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IdeaVim dial plugin increment decrement dates booleans",
+        "timestamp": "2025-12-13T23:38:05.220Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IdeaVim Plug anyobject chylex 2024",
+        "timestamp": "2025-12-13T23:38:05.852Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IdeaVim sneak vs easymotion conflict",
+        "timestamp": "2025-12-13T23:38:06.264Z"
+      }
+    ],
+    "search_count": 10,
+    "elevation_mode": "strategic_abstraction",
+    "current_gap": "10 manual WebSearches without research orchestration",
+    "proposed_enhancement": "Use analyst/research agent to orchestrate multi-source research",
+    "commonality_markers": [
+      "3+ WebSearch",
+      "related queries",
+      "configuration/setup topics"
+    ]
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

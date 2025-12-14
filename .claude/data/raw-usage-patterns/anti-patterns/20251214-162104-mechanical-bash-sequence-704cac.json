@@ -1,0 +1,51 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.305329",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "mechanical-bash-sequence",
+    "session_id": "ec369a72-3c29-42e8-84bf-6c0cea91f41e",
+    "violation_type": "mechanical_repetition",
+    "tool_sequence": [
+      {
+        "tool": "Bash",
+        "command": "tail -30 /tmp/claude/tasks/b00e548.output | grep -E \"flutter|Scheme|Search|role\"",
+        "timestamp": "2025-12-14T04:35:24.597Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "~/Library/Android/sdk/platform-tools/adb shell pm clear app.openscheme.home",
+        "timestamp": "2025-12-14T04:35:43.230Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "rm -rf /Users/rayk/Projects/lucid-apps/apps/openscheme/.firebase-emulator-data && pkill -f \"firebase.*emulators\" 2>/dev/null; sleep 2 && firebase emulators:start --export-on-exit=.firebase-emulator-data 2>&1 &",
+        "timestamp": "2025-12-14T04:35:46.368Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "sleep 10 && grep \"All emulators ready\" /tmp/claude/tasks/b882443.output",
+        "timestamp": "2025-12-14T04:35:53.139Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "pkill -f \"flutter.*openscheme\" 2>/dev/null; sleep 2 && fvm flutter run -d 39131FDJG002N3 --dart-define=USE_FIREBASE_EMULATOR=true --dart-define=EMULATOR_HOST=192.168.0.125 2>&1 &",
+        "timestamp": "2025-12-14T04:36:10.585Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "sleep 45 && grep \"Syncing files\" /tmp/claude/tasks/bf4f1ab.output && echo \"App ready\"",
+        "timestamp": "2025-12-14T04:36:15.457Z"
+      }
+    ],
+    "context_summary": "6 sequential Bash commands - mechanical work that breaks cognitive offloading",
+    "commonality_markers": [
+      "5+ sequential bash",
+      "environment checking",
+      "log tailing"
+    ],
+    "ideal_approach": "Wrap repetitive operations in a script or delegate to env agent",
+    "improvement_hypothesis": "Detect repetitive bash patterns and suggest automation"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

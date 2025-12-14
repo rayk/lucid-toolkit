@@ -1,0 +1,46 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.304376",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "mechanical-bash-sequence",
+    "session_id": "73d70d1c-7b9d-4a38-a98f-b149b7d7fa28",
+    "violation_type": "mechanical_repetition",
+    "tool_sequence": [
+      {
+        "tool": "Bash",
+        "command": "cat /Users/rayk/Projects/lucid-apps/apps/openscheme/.firebase-emulator.log 2>/dev/null | tail -30 || echo \"No log file found\"",
+        "timestamp": "2025-12-14T00:36:48.525Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "which firebase && firebase --version",
+        "timestamp": "2025-12-14T00:36:49.216Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cd /Users/rayk/Projects/lucid-apps/apps/openscheme && ./scripts/ensure-emulators.sh 2>&1",
+        "timestamp": "2025-12-14T00:36:58.799Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "curl -s \"http://localhost:4400/emulators\" | jq . 2>/dev/null || curl -s \"http://localhost:4400/emulators\"",
+        "timestamp": "2025-12-14T00:37:11.805Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "ls -la /Users/rayk/Projects/lucid-apps/apps/openscheme/scripts/ensure-emulators.sh",
+        "timestamp": "2025-12-14T00:37:20.333Z"
+      }
+    ],
+    "context_summary": "5 sequential Bash commands - mechanical work that breaks cognitive offloading",
+    "commonality_markers": [
+      "5+ sequential bash",
+      "environment checking",
+      "log tailing"
+    ],
+    "ideal_approach": "Wrap repetitive operations in a script or delegate to env agent",
+    "improvement_hypothesis": "Detect repetitive bash patterns and suggest automation"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

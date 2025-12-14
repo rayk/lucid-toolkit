@@ -1,0 +1,56 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.304132",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "mechanical-bash-sequence",
+    "session_id": "6145648d-0ff5-4d43-9014-01438f82170f",
+    "violation_type": "mechanical_repetition",
+    "tool_sequence": [
+      {
+        "tool": "Bash",
+        "command": "ls -la /Users/rayk/Projects/lucid-toolkit/shared/status-line/status_line.py 2>&1",
+        "timestamp": "2025-12-13T23:57:37.588Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "ls -la /Users/rayk/.claude/plugins/luc@lucid-toolkit/scripts/status_line.py 2>&1",
+        "timestamp": "2025-12-13T23:57:38.627Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "python3 /Users/rayk/Projects/lucid-toolkit/shared/status-line/status_line.py 2>&1 < /dev/null || echo \"Exit code: $?\"",
+        "timestamp": "2025-12-13T23:57:39.934Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "find /Users/rayk/.claude -name \"status_line.py\" 2>/dev/null",
+        "timestamp": "2025-12-13T23:57:45.883Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "find /Users/rayk/Projects/lucid-toolkit -name \"status_line.py\" 2>/dev/null | head -5",
+        "timestamp": "2025-12-13T23:57:46.934Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "ls -la /Users/rayk/.claude/plugins/ 2>&1",
+        "timestamp": "2025-12-13T23:57:47.762Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "echo '{\"workspace\": {\"project_dir\": \"/Users/rayk/Projects/lucid-apps\"}}' | python3 /Users/rayk/.claude/plugins/marketplaces/lucid-toolkit/plugins/luc/scripts/status_line.py 2>&1",
+        "timestamp": "2025-12-13T23:57:56.473Z"
+      }
+    ],
+    "context_summary": "7 sequential Bash commands - mechanical work that breaks cognitive offloading",
+    "commonality_markers": [
+      "5+ sequential bash",
+      "environment checking",
+      "log tailing"
+    ],
+    "ideal_approach": "Wrap repetitive operations in a script or delegate to env agent",
+    "improvement_hypothesis": "Detect repetitive bash patterns and suggest automation"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

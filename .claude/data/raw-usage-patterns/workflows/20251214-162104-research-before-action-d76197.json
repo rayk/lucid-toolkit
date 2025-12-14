@@ -1,0 +1,74 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.302913",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "research-before-action",
+    "session_id": "0cb101e2-89e0-4e32-b34f-bbdfacb23434",
+    "tool_sequence": [
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ IDEA Flutter run configuration xml format 2024 2025",
+        "timestamp": "2025-12-14T00:08:16.034Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ IDEA run configuration \"before launch\" shell script XML method RunConfigurationTask",
+        "timestamp": "2025-12-14T00:09:09.606Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ Flutter run configuration additionalArgs dart-define device ID XML",
+        "timestamp": "2025-12-14T00:09:54.108Z"
+      },
+      {
+        "tool": "Write",
+        "parameters": {
+          "file_path": "/Users/rayk/Projects/lucid-apps/.idea/runConfigurations/OpenScheme___Integration_Tests__Emulator_.xml",
+          "content": "<component name=\"ProjectRunConfigurationManager\">\n  <configuration default=\"false\" name=\"OpenScheme - Integration Tests (Emulator)\" type=\"FlutterTestConfigurationType\" factoryName=\"Flutter Test\">\n    <option name=\"additionalArgs\" value=\"--dart-define=USE_FIREBASE_EMULATOR=true\" />\n    <option name=\"filePath\" value=\"$PROJECT_DIR$/apps/openscheme/integration_test\" />\n    <option name=\"testScope\" value=\"DIRECTORY\" />\n    <method v=\"2\">\n      <option name=\"RunConfigurationTask\" enabled=\"true\" run_configuration_name=\"OpenScheme - Ensure Emulators\" run_configuration_type=\"ShConfigurationType\" />\n    </method>\n  </configuration>\n</component>\n"
+        },
+        "timestamp": "2025-12-14T00:10:23.052Z"
+      },
+      {
+        "tool": "Write",
+        "parameters": {
+          "file_path": "/Users/rayk/Projects/lucid-apps/.idea/runConfigurations/OpenScheme___Start_Emulators__Foreground_.xml",
+          "content": "<component name=\"ProjectRunConfigurationManager\">\n  <configuration default=\"false\" name=\"OpenScheme - Start Emulators (Foreground)\" type=\"ShConfigurationType\">\n    <option name=\"EXECUTE_SCRIPT_FILE\" value=\"true\" />\n    <option name=\"INDEPENDENT_SCRIPT_PATH\" value=\"true\" />\n    <option name=\"SCRIPT_PATH\" value=\"$PROJECT_DIR$/apps/openscheme/scripts/start-emulators.sh\" />\n    <option name=\"INDEPENDENT_SCRIPT_WORKING_DIRECTORY\" value=\"true\" />\n    <option name=\"SCRIPT_WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/apps/openscheme\" />\n    <option name=\"EXECUTE_IN_TERMINAL\" value=\"true\" />\n    <method v=\"2\" />\n  </configuration>\n</component>\n"
+        },
+        "timestamp": "2025-12-14T00:10:29.782Z"
+      },
+      {
+        "tool": "Bash",
+        "parameters": {
+          "command": "ls -la /Users/rayk/Projects/lucid-apps/.idea/runConfigurations/OpenScheme*.xml /Users/rayk/Projects/lucid-apps/.idea/runConfigurations/openscheme*.xml 2>/dev/null | head -20",
+          "description": "List all OpenScheme run configurations"
+        },
+        "timestamp": "2025-12-14T00:10:34.654Z"
+      },
+      {
+        "tool": "Bash",
+        "parameters": {
+          "command": "cd /Users/rayk/Projects/lucid-apps/apps/openscheme && head -5 scripts/*.sh",
+          "description": "Check script headers"
+        },
+        "timestamp": "2025-12-14T00:10:35.570Z"
+      },
+      {
+        "tool": "Bash",
+        "parameters": {
+          "command": "xmllint --noout /Users/rayk/Projects/lucid-apps/.idea/runConfigurations/OpenScheme*.xml 2>&1 && echo \"All XML files are well-formed\"",
+          "description": "Validate XML syntax"
+        },
+        "timestamp": "2025-12-14T00:10:41.492Z"
+      }
+    ],
+    "context_summary": "User researches topic with multiple searches before taking action",
+    "commonality_markers": [
+      "3+ WebSearch",
+      "Edit/Write follows",
+      "configuration files"
+    ],
+    "improvement_hypothesis": "Could use analyst/research agent to orchestrate searches and synthesize findings"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

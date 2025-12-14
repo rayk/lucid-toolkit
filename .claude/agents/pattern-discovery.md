@@ -82,6 +82,59 @@ Evidence required:
 - What context would help automation
 - What decisions are being made implicitly
 </enhancement_opportunities>
+
+<recovery_patterns>
+Track user's ability to redirect/recover (README inclusion test: "enables recovery").
+
+Capture when: User interrupts expected flow, issues rollback commands, or redirects conversation
+Evidence required:
+- The parentUuid chain break point (which message broke the expected flow)
+- Commands/operations before and after interrupt
+- Outcome classification: successful_redirect, partial_recovery, abandoned, locked_in_path
+- Time from interrupt to resolution (if any)
+
+Classification:
+- **successful_recovery**: User redirected, goal achieved
+- **partial_recovery**: User redirected, partial success
+- **abandoned**: User gave up after interrupt
+- **locked_in_path**: User couldn't redirect (exclusion test violation!)
+
+Capture these as critical - "locked_in_path" directly violates README philosophy.
+</recovery_patterns>
+
+<context_sufficiency_patterns>
+Track whether Claude has enough context to proceed (README: "sufficient context to understand intent").
+
+Capture when: AskUserQuestion appears, errors follow assumptions, or clarification loops occur
+Evidence required:
+- AskUserQuestion invocations with full question text
+- Clarification loops (multiple questions on same topic in sequence)
+- Errors that followed Claude proceeding without clarification
+- Session outcome after clarification vs after assumption
+
+Classification:
+- **successful_clarification**: Asked, got answer, proceeded successfully
+- **clarification_loop**: Multiple questions needed, indicates unclear initial context
+- **insufficient_context_failure**: Proceeded without asking, failed
+- **over_clarification**: Asked about things that didn't need asking (breaks flow)
+</context_sufficiency_patterns>
+
+<subagent_chain_patterns>
+Track quality of Task tool delegations (per CLAUDE.md delegation patterns).
+
+Capture when: Task tool is invoked with subagent_type
+Evidence required:
+- Full Task tool call parameters (subagent_type, prompt, model)
+- Whether corresponding agent-{id}.jsonl exists
+- Outcome of delegated work (success/failure/partial)
+- Handoff context quality indicators
+
+Classification:
+- **good_delegation**: Clear prompt, appropriate agent, successful outcome
+- **poor_handoff**: Insufficient context in prompt, agent struggled
+- **wrong_agent**: Subagent type didn't match task domain
+- **delegation_chain**: Task spawned another Task (track depth)
+</subagent_chain_patterns>
 </pattern_definitions>
 
 <evidence_requirements>
@@ -155,7 +208,7 @@ If 0 sessions, write "No new sessions to analyze" and exit.
 </phase>
 
 <phase name="2_analyze_patterns">
-Launch 3 Task agents in PARALLEL (model: sonnet for better analysis):
+Launch 5 Task agents in PARALLEL (model: sonnet for better analysis):
 
 **Task 1 - Workflow Patterns:**
 subagent_type: general-purpose, model: sonnet
@@ -280,6 +333,88 @@ prompt: |
     "proposed_enhancement": "Research agent that takes topic and gathers from known sources",
     "commonality_markers": ["api documentation", "multiple doc sources"]
   }]
+
+**Task 4 - Recovery Patterns:**
+subagent_type: general-purpose, model: sonnet
+prompt: |
+  Read /tmp/pd_parsed.json. Find recovery/redirect patterns.
+
+  Look for:
+  - User messages that break expected parentUuid flow (interrupts)
+  - Rollback commands (git reset, git restore, rm, mv .bak)
+  - Conversation redirects ("actually", "wait", "instead", "no")
+  - Abandoned workflows (interrupt with no subsequent completion)
+
+  CRITICAL: Extract full evidence - the actual message/command sequence.
+
+  For EACH recovery pattern, extract:
+  1. The session_id and timestamp range
+  2. The exact message/tool sequence showing the interrupt
+  3. Commands before and after the redirect
+  4. Outcome classification
+
+  Return JSON array:
+  [{
+    "pattern_type": "recovery",
+    "session_id": "...",
+    "classification": "successful_recovery|partial_recovery|abandoned|locked_in_path",
+    "interrupt_point": {
+      "message_uuid": "...",
+      "broke_expected_flow_from": "..."
+    },
+    "tool_sequence_before": [...],
+    "tool_sequence_after": [...],
+    "rollback_commands": ["..."],
+    "time_to_resolution_ms": number or null,
+    "context_summary": "User was doing X, interrupted to do Y instead",
+    "commonality_markers": ["redirect type", "domain"],
+    "severity": "critical" if locked_in_path else "info"
+  }]
+
+**Task 5 - Plugin Behavior Tests:**
+subagent_type: general-purpose, model: sonnet
+prompt: |
+  Read /tmp/pd_parsed.json. Test plugin usage against README behavior tests.
+
+  For each plugin used in sessions, evaluate against its test:
+
+  **architect**: "helps human express architectural intent that Claude can enforce"
+  - PASS: Human defines principles/constraints, Claude enforces at code level
+  - FAIL: Human specifying implementation details, Claude not enforcing constraints
+
+  **analyst**: "applies proven mental model to clarify thinking"
+  - PASS: Model invoked, reasoning made explicit, human reviewed
+  - FAIL: Analysis produced without surfacing reasoning
+
+  **plan**: "enables independent work with human control of scope and budget"
+  - PASS: Cost transparency, checkpoints, scope approval before execution
+  - FAIL: Hidden execution, no cost visibility, no checkpoints
+
+  **impl-*** (flutter, python, neo4j): "handles specific concern end-to-end"
+  - PASS: Agent stayed in domain, complete handling, clean handoff
+  - FAIL: Domain overlap, incomplete handling, unclear boundaries
+
+  For EACH plugin session, extract:
+  1. Plugin name and behavior test
+  2. Session evidence (tool calls, patterns)
+  3. PASS or FAIL with specific reason
+  4. Violation details if FAIL
+
+  Return JSON array:
+  [{
+    "pattern_type": "behavior_test",
+    "plugin": "architect|analyst|plan|impl-flutter|...",
+    "behavior_test": "the test statement",
+    "session_id": "...",
+    "result": "pass|fail",
+    "evidence": {
+      "tool_sequence": [...],
+      "files_involved": [...],
+      "context_summary": "..."
+    },
+    "violation_reason": "..." (if fail),
+    "commonality_markers": ["patterns that indicate pass/fail"]
+  }]
 </phase>
 
 <phase name="3_classify_and_persist">
@@ -293,7 +428,7 @@ For each pattern from subagents:
 ```bash
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 PATTERNS_DIR=".claude/data/raw-usage-patterns"
-mkdir -p "$PATTERNS_DIR/workflows" "$PATTERNS_DIR/anti-patterns" "$PATTERNS_DIR/enhancements"
+mkdir -p "$PATTERNS_DIR/workflows" "$PATTERNS_DIR/anti-patterns" "$PATTERNS_DIR/enhancements" "$PATTERNS_DIR/recovery" "$PATTERNS_DIR/context-sufficiency" "$PATTERNS_DIR/behavior-tests"
 ```
 
 **VALIDATION GATE**: Reject any pattern that lacks:
@@ -344,7 +479,10 @@ Update .claude/data/pattern-discovery-state.json:
     "totalPatternsDiscovered": {
       "workflows": X,
       "anti_patterns": Y,
-      "enhancements": Z
+      "enhancements": Z,
+      "recovery": A,
+      "context_sufficiency": B,
+      "behavior_tests": C
     }
   },
   "runHistory": [
@@ -352,13 +490,16 @@ Update .claude/data/pattern-discovery-state.json:
       "run_id": "...",
       "timestamp": "...",
       "sessions_analyzed": N,
-      "patterns_found": { "workflows": X, "anti_patterns": Y, "enhancements": Z }
+      "patterns_found": { "workflows": X, "anti_patterns": Y, "enhancements": Z, "recovery": A, "context_sufficiency": B, "behavior_tests": C }
     }
   ],
   "patternIndex": {
     "workflows": ["file1.json", "file2.json"],
     "anti_patterns": ["file3.json"],
-    "enhancements": ["file4.json", "file5.json"]
+    "enhancements": ["file4.json", "file5.json"],
+    "recovery": ["file6.json"],
+    "context_sufficiency": ["file7.json"],
+    "behavior_tests": ["file8.json"]
   }
 }
 ```
@@ -375,7 +516,7 @@ Output a brief summary:
 
 <success_criteria>
 - Scripts executed successfully
-- 3 subagents completed pattern analysis
+- 5 subagents completed pattern analysis
 - Patterns saved to raw-usage-patterns/{category}/
 - State file updated with run metadata
 - Summary output provided

@@ -1,18 +1,18 @@
 {
   "$schema": "../schema/usage-analysis-state.schema.json",
   "analysisMetadata": {
-    "lastAnalyzedTimestamp": "2025-12-13T12:18:12.307Z",
+    "lastAnalyzedTimestamp": "2025-12-14T04:43:03.593736+00:00",
     "lastAnalyzedSessionId": null,
-    "lastRunTimestamp": "2025-12-13T12:20:14.879920+00:00",
-    "totalSessionsAnalyzed": 30,
+    "lastRunTimestamp": "2025-12-14T04:45:32.810445+00:00",
+    "totalSessionsAnalyzed": 50,
     "dateRangeStart": "2025-12-11T06:23:34.268Z",
-    "dateRangeEnd": "2025-12-13T12:18:12.307Z"
+    "dateRangeEnd": "2025-12-14T04:43:03.593736+00:00"
   },
   "pluginInventory": {
     "plugins": {
       "architect": {
         "name": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "behaviors": {
           "commands": [
             "init",
@@ -73,7 +73,7 @@
       },
       "impl-flutter": {
         "name": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "behaviors": {
           "commands": [],
           "skills": [
@@ -153,7 +153,7 @@
       },
       "plan": {
         "name": "plan",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "behaviors": {
           "commands": [
             "generate",
@@ -173,63 +173,63 @@
         "name": "init",
         "type": "command",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./commands/init.md"
       },
       "architect:adr": {
         "name": "adr",
         "type": "command",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./commands/adr.md"
       },
       "architect:review": {
         "name": "review",
         "type": "command",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./commands/review.md"
       },
       "architect:manage-architecture": {
         "name": "manage-architecture",
         "type": "skill",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./skills/manage-architecture"
       },
       "architect:create-adr": {
         "name": "create-adr",
         "type": "skill",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./skills/create-adr"
       },
       "architect:component-analyzer": {
         "name": "component-analyzer",
         "type": "agent",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./agents/component-analyzer.md"
       },
       "architect:architecture-reviewer": {
         "name": "architecture-reviewer",
         "type": "agent",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./agents/architecture-reviewer.md"
       },
       "architect:adr-writer": {
         "name": "adr-writer",
         "type": "agent",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./agents/adr-writer.md"
       },
       "architect:consistency-checker": {
         "name": "consistency-checker",
         "type": "agent",
         "plugin": "architect",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "./agents/consistency-checker.md"
       },
       "analyst:consider": {
@@ -411,63 +411,63 @@
         "name": "dart-flutter-mcp",
         "type": "skill",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./skills/dart-flutter-mcp"
       },
       "impl-flutter:flutter-coder": {
         "name": "flutter-coder",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-coder.md"
       },
       "impl-flutter:flutter-tester": {
         "name": "flutter-tester",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-tester.md"
       },
       "impl-flutter:flutter-debugger": {
         "name": "flutter-debugger",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-debugger.md"
       },
       "impl-flutter:flutter-env": {
         "name": "flutter-env",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-env.md"
       },
       "impl-flutter:flutter-data": {
         "name": "flutter-data",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-data.md"
       },
       "impl-flutter:flutter-platform": {
         "name": "flutter-platform",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-platform.md"
       },
       "impl-flutter:flutter-release": {
         "name": "flutter-release",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-release.md"
       },
       "impl-flutter:flutter-ux": {
         "name": "flutter-ux",
         "type": "agent",
         "plugin": "impl-flutter",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./agents/flutter-ux.md"
       },
       "impl-python:python-dev-tools": {
@@ -635,28 +635,28 @@
         "name": "generate",
         "type": "command",
         "plugin": "plan",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./commands/generate.md"
       },
       "plan:analyze": {
         "name": "analyze",
         "type": "command",
         "plugin": "plan",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./commands/analyze.md"
       },
       "plan:validate": {
         "name": "validate",
         "type": "command",
         "plugin": "plan",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./commands/validate.md"
       },
       "plan:execution-prompt-generator": {
         "name": "execution-prompt-generator",
         "type": "skill",
         "plugin": "plan",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "path": "./skills/execution-prompt-generator"
       }
     }
@@ -664,13 +664,17 @@
   "invocationMetrics": {
     "behaviors": {
       "agent:Explore": {
-        "invocations": 5,
+        "invocations": 9,
         "sessions": [
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
           "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
           "01b2cf12-d715-4a60-88c5-b4ee1e53bfd7",
+          "90f454ec-52d5-4f4f-bbc0-91199e24c181",
+          "34c1695d-7f53-4b69-8ffe-b6d84ad98e4d",
           "aedf036b-11b1-47d6-91ed-1f1e56e99280",
-          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
-          "76533dc7-fb48-4c37-b97c-46082a83a773"
+          "9f763f9a-710e-4382-861a-3cfdc4a85545",
+          "76533dc7-fb48-4c37-b97c-46082a83a773",
+          "6145648d-0ff5-4d43-9014-01438f82170f"
         ],
         "tokens_input": 0,
         "tokens_output": 0,
@@ -680,12 +684,13 @@
           "parallel": 0,
           "sequential": 0
         },
-        "session_count": 5
+        "session_count": 9
       },
       "agent:impl-flutter:flutter-tester": {
-        "invocations": 2,
+        "invocations": 3,
         "sessions": [
           "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
           "281ffece-bf4d-4368-afd2-6ae72eb8f756"
         ],
         "tokens_input": 0,
@@ -696,13 +701,14 @@
           "parallel": 0,
           "sequential": 0
         },
-        "session_count": 2
+        "session_count": 3
       },
       "agent:impl-flutter:flutter-env": {
-        "invocations": 3,
+        "invocations": 4,
         "sessions": [
           "76533dc7-fb48-4c37-b97c-46082a83a773",
           "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
           "281ffece-bf4d-4368-afd2-6ae72eb8f756"
         ],
         "tokens_input": 0,
@@ -713,12 +719,13 @@
           "parallel": 0,
           "sequential": 0
         },
-        "session_count": 3
+        "session_count": 4
       },
       "agent:impl-flutter:flutter-ux": {
-        "invocations": 2,
+        "invocations": 3,
         "sessions": [
           "2072867e-3f96-4580-a7bd-e58fd9c85415",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
           "281ffece-bf4d-4368-afd2-6ae72eb8f756"
         ],
         "tokens_input": 0,
@@ -729,14 +736,15 @@
           "parallel": 0,
           "sequential": 0
         },
-        "session_count": 2
+        "session_count": 3
       },
       "agent:impl-flutter:flutter-coder": {
-        "invocations": 3,
+        "invocations": 4,
         "sessions": [
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
           "496021e9-78e1-480d-a0cd-b67538e78ddf",
-          "281ffece-bf4d-4368-afd2-6ae72eb8f756",
-          "78601300-bfdf-4e5d-84e5-c62a37a71dc9"
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
         ],
         "tokens_input": 0,
         "tokens_output": 0,
@@ -746,7 +754,7 @@
           "parallel": 0,
           "sequential": 0
         },
-        "session_count": 3
+        "session_count": 4
       },
       "agent:general-purpose": {
         "invocations": 1,
@@ -767,6 +775,97 @@
         "invocations": 1,
         "sessions": [
           "84da288d-9666-457c-92d2-5d4bbe85a608"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 1
+      },
+      "agent:Plan": {
+        "invocations": 1,
+        "sessions": [
+          "9f763f9a-710e-4382-861a-3cfdc4a85545"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 1
+      },
+      "agent:impl-flutter:flutter-data": {
+        "invocations": 1,
+        "sessions": [
+          "a4dde869-3fab-42a8-8619-fbe69728ed21"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 1
+      },
+      "agent:usage-analysis": {
+        "invocations": 2,
+        "sessions": [
+          "9cda6296-3def-4ed7-895d-f069d58388ef",
+          "75fcfca2-cc3d-4709-81c0-1c2402e1d3e6"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 2
+      },
+      "agent:pattern-discovery": {
+        "invocations": 1,
+        "sessions": [
+          "90f454ec-52d5-4f4f-bbc0-91199e24c181"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 1
+      },
+      "agent:subagent-auditor": {
+        "invocations": 1,
+        "sessions": [
+          "d5544dcb-f408-49fa-a77d-f0e976349387"
+        ],
+        "tokens_input": 0,
+        "tokens_output": 0,
+        "execution_patterns": {
+          "foreground": 0,
+          "background": 0,
+          "parallel": 0,
+          "sequential": 0
+        },
+        "session_count": 1
+      },
+      "agent:skill-auditor": {
+        "invocations": 1,
+        "sessions": [
+          "d5544dcb-f408-49fa-a77d-f0e976349387"
         ],
         "tokens_input": 0,
         "tokens_output": 0,
@@ -803,12 +902,12 @@
       }
     },
     "totals": {
-      "sessions": 30,
-      "tool_calls": 1147,
-      "tokens_input": 276314,
-      "tokens_output": 482393,
+      "sessions": 50,
+      "tool_calls": 1873,
+      "tokens_input": 542918,
+      "tokens_output": 717953,
       "cache_reads": 180769470,
-      "behaviors_invoked": 17
+      "behaviors_invoked": 13
     }
   },
   "sessionSummaries": [],

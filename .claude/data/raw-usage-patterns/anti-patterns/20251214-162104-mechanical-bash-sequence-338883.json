@@ -1,0 +1,71 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.304840",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "mechanical-bash-sequence",
+    "session_id": "a4dde869-3fab-42a8-8619-fbe69728ed21",
+    "violation_type": "mechanical_repetition",
+    "tool_sequence": [
+      {
+        "tool": "Bash",
+        "command": "fvm flutter analyze",
+        "timestamp": "2025-12-14T03:39:11.851Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "fvm flutter test --no-pub 2>&1 | tail -100",
+        "timestamp": "2025-12-14T03:39:24.050Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "fvm flutter test --no-pub 2>&1 | grep -E '(^[0-9]+:[0-9]+ \\+[0-9]+:|PASSED|FAILED|ERROR|All tests passed|Some tests failed)'",
+        "timestamp": "2025-12-14T03:39:42.513Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "fvm flutter test --no-pub 2>&1 | grep -A 50 \"FAILED\\|00:.. +[0-9]* -1:\"",
+        "timestamp": "2025-12-14T03:39:59.120Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cat /Users/rayk/.pub-cache/hosted/pub.dev/google_places_autocomplete_text_field-3.0.0/lib/google_places_autocomplete_text_field.dart",
+        "timestamp": "2025-12-14T03:40:18.277Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cat /Users/rayk/.pub-cache/hosted/pub.dev/google_places_autocomplete_text_field-3.0.0/lib/src/src_barrel.dart",
+        "timestamp": "2025-12-14T03:40:22.441Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cat /Users/rayk/.pub-cache/hosted/pub.dev/google_places_autocomplete_text_field-3.0.0/lib/src/widgets/google_places_autocomplete_text_field.dart",
+        "timestamp": "2025-12-14T03:40:27.435Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cat /Users/rayk/.pub-cache/hosted/pub.dev/google_places_autocomplete_text_field-3.0.0/lib/src/data/google_api_config.dart",
+        "timestamp": "2025-12-14T03:40:35.242Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "ls -la /Users/rayk/.pub-cache/hosted/pub.dev/google_places_autocomplete_text_field-3.0.0/lib/src/data/",
+        "timestamp": "2025-12-14T03:40:39.692Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cat /Users/rayk/.pub-cache/hosted/pub.dev/google_places_autocomplete_text_field-3.0.0/lib/src/model/model_barrel.dart",
+        "timestamp": "2025-12-14T03:40:43.941Z"
+      }
+    ],
+    "context_summary": "11 sequential Bash commands - mechanical work that breaks cognitive offloading",
+    "commonality_markers": [
+      "5+ sequential bash",
+      "environment checking",
+      "log tailing"
+    ],
+    "ideal_approach": "Wrap repetitive operations in a script or delegate to env agent",
+    "improvement_hypothesis": "Detect repetitive bash patterns and suggest automation"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

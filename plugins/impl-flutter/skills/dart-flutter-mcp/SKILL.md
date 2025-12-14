@@ -1,6 +1,7 @@
 ---
 name: dart-flutter-mcp
-description: Expert guidance for using Dart and Flutter MCP server tools. Use when working with dart_analyzer, dart_run_tests, dart_resolve_symbol, get_runtime_errors, get_widget_tree, hot_reload, or IDE MCP tools in Flutter development.
+description: |
+  Provides Flutter and Dart development workflows using dart-mcp tools. Triggers when working with .dart files, pubspec.yaml, or when user mentions Flutter, widget, Riverpod, Freezed, or Dart development. MUST BE USED for Flutter project work involving dart_analyzer, dart_run_tests, hot_reload, or IDE MCP tools.
 ---
 
 <objective>

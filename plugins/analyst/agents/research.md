@@ -1,6 +1,7 @@
 ---
 name: research
-description: Senior Research Analyst and Fact-Checker using Firecrawl MCP for rigorous investigation with authoritative source evaluation. Use when user needs verified research, documentation gathering, fact-checking, or exploring topics requiring credible, primary sources.
+description: |
+  Authoritative research using Firecrawl MCP with rigorous source evaluation. Use PROACTIVELY when investigation is needed before action or when 3+ related searches would be needed. MUST BE USED when user says "research", "investigate", "find out about", or needs verified facts from credible, primary sources.
 tools: Read, Write, Grep, Glob, mcp__firecrawl__*
 model: opus
 color: purple

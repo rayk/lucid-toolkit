@@ -17,6 +17,7 @@ import argparse
 import base64
 import json
 import os
+import statistics
 import sys
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
@@ -99,6 +100,41 @@ class SessionAnalysis:
     })
     errors: list = field(default_factory=list)
     warnings: list = field(default_factory=list)
+
+    # Decision attribution - track who decided what
+    decision_attribution: dict = field(default_factory=lambda: {
+        "human_directed": 0,      # Actions directly following user message
+        "claude_autonomous": 0,   # Actions in multi-tool sequences
+        "ambiguous": 0
+    })
+
+    # Leverage metrics - asymmetric leverage measurement
+    leverage: dict = field(default_factory=lambda: {
+        "human_input_tokens": 0,
+        "claude_output_tokens": 0,
+        "human_decisions": 0,
+        "claude_tool_calls": 0,
+        "token_leverage_ratio": 0.0,
+        "action_leverage_ratio": 0.0
+    })
+
+    # Recovery indicators - can users redirect/recover
+    recovery_indicators: dict = field(default_factory=lambda: {
+        "user_interrupts": 0,
+        "rollback_commands": [],
+        "redirect_attempts": 0,
+        "abandoned_workflows": 0
+    })
+
+    # Context sufficiency - does Claude have enough context
+    context_sufficiency: dict = field(default_factory=lambda: {
+        "ask_user_count": 0,
+        "clarification_loops": 0,
+        "proceeded_without_info": 0
+    })
+
+    # Subagent references - for chain quality analysis
+    subagent_calls: list = field(default_factory=list)
 
 
 @dataclass
@@ -319,11 +355,21 @@ def cmd_discover(args) -> dict:
             "from_date": args.from_date,
             "to_date": args.to_date,
             "plugin": args.plugin,
-            "checkpoint": args.checkpoint
+            "checkpoint": args.checkpoint,
+            "projects": args.projects,
+            "exclude_projects": args.exclude_projects
         },
         "errors": [],
         "warnings": []
     }
+
+    # Parse project filters
+    include_projects = None
+    exclude_projects = None
+    if args.projects:
+        include_projects = [p.strip() for p in args.projects.split(',')]
+    if args.exclude_projects:
+        exclude_projects = [p.strip() for p in args.exclude_projects.split(',')]
 
     # Check history file
     if not HISTORY_FILE.exists():
@@ -402,6 +448,18 @@ def cmd_discover(args) -> dict:
         if not session_id:
             continue
 
+        # Apply project filters
+        if include_projects:
+            # Check if any included project name appears in the path
+            matches = any(proj in project_path or proj in project for proj in include_projects)
+            if not matches:
+                continue
+        if exclude_projects:
+            # Check if any excluded project name appears in the path
+            matches = any(proj in project_path or proj in project for proj in exclude_projects)
+            if matches:
+                continue
+
         # Find corresponding log file
         log_file = None
         if project_path:
@@ -435,6 +493,88 @@ def cmd_discover(args) -> dict:
     result["sessions"] = sessions
     result["total_found"] = len(sessions)
     return result
+
+
+def classify_decision(entries: list, current_idx: int, current_entry: dict) -> str:
+    """Classify if this action was human-directed or claude-autonomous."""
+    parent_uuid = current_entry.get("parentUuid")
+
+    # Find parent entry
+    for prev_entry in entries[:current_idx]:
+        if prev_entry.get("uuid") == parent_uuid:
+            if prev_entry.get("type") == "user":
+                return "human_directed"
+            elif prev_entry.get("type") == "assistant":
+                # Check if parent also had tool_use - this is a chain
+                content = prev_entry.get("message", {}).get("content", [])
+                has_tool_use = any(c.get("type") == "tool_use" for c in content if isinstance(c, dict))
+                if has_tool_use:
+                    return "claude_autonomous"
+    return "ambiguous"
+
+
+def is_rollback_command(cmd: str) -> bool:
+    """Detect commands that indicate rollback/recovery."""
+    rollback_patterns = [
+        "git reset", "git checkout --", "git restore",
+        "git stash", "git revert", "rm -rf", "mv .bak",
+        "cp .backup"
+    ]
+    cmd_lower = cmd.lower()
+    return any(p in cmd_lower for p in rollback_patterns)
+
+
+def detect_recovery_patterns(entries: list) -> dict:
+    """Detect rollback/recovery indicators in session."""
+    patterns = {
+        "user_interrupts": 0,
+        "rollback_commands": [],
+        "redirect_attempts": 0,
+        "abandoned_workflows": 0
+    }
+
+    expected_parent = None
+    for entry in entries:
+        if entry.get("type") == "user":
+            actual_parent = entry.get("parentUuid")
+            # If user message doesn't follow expected flow, it's an interrupt
+            if expected_parent and actual_parent and actual_parent != expected_parent:
+                patterns["user_interrupts"] += 1
+                patterns["redirect_attempts"] += 1
+
+        # Check for rollback commands in tool results or Bash calls
+        if entry.get("type") == "assistant":
+            content = entry.get("message", {}).get("content", [])
+            for item in content:
+                if isinstance(item, dict) and item.get("type") == "tool_use":
+                    if item.get("name") == "Bash":
+                        cmd = item.get("input", {}).get("command", "")
+                        if is_rollback_command(cmd):
+                            patterns["rollback_commands"].append(cmd)
+
+        expected_parent = entry.get("uuid")
+
+    return patterns
+
+
+def extract_subagent_calls(entries: list) -> list:
+    """Extract Task tool calls with subagent info."""
+    subagent_calls = []
+    for entry in entries:
+        if entry.get("type") == "assistant":
+            content = entry.get("message", {}).get("content", [])
+            for item in content:
+                if isinstance(item, dict) and item.get("type") == "tool_use":
+                    if item.get("name") == "Task":
+                        input_data = item.get("input", {})
+                        subagent_calls.append({
+                            "tool_use_id": item.get("id"),
+                            "subagent_type": input_data.get("subagent_type", "unknown"),
+                            "description": input_data.get("description", ""),
+                            "model": input_data.get("model"),
+                            "prompt_length": len(input_data.get("prompt", ""))
+                        })
+    return subagent_calls
 
 
 def cmd_parse(args) -> dict:
@@ -502,7 +642,13 @@ def cmd_parse(args) -> dict:
 
         first_timestamp = None
 
-        for entry in entries:
+        # Track message threading for decision attribution and leverage
+        all_entries = list(entries)  # Convert to list for indexing
+        human_input_tokens = 0
+        claude_output_tokens = 0
+        human_decisions = 0  # Count of user messages
+
+        for idx, entry in enumerate(all_entries):
             entry_type = entry.get("type")
 
             # Extract timestamp from entry
@@ -515,6 +661,18 @@ def cmd_parse(args) -> dict:
             message = entry.get("message", {})
             message_content = message.get("content", [])
             message_role = message.get("role")
+
+            # Track user decisions and input tokens
+            if entry_type == "user":
+                human_decisions += 1
+                # Add user input tokens if available
+                usage = message.get("usage", {})
+                human_input_tokens += usage.get("input_tokens", 0)
+
+            # Track Claude output tokens
+            elif entry_type == "assistant":
+                usage = message.get("usage", {})
+                claude_output_tokens += usage.get("output_tokens", 0)
 
             # Token metrics from message.usage (current format)
             if "usage" in message:
@@ -553,6 +711,10 @@ def cmd_parse(args) -> dict:
                                 timestamp=ts or "",
                                 parameters=tool_input
                             )
+
+                            # Classify decision attribution for this tool use
+                            decision = classify_decision(all_entries, idx, entry)
+                            analysis.decision_attribution[decision] += 1
 
                             # Detect background execution
                             if tool_name == "Task":
@@ -599,6 +761,28 @@ def cmd_parse(args) -> dict:
                     error_msg = error_msg.get("message", str(error_msg))
                 analysis.errors.append(str(error_msg))
 
+        # Calculate leverage ratios
+        analysis.leverage["human_input_tokens"] = human_input_tokens
+        analysis.leverage["claude_output_tokens"] = claude_output_tokens
+        analysis.leverage["human_decisions"] = human_decisions
+        analysis.leverage["claude_tool_calls"] = len(analysis.tool_calls)
+
+        if human_input_tokens > 0:
+            analysis.leverage["token_leverage_ratio"] = round(claude_output_tokens / human_input_tokens, 2)
+        if human_decisions > 0:
+            analysis.leverage["action_leverage_ratio"] = round(len(analysis.tool_calls) / human_decisions, 2)
+
+        # Detect recovery patterns
+        recovery = detect_recovery_patterns(all_entries)
+        analysis.recovery_indicators = recovery
+
+        # Track AskUserQuestion calls for context sufficiency
+        ask_user_count = sum(1 for tc in analysis.tool_calls if isinstance(tc, dict) and tc.get("tool_name") == "AskUserQuestion")
+        analysis.context_sufficiency["ask_user_count"] = ask_user_count
+
+        # Extract subagent calls
+        analysis.subagent_calls = extract_subagent_calls(all_entries)
+
         # Set timestamp
         if not analysis.timestamp and first_timestamp:
             analysis.timestamp = first_timestamp
@@ -632,6 +816,11 @@ def cmd_aggregate(args) -> dict:
     Returns JSON with:
     - metrics: Aggregated metrics per behavior and plugin
     - trends: Usage over time
+    - decisionAttribution: Aggregate decision patterns
+    - leverageMetrics: Aggregate leverage analysis
+    - recoveryAnalysis: Aggregate recovery indicators
+    - contextSufficiency: Aggregate context metrics
+    - subagentMetrics: Aggregate subagent usage
     """
     result = {
         "status": "success",
@@ -646,6 +835,34 @@ def cmd_aggregate(args) -> dict:
                 "cache_reads": 0,
                 "behaviors_invoked": 0
             }
+        },
+        "decisionAttribution": {
+            "total_human_directed": 0,
+            "total_claude_autonomous": 0,
+            "total_ambiguous": 0,
+            "autonomy_ratio": 0.0
+        },
+        "leverageMetrics": {
+            "avg_token_leverage": 0.0,
+            "avg_action_leverage": 0.0,
+            "inverted_sessions": [],
+            "high_leverage_sessions": []
+        },
+        "recoveryAnalysis": {
+            "total_interrupts": 0,
+            "total_rollbacks": 0,
+            "all_rollback_commands": [],
+            "sessions_with_recovery": []
+        },
+        "contextSufficiency": {
+            "total_ask_user": 0,
+            "avg_ask_user_per_session": 0.0,
+            "sessions_with_clarifications": []
+        },
+        "subagentMetrics": {
+            "total_delegations": 0,
+            "subagent_types": {},
+            "avg_delegations_per_session": 0.0
         },
         "date_range": {
             "start": None,
@@ -675,8 +892,11 @@ def cmd_aggregate(args) -> dict:
     behavior_stats = {}
     plugin_stats = {}
     timestamps = []
+    token_leverage_ratios = []
+    action_leverage_ratios = []
 
     for session in sessions:
+        session_id = session.get("session_id")
         result["metrics"]["totals"]["sessions"] += 1
         result["metrics"]["totals"]["tool_calls"] += len(session.get("tool_calls", []))
         result["metrics"]["totals"]["tokens_input"] += session.get("total_tokens_input", 0)
@@ -686,6 +906,57 @@ def cmd_aggregate(args) -> dict:
         ts = session.get("timestamp")
         if ts:
             timestamps.append(ts)
+
+        # Aggregate decision attribution
+        decision_attr = session.get("decision_attribution", {})
+        result["decisionAttribution"]["total_human_directed"] += decision_attr.get("human_directed", 0)
+        result["decisionAttribution"]["total_claude_autonomous"] += decision_attr.get("claude_autonomous", 0)
+        result["decisionAttribution"]["total_ambiguous"] += decision_attr.get("ambiguous", 0)
+
+        # Aggregate leverage metrics
+        leverage = session.get("leverage", {})
+        token_ratio = leverage.get("token_leverage_ratio", 0)
+        action_ratio = leverage.get("action_leverage_ratio", 0)
+
+        if token_ratio > 0:
+            token_leverage_ratios.append(token_ratio)
+            if token_ratio < 1.0:
+                result["leverageMetrics"]["inverted_sessions"].append(session_id)
+            elif token_ratio > 10.0:
+                result["leverageMetrics"]["high_leverage_sessions"].append(session_id)
+
+        if action_ratio > 0:
+            action_leverage_ratios.append(action_ratio)
+
+        # Aggregate recovery indicators
+        recovery = session.get("recovery_indicators", {})
+        interrupts = recovery.get("user_interrupts", 0)
+        rollbacks = recovery.get("rollback_commands", [])
+
+        result["recoveryAnalysis"]["total_interrupts"] += interrupts
+        result["recoveryAnalysis"]["total_rollbacks"] += len(rollbacks)
+        result["recoveryAnalysis"]["all_rollback_commands"].extend(rollbacks)
+
+        if interrupts > 0 or rollbacks:
+            result["recoveryAnalysis"]["sessions_with_recovery"].append(session_id)
+
+        # Aggregate context sufficiency
+        context = session.get("context_sufficiency", {})
+        ask_user = context.get("ask_user_count", 0)
+        result["contextSufficiency"]["total_ask_user"] += ask_user
+
+        if ask_user > 0:
+            result["contextSufficiency"]["sessions_with_clarifications"].append(session_id)
+
+        # Aggregate subagent metrics
+        subagent_calls = session.get("subagent_calls", [])
+        result["subagentMetrics"]["total_delegations"] += len(subagent_calls)
+
+        for call in subagent_calls:
+            agent_type = call.get("subagent_type", "unknown")
+            if agent_type not in result["subagentMetrics"]["subagent_types"]:
+                result["subagentMetrics"]["subagent_types"][agent_type] = 0
+            result["subagentMetrics"]["subagent_types"][agent_type] += 1
 
         # Per-behavior stats
         for behavior in session.get("behaviors_invoked", []):
@@ -701,7 +972,7 @@ def cmd_aggregate(args) -> dict:
                 }
 
             behavior_stats[behavior]["invocations"] += 1
-            behavior_stats[behavior]["sessions"].add(session.get("session_id"))
+            behavior_stats[behavior]["sessions"].add(session_id)
 
         # Per-plugin stats
         for plugin in session.get("plugins_detected", []):
@@ -710,7 +981,7 @@ def cmd_aggregate(args) -> dict:
                     "sessions": set(),
                     "behaviors_used": set()
                 }
-            plugin_stats[plugin]["sessions"].add(session.get("session_id"))
+            plugin_stats[plugin]["sessions"].add(session_id)
             for b in session.get("behaviors_invoked", []):
                 plugin_stats[plugin]["behaviors_used"].add(b)
 
@@ -726,6 +997,31 @@ def cmd_aggregate(args) -> dict:
 
     result["metrics"]["behaviors"] = behavior_stats
     result["metrics"]["plugins"] = plugin_stats
+
+    # Calculate aggregate averages and ratios
+    total_decisions = (result["decisionAttribution"]["total_human_directed"] +
+                      result["decisionAttribution"]["total_claude_autonomous"] +
+                      result["decisionAttribution"]["total_ambiguous"])
+
+    if total_decisions > 0:
+        result["decisionAttribution"]["autonomy_ratio"] = round(
+            result["decisionAttribution"]["total_claude_autonomous"] / total_decisions, 2
+        )
+
+    if token_leverage_ratios:
+        result["leverageMetrics"]["avg_token_leverage"] = round(statistics.mean(token_leverage_ratios), 2)
+
+    if action_leverage_ratios:
+        result["leverageMetrics"]["avg_action_leverage"] = round(statistics.mean(action_leverage_ratios), 2)
+
+    total_sessions = result["metrics"]["totals"]["sessions"]
+    if total_sessions > 0:
+        result["contextSufficiency"]["avg_ask_user_per_session"] = round(
+            result["contextSufficiency"]["total_ask_user"] / total_sessions, 2
+        )
+        result["subagentMetrics"]["avg_delegations_per_session"] = round(
+            result["subagentMetrics"]["total_delegations"] / total_sessions, 2
+        )
 
     # Date range
     if timestamps:
@@ -799,6 +1095,8 @@ def main():
     discover_parser.add_argument("--to", dest="to_date", help="End date (YYYY-MM-DD)")
     discover_parser.add_argument("--plugin", help="Filter by plugin name")
     discover_parser.add_argument("--checkpoint", help="Resume from timestamp")
+    discover_parser.add_argument("--projects", help="Comma-separated list of project names to include (e.g., lucid-apps,lucid-cloud)")
+    discover_parser.add_argument("--exclude-projects", help="Comma-separated list of project names to exclude")
 
     # parse command
     parse_parser = subparsers.add_parser("parse", help="Parse session log files")

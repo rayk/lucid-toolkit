@@ -1,6 +1,22 @@
-# CLAUDE.md
+# CLAUDE.md Template for Lucid Toolkit Plugin Users
 
-Project instructions for Claude Code working in this repository.
+> **Usage**: Copy this file to your project root as `CLAUDE.md`. Customize the
+> "Project-Specific" section and remove plugins you haven't installed from the
+> delegation patterns table.
+
+---
+
+## Project-Specific
+
+<!-- Add your project's specific instructions here -->
+
+**Project**: [Your project name]
+**Tech Stack**: [e.g., Flutter/Dart, Python, TypeScript]
+**Key Directories**:
+- `src/` - Source code
+- `tests/` - Test files
+
+---
 
 <critical_behavior>
 ## Context Preservation
@@ -43,13 +59,13 @@ False positives (unnecessary delegation) acceptable. Context exhaustion is not.
 
 | Request | Action | Rationale |
 |---------|--------|-----------|
-| "Where is auth configured?" | Task(Explore) | Unknown location |
-| "Fix getUserById" | Task(general-purpose) | Find + analyze + edit |
-| "Error: 'path not found' in config" | Task(general-purpose) | Specificity trap |
-| "Add import to src/utils.ts" | Direct Edit | Known file, single op |
+| "Where is X configured?" | Task(Explore) | Unknown location |
+| "Fix [function name]" | Task(general-purpose) | Find + analyze + edit |
+| "Error: '[message]' in config" | Task(general-purpose) | Specificity trap |
+| "Add import to src/file.ts" | Direct Edit | Known file, single op |
 | "What does this file do?" [in context] | Direct answer | Already read |
 | "Fix the performance issue" | Ask → Task | Ambiguous, then delegate |
-| "Change timeout to 5000 in config.ts" | Direct Edit | Specific + location given |
+| "Change X to Y in config.ts" | Direct Edit | Specific + location given |
 
 ## Constraints
 
@@ -80,102 +96,26 @@ DO:
 
 ---
 
-## Repository Overview
-
-Lucid Toolkit is a Claude Code plugin marketplace implementing capability-driven development workflows.
-
-## Commands
-
-```bash
-# Add marketplace
-/plugin marketplace add rayk/lucid-toolkit
-
-# Install plugin
-/plugin install capability@lucid-toolkit
-
-# Install shared CLI library (required for hooks/scripts)
-cd shared/cli-commons && pip install -e .
-
-# Run tests
-cd shared/cli-commons && pytest
-```
-
-## Structure
-
-```
-lucid-toolkit/
-├── .claude/                 # Local commands, skills, agents
-│   ├── commands/           # Slash commands for this repo
-│   ├── skills/             # Skills for this repo
-│   └── agents/             # Subagent definitions
-├── .claude-plugin/         # Marketplace configuration
-│   └── marketplace.json
-├── plugins/                # Installable plugins
-│   ├── capability/         # Strategic capability management
-│   ├── outcome/            # Outcome lifecycle management
-│   ├── context/            # Context window conservation
-│   ├── think/              # Mental models (consider, assess)
-│   ├── workspace/          # Multi-project management
-│   └── plan/               # TDD execution prompts
-└── shared/
-    └── cli-commons/        # Python utilities for hooks
-```
-
-### Plugin Structure
-
-```
-plugins/{name}/
-├── plugin.json          # Metadata and declarations
-├── commands/            # Slash commands (*.md)
-├── skills/              # Skills (SKILL.md)
-├── hooks/               # Python lifecycle scripts
-├── schemas/             # JSON schemas
-└── templates/           # File templates
-```
-
-## Key Concepts
-
-**Capability-Driven Development:**
-- Capabilities = strategic goals with maturity percentage
-- Outcomes = tactical work units that build capabilities
-- Outcome completion → capability maturity increases
-
-**Outcome Hierarchy:**
-- Parent outcomes aggregate children (`005-parent/005.1-child/`)
-- Children have `parentContribution` %, parent owns `capabilityContributions`
-
-## Naming Conventions
-
-| Entity | Pattern | Example |
-|--------|---------|---------|
-| Capability ID | `^[a-z0-9]+(-[a-z0-9]+)*$` | `auth-system` |
-| Outcome Dir | `^[0-9]+-[a-z0-9-]+$` | `005-ontology` |
-| Child Outcome | `^[0-9]+\.[0-9]+-[a-z0-9-]+$` | `005.1-testing` |
-
-## Cross-Reference Integrity
-
-When modifying tracking files, maintain referential integrity:
-- `capabilities/*/capability_track.json` - Individual capability state
-- `outcomes/*/outcome_track.json` - Outcome state and links
-- `status/capability_summary.json` - Central capability index
-- `status/outcome_summary.json` - Central outcome index
-
----
-
 ## Delegation Patterns (Plugin-Specific)
+
+> **Note**: Remove rows for plugins you haven't installed.
 
 Recognize these patterns and delegate immediately:
 
-| User Request Pattern | Delegate To |
-|---------------------|-------------|
-| "find where X", "search for Y", "what files" | Task(Explore) |
-| "update all", "fix across", "refactor everywhere" | Task(general-purpose) |
-| "implement [feature]" in Flutter project | Task(impl-flutter:flutter-coder) |
-| "review architecture", "architect review" | Task(architect:architecture-reviewer) |
-| "research [topic]", "investigate", "find out" | Task(analyst:research) |
-| "analyze", "think through", "consider options" | Skill(analyst:consider) |
-| "execute plan", "TDD prompt", "implementation plan" | Skill(plan:execution-prompt-generator) |
-| "build failed", "CI broken", "flutter doctor" | Task(impl-flutter:flutter-env) |
+| User Request Pattern | Delegate To | Plugin Required |
+|---------------------|-------------|-----------------|
+| "find where X", "search for Y", "what files" | Task(Explore) | (built-in) |
+| "update all", "fix across", "refactor everywhere" | Task(general-purpose) | (built-in) |
+| "research [topic]", "investigate", "find out" | Task(analyst:research) | analyst |
+| "analyze", "think through", "consider options" | Skill(analyst:consider) | analyst |
+| "review architecture", "architect review" | Task(architect:architecture-reviewer) | architect |
+| "create ADR", "document decision" | Task(architect:adr-writer) | architect |
+| "execute plan", "TDD prompt", "implementation plan" | Skill(plan:execution-prompt-generator) | plan |
+| "implement [feature]" in Flutter project | Task(impl-flutter:flutter-coder) | impl-flutter |
+| "build failed", "CI broken", "flutter doctor" | Task(impl-flutter:flutter-env) | impl-flutter |
+| "write tests" in Flutter project | Task(impl-flutter:flutter-tester) | impl-flutter |
+| "implement [feature]" in Python project | Task(impl-python:python-coder) | impl-python |
+| "debug", "fix error" in Python | Task(impl-python:python-debugger) | impl-python |
 
 ### After Completing Work Units
 
@@ -219,9 +159,9 @@ Each subagent gets its own context window. Use this to:
 
 Launch multiple Task agents simultaneously for independent work:
 ```
-Task(impl-flutter:flutter-coder): "Implement login screen"
-Task(impl-flutter:flutter-tester): "Write auth unit tests"
-Task(impl-flutter:flutter-ux): "Design onboarding flow"
+Task(agent-1): "First independent task"
+Task(agent-2): "Second independent task"
+Task(agent-3): "Third independent task"
 ```
 
 ### Coordinate via progress.md
@@ -231,11 +171,11 @@ Create `progress.md` at project root for multi-agent coordination:
 # Progress Log
 
 ## Active Tasks
-- [ ] Login screen implementation (flutter-coder)
-- [ ] Auth unit tests (flutter-tester)
+- [ ] Task description (agent-name)
+- [ ] Another task (agent-name)
 
 ## Completed
-- [x] Auth service setup
+- [x] Completed task
 ```
 
 ### Read Operations (Always Parallelize)
@@ -244,3 +184,41 @@ Instead of sequential reads, use parallel tool calls in a single message:
 - Multiple Read tools execute in parallel automatically
 - Multiple Task tools execute in parallel automatically
 - Only serialize when there are dependencies between operations
+
+---
+
+## Path-Based Rules (Optional)
+
+> Add these sections if you want context-specific guidance when working in certain directories.
+
+<!--
+Example: Uncomment and customize for your project
+
+---
+paths: architecture/decisions/**
+---
+
+# ADR Work
+When creating or editing Architecture Decision Records:
+- Use `/architect adr` for new ADR creation
+- Use `architect:adr-writer` agent for structured documentation
+
+---
+paths: **/plans/**
+---
+
+# Plan Work
+When working with execution plans or specifications:
+- Use `/plan validate` after editing plan files
+- Use `plan:execution-prompt-generator` skill before implementation
+
+---
+paths: **/*.dart
+---
+
+# Flutter Development
+For Dart/Flutter file work:
+- Use `impl-flutter:flutter-coder` for feature implementation
+- Use `impl-flutter:flutter-tester` for test writing
+- Use `impl-flutter:flutter-env` for environment issues
+-->

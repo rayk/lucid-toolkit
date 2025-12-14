@@ -1,0 +1,110 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.303796",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "research-before-action",
+    "session_id": "f0e803ee-cc4b-4e79-bf9c-f6d18b40a73a",
+    "tool_sequence": [
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ IDEA Flutter run configuration dart-define before launch task 2024",
+        "timestamp": "2025-12-13T22:02:44.062Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "Firebase emulator check if already running bash script 2024",
+        "timestamp": "2025-12-13T22:02:44.521Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ compound run configuration start service before Flutter app",
+        "timestamp": "2025-12-13T22:03:11.864Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "Android Studio Flutter run configuration additional arguments dart-define XML format",
+        "timestamp": "2025-12-13T22:03:12.216Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "\"firebase emulators:start\" background process wait for ready then start app",
+        "timestamp": "2025-12-13T22:03:46.487Z"
+      },
+      {
+        "tool": "Grep",
+        "parameters": {
+          "pattern": "before_run|method.*option",
+          "path": "/Users/rayk/Projects/lucid-apps/.idea/runConfigurations",
+          "output_mode": "content"
+        },
+        "timestamp": "2025-12-13T22:07:09.658Z"
+      },
+      {
+        "tool": "Write",
+        "parameters": {
+          "file_path": "/Users/rayk/Projects/lucid-apps/.idea/runConfigurations/OpenScheme___Ensure_Emulators.xml",
+          "content": "<component name=\"ProjectRunConfigurationManager\">\n  <configuration default=\"false\" name=\"OpenScheme - Ensure Emulators\" type=\"ShConfigurationType\">\n    <option name=\"EXECUTE_SCRIPT_FILE\" value=\"true\" />\n    <option name=\"INDEPENDENT_SCRIPT_PATH\" value=\"true\" />\n    <option name=\"SCRIPT_PATH\" value=\"$PROJECT_DIR$/apps/openscheme/scripts/ensure-emulators.sh\" />\n    <option name=\"INDEPENDENT_SCRIPT_WORKING_DIRECTORY\" value=\"true\" />\n    <option name=\"SCRIPT_WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/apps/openscheme\" />\n    <option name=\"EXECUTE_IN_TERMINAL\" value=\"true\" />\n    <method v=\"2\" />\n  </configuration>\n</component>\n"
+        },
+        "timestamp": "2025-12-13T22:07:22.362Z"
+      },
+      {
+        "tool": "Write",
+        "parameters": {
+          "file_path": "/Users/rayk/Projects/lucid-apps/.idea/runConfigurations/OpenScheme___Dev__Emulator_.xml",
+          "content": "<component name=\"ProjectRunConfigurationManager\">\n  <configuration default=\"false\" name=\"OpenScheme - Dev (Emulator)\" type=\"FlutterRunConfigurationType\" factoryName=\"Flutter\">\n    <option name=\"additionalArgs\" value=\"--dart-define=USE_FIREBASE_EMULATOR=true\" />\n    <option name=\"filePath\" value=\"$PROJECT_DIR$/apps/openscheme/lib/main.dart\" />\n    <method v=\"2\">\n      <option name=\"RunConfigurationTask\" enabled=\"true\" run_configuration_name=\"OpenScheme - Ensure Emulators\" run_configuration_type=\"ShConfigurationType\" />\n    </method>\n  </configuration>\n</component>\n"
+        },
+        "timestamp": "2025-12-13T22:07:24.969Z"
+      },
+      {
+        "tool": "TodoWrite",
+        "parameters": {
+          "todos": [
+            {
+              "content": "Update start-emulators.sh with existing emulator check",
+              "status": "completed",
+              "activeForm": "Updating start-emulators.sh"
+            },
+            {
+              "content": "Create ensure-emulators.sh idempotent launcher script",
+              "status": "completed",
+              "activeForm": "Creating ensure-emulators.sh"
+            },
+            {
+              "content": "Create IntelliJ run configuration for emulator mode",
+              "status": "completed",
+              "activeForm": "Creating IntelliJ run configuration"
+            },
+            {
+              "content": "Update run-with-emulator.sh to use ensure script",
+              "status": "in_progress",
+              "activeForm": "Updating run-with-emulator.sh"
+            },
+            {
+              "content": "Create stop-emulators.sh convenience script",
+              "status": "pending",
+              "activeForm": "Creating stop-emulators.sh"
+            }
+          ]
+        },
+        "timestamp": "2025-12-13T22:07:31.680Z"
+      },
+      {
+        "tool": "Write",
+        "parameters": {
+          "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/scripts/run-with-emulator.sh",
+          "content": "#!/bin/bash\n# Run Flutter app with Firebase Emulator support\n#\n# This script:\n# 1. Ensures Firebase emulators are running (starts if needed)\n# 2. Runs the Flutter app with USE_FIREBASE_EMULATOR=true\n#\n# Usage: ./run-with-emulator.sh [flutter run args...]\n# Example: ./run-with-emulator.sh -d emulator-5554\n\nset -e\n\nSCRIPT_DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\n\n# Ensure emulators are running\n\"$SCRIPT_DIR/ensure-emulators.sh\"\n\necho \"\"\necho \"Starting Flutter app with emulator support...\"\necho \"\"\n\n# Run Flutter with emulator flag\nfvm flutter run --dart-define=USE_FIREBASE_EMULATOR=true \"$@\"\n"
+        },
+        "timestamp": "2025-12-13T22:07:35.592Z"
+      }
+    ],
+    "context_summary": "User researches topic with multiple searches before taking action",
+    "commonality_markers": [
+      "3+ WebSearch",
+      "Edit/Write follows",
+      "configuration files"
+    ],
+    "improvement_hypothesis": "Could use analyst/research agent to orchestrate searches and synthesize findings"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

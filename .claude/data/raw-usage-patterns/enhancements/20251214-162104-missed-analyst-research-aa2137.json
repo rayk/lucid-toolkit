@@ -1,0 +1,52 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.307130",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "missed-analyst-research",
+    "session_id": "f0e803ee-cc4b-4e79-bf9c-f6d18b40a73a",
+    "current_behavior": "manual_research",
+    "tool_sequence": [
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ IDEA Flutter run configuration dart-define before launch task 2024",
+        "timestamp": "2025-12-13T22:02:44.062Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "Firebase emulator check if already running bash script 2024",
+        "timestamp": "2025-12-13T22:02:44.521Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ compound run configuration start service before Flutter app",
+        "timestamp": "2025-12-13T22:03:11.864Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "Android Studio Flutter run configuration additional arguments dart-define XML format",
+        "timestamp": "2025-12-13T22:03:12.216Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "\"firebase emulators:start\" background process wait for ready then start app",
+        "timestamp": "2025-12-13T22:03:46.487Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ run configuration XML \"before_run_tasks\" shell script example",
+        "timestamp": "2025-12-13T22:06:18.476Z"
+      }
+    ],
+    "search_count": 6,
+    "elevation_mode": "strategic_abstraction",
+    "current_gap": "6 manual WebSearches without research orchestration",
+    "proposed_enhancement": "Use analyst/research agent to orchestrate multi-source research",
+    "commonality_markers": [
+      "3+ WebSearch",
+      "related queries",
+      "configuration/setup topics"
+    ]
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

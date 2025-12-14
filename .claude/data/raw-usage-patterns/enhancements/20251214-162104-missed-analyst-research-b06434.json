@@ -1,0 +1,37 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.306686",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "missed-analyst-research",
+    "session_id": "0cb101e2-89e0-4e32-b34f-bbdfacb23434",
+    "current_behavior": "manual_research",
+    "tool_sequence": [
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ IDEA Flutter run configuration xml format 2024 2025",
+        "timestamp": "2025-12-14T00:08:16.034Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ IDEA run configuration \"before launch\" shell script XML method RunConfigurationTask",
+        "timestamp": "2025-12-14T00:09:09.606Z"
+      },
+      {
+        "tool": "WebSearch",
+        "query": "IntelliJ Flutter run configuration additionalArgs dart-define device ID XML",
+        "timestamp": "2025-12-14T00:09:54.108Z"
+      }
+    ],
+    "search_count": 3,
+    "elevation_mode": "strategic_abstraction",
+    "current_gap": "3 manual WebSearches without research orchestration",
+    "proposed_enhancement": "Use analyst/research agent to orchestrate multi-source research",
+    "commonality_markers": [
+      "3+ WebSearch",
+      "related queries",
+      "configuration/setup topics"
+    ]
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

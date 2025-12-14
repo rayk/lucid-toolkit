@@ -1,17 +1,7 @@
 ---
 name: execution-prompt-generator
 description: |
-  Analyze design documents and generate autonomous execution prompts for TDD implementation.
-
-  INVOKE THIS SKILL when user:
-  - Asks to "generate an execution prompt" or "create implementation plan"
-  - Mentions "TDD execution", "autonomous implementation", "phased plan"
-  - Has a design document and wants to implement it
-  - Reads plan files (**/plans/*.md) and asks to "analyze" or "execute"
-  - Wants cost-efficient model delegation strategy
-  - Asks about "red-green-refactor" implementation
-
-  Trigger keywords: execution prompt, TDD, implementation plan, design document, phased execution, cost tracking
+  Generates TDD-style execution prompts from design documents. Triggers when reading files in /plans/ directories, when user mentions "execute plan", "TDD prompt", "implementation plan", or "generate execution prompt". MUST BE USED before implementing from specification.md files or when user has a design document and wants to implement it.
 ---
 
 <overview>

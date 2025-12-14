@@ -160,6 +160,26 @@ cd shared/cli-commons && pip install -e .
 - **Flutter** - Riverpod, fpdart, mobile-specific patterns
 - **Neo4j** - Graph modeling, Cypher optimization, APOC/GDS integration
 
+## CLAUDE.md Template
+
+For optimal plugin behavior, copy the template to your project:
+
+```bash
+# From your project root
+curl -O https://raw.githubusercontent.com/rayk/lucid-toolkit/main/templates/CLAUDE.md.template
+mv CLAUDE.md.template CLAUDE.md
+```
+
+The template includes:
+- **Context preservation** - Delegation patterns that prevent context exhaustion
+- **Plugin triggers** - Pattern recognition table that enables automatic plugin invocation
+- **Compaction strategy** - Proactive context management at 70-75%
+- **Parallel execution** - Multi-agent coordination patterns
+
+Customize the "Project-Specific" section and remove plugins you haven't installed.
+
+---
+
 ## Plugin Structure
 
 ```

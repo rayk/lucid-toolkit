@@ -1,0 +1,257 @@
+{
+  "$schema": "../schema/usage-analysis-state.schema.json",
+  "analysisMetadata": {
+    "lastAnalyzedTimestamp": "2025-12-14T05:10:05.294Z",
+    "lastAnalyzedSessionId": "3637afce-3109-4c39-9f62-41a8533bd70a",
+    "lastRunTimestamp": "2025-12-14T05:20:00.000Z",
+    "totalSessionsAnalyzed": 53,
+    "dateRangeStart": "2025-12-11T06:23:34.268Z",
+    "dateRangeEnd": "2025-12-14T05:10:05.294Z"
+  },
+  "pluginInventory": {
+    "plugins": {
+      "architect": {
+        "name": "architect",
+        "version": "1.1.0",
+        "behaviors": {
+          "commands": ["init", "adr", "review"],
+          "skills": ["manage-architecture", "create-adr"],
+          "agents": ["component-analyzer", "architecture-reviewer", "adr-writer", "consistency-checker"],
+          "hooks": []
+        }
+      },
+      "analyst": {
+        "name": "analyst",
+        "version": "2.0.0",
+        "behaviors": {
+          "commands": ["consider", "assess", "reflect", "debate", "swarm"],
+          "skills": ["consider"],
+          "agents": ["research", "model-5-whys", "model-10-10-10", "model-eisenhower", "model-first-principles", "model-inversion", "model-occams-razor", "model-one-thing", "model-opportunity-cost", "model-pareto", "model-second-order", "model-six-hats", "model-swot", "model-toc", "model-via-negativa", "think-classifier", "think-clr-validator", "think-orchestrator", "think-synthesizer", "think-validator"],
+          "hooks": []
+        }
+      },
+      "impl-flutter": {
+        "name": "impl-flutter",
+        "version": "2.1.0",
+        "behaviors": {
+          "commands": [],
+          "skills": ["dart-flutter-mcp"],
+          "agents": ["flutter-coder", "flutter-tester", "flutter-debugger", "flutter-env", "flutter-data", "flutter-platform", "flutter-release", "flutter-ux"],
+          "hooks": []
+        }
+      },
+      "impl-python": {
+        "name": "impl-python",
+        "version": "2.0.0",
+        "behaviors": {
+          "commands": [],
+          "skills": ["python-dev-tools"],
+          "agents": ["python-coder", "python-tester", "python-debugger", "python-env", "python-data", "python-platform", "python-release", "python-api"],
+          "hooks": []
+        }
+      },
+      "impl-neo4j": {
+        "name": "impl-neo4j",
+        "version": "1.1.0",
+        "behaviors": {
+          "commands": [],
+          "skills": ["neo4j-cypher"],
+          "agents": ["neo4j-modeler", "neo4j-query", "neo4j-data", "neo4j-perf", "neo4j-driver", "neo4j-env"],
+          "hooks": []
+        }
+      },
+      "luc": {
+        "name": "luc",
+        "version": "2.4.0",
+        "behaviors": {
+          "commands": ["setup", "about"],
+          "skills": ["manage-markdown-docs", "never-guess", "render-output", "resolve-ambiguity", "use-toon"],
+          "agents": [],
+          "hooks": []
+        }
+      },
+      "plan": {
+        "name": "plan",
+        "version": "2.1.0",
+        "behaviors": {
+          "commands": ["generate", "analyze", "validate"],
+          "skills": ["execution-prompt-generator"],
+          "agents": [],
+          "hooks": []
+        }
+      }
+    }
+  },
+  "invocationMetrics": {
+    "behaviors": {
+      "agent:Explore": {
+        "invocations": 9,
+        "sessions": [
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "01b2cf12-d715-4a60-88c5-b4ee1e53bfd7",
+          "90f454ec-52d5-4f4f-bbc0-91199e24c181",
+          "34c1695d-7f53-4b69-8ffe-b6d84ad98e4d",
+          "aedf036b-11b1-47d6-91ed-1f1e56e99280",
+          "9f763f9a-710e-4382-861a-3cfdc4a85545",
+          "76533dc7-fb48-4c37-b97c-46082a83a773",
+          "6145648d-0ff5-4d43-9014-01438f82170f"
+        ],
+        "session_count": 9
+      },
+      "agent:impl-flutter:flutter-tester": {
+        "invocations": 3,
+        "sessions": [
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
+        ],
+        "session_count": 3
+      },
+      "agent:impl-flutter:flutter-env": {
+        "invocations": 4,
+        "sessions": [
+          "76533dc7-fb48-4c37-b97c-46082a83a773",
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
+        ],
+        "session_count": 4
+      },
+      "agent:impl-flutter:flutter-ux": {
+        "invocations": 3,
+        "sessions": [
+          "2072867e-3f96-4580-a7bd-e58fd9c85415",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
+        ],
+        "session_count": 3
+      },
+      "agent:impl-flutter:flutter-coder": {
+        "invocations": 4,
+        "sessions": [
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
+          "a4dde869-3fab-42a8-8619-fbe69728ed21",
+          "496021e9-78e1-480d-a0cd-b67538e78ddf",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756"
+        ],
+        "session_count": 4
+      },
+      "agent:general-purpose": {
+        "invocations": 1,
+        "sessions": ["76533dc7-fb48-4c37-b97c-46082a83a773"],
+        "session_count": 1
+      },
+      "skill:impl-flutter:dart-flutter-mcp": {
+        "invocations": 1,
+        "sessions": ["84da288d-9666-457c-92d2-5d4bbe85a608"],
+        "session_count": 1
+      },
+      "agent:Plan": {
+        "invocations": 1,
+        "sessions": ["9f763f9a-710e-4382-861a-3cfdc4a85545"],
+        "session_count": 1
+      },
+      "agent:impl-flutter:flutter-data": {
+        "invocations": 1,
+        "sessions": ["a4dde869-3fab-42a8-8619-fbe69728ed21"],
+        "session_count": 1
+      },
+      "agent:usage-analysis": {
+        "invocations": 2,
+        "sessions": [
+          "9cda6296-3def-4ed7-895d-f069d58388ef",
+          "75fcfca2-cc3d-4709-81c0-1c2402e1d3e6"
+        ],
+        "session_count": 2
+      },
+      "agent:pattern-discovery": {
+        "invocations": 1,
+        "sessions": ["90f454ec-52d5-4f4f-bbc0-91199e24c181"],
+        "session_count": 1
+      },
+      "agent:subagent-auditor": {
+        "invocations": 1,
+        "sessions": ["d5544dcb-f408-49fa-a77d-f0e976349387"],
+        "session_count": 1
+      },
+      "agent:skill-auditor": {
+        "invocations": 1,
+        "sessions": ["d5544dcb-f408-49fa-a77d-f0e976349387"],
+        "session_count": 1
+      }
+    },
+    "plugins": {
+      "impl-flutter": {
+        "sessions": [
+          "1cc4caa6-3fc9-400d-8e8d-5344c4a58eae",
+          "281ffece-bf4d-4368-afd2-6ae72eb8f756",
+          "84da288d-9666-457c-92d2-5d4bbe85a608",
+          "78601300-bfdf-4e5d-84e5-c62a37a71dc9",
+          "76533dc7-fb48-4c37-b97c-46082a83a773",
+          "496021e9-78e1-480d-a0cd-b67538e78ddf",
+          "2072867e-3f96-4580-a7bd-e58fd9c85415"
+        ],
+        "session_count": 7
+      }
+    },
+    "totals": {
+      "sessions": 53,
+      "tool_calls": 1893,
+      "tokens_input": 543783,
+      "tokens_output": 736214,
+      "cache_reads": 184094093,
+      "behaviors_invoked": 13
+    }
+  },
+  "findings": {
+    "category1_missed": [
+      {
+        "behavior": "plan:*",
+        "trigger": "plan file operations",
+        "occurrences": 244,
+        "priority": "critical"
+      },
+      {
+        "behavior": "impl-python:*",
+        "trigger": "python file operations",
+        "occurrences": 33,
+        "priority": "high"
+      },
+      {
+        "behavior": "analyst:*",
+        "trigger": "analysis task prompts",
+        "occurrences": 5,
+        "priority": "medium"
+      },
+      {
+        "behavior": "architect:*",
+        "trigger": "adr/architecture files",
+        "occurrences": 4,
+        "priority": "medium"
+      }
+    ],
+    "category2_suboptimal": [
+      {
+        "pattern": "sequential_execution",
+        "expected": "mixed",
+        "actual": "100% sequential",
+        "priority": "medium"
+      },
+      {
+        "pattern": "background_utilization",
+        "expected": ">10%",
+        "actual": "0.3%",
+        "priority": "low"
+      }
+    ],
+    "category3_unused": [
+      {"plugin": "architect", "behaviors": 9, "sessions": 0},
+      {"plugin": "analyst", "behaviors": 26, "sessions": 0},
+      {"plugin": "impl-python", "behaviors": 9, "sessions": 0},
+      {"plugin": "impl-neo4j", "behaviors": 7, "sessions": 0},
+      {"plugin": "luc", "behaviors": 7, "sessions": 0},
+      {"plugin": "plan", "behaviors": 4, "sessions": 0}
+    ]
+  }
+}

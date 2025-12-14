@@ -1,0 +1,46 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.304609",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "mechanical-bash-sequence",
+    "session_id": "a4dde869-3fab-42a8-8619-fbe69728ed21",
+    "violation_type": "mechanical_repetition",
+    "tool_sequence": [
+      {
+        "tool": "Bash",
+        "command": "cd /Users/rayk/Projects/lucid-apps/apps/openscheme && flutter analyze",
+        "timestamp": "2025-12-14T02:57:29.842Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cd /Users/rayk/Projects/lucid-apps/apps/openscheme && fvm flutter analyze",
+        "timestamp": "2025-12-14T02:57:39.784Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "cd /Users/rayk/Projects/lucid-apps/apps/openscheme && fvm flutter analyze 2>&1 | grep -E \"^   error\" | head -20",
+        "timestamp": "2025-12-14T02:57:55.121Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "fvm flutter test --reporter=compact 2>&1 | tail -30",
+        "timestamp": "2025-12-14T02:58:05.565Z"
+      },
+      {
+        "tool": "Bash",
+        "command": "fvm flutter test 2>&1 | tail -10",
+        "timestamp": "2025-12-14T02:58:31.595Z"
+      }
+    ],
+    "context_summary": "5 sequential Bash commands - mechanical work that breaks cognitive offloading",
+    "commonality_markers": [
+      "5+ sequential bash",
+      "environment checking",
+      "log tailing"
+    ],
+    "ideal_approach": "Wrap repetitive operations in a script or delegate to env agent",
+    "improvement_hypothesis": "Detect repetitive bash patterns and suggest automation"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

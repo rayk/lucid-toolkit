@@ -1,19 +1,101 @@
 ---
-description: Idempotent project setup - detects state and generates project-info.toon
-allowed-tools: [Task, Read, Bash, Write, Glob, AskUserQuestion, Edit]
+description: Idempotent project setup - detects state, generates project-info.toon, validates CLAUDE.md
+argument-hint: (none - operates on current directory)
+allowed-tools: [Task, AskUserQuestion]
 ---
 
 <objective>
-Configure foundational Claude Code settings for any project through an idempotent command that detects current state and performs the appropriate action: initialize, repair, or report.
+Configure foundational Claude Code settings for any project through an idempotent command that detects current state and performs the appropriate action: initialize, repair, migrate, or report.
 
-This is the base-level setup that works with any project structure. It establishes the `.claude/` directory, generates `project-info.toon` following the schema.org-based TOON format, and configures the Claude Code status line.
+This command delegates to a setup specialist agent that:
+1. Establishes `.claude/` directory and `project-info.toon`
+2. Configures Claude Code status line
+3. Validates CLAUDE.md contains required behavioral instructions for plugin effectiveness
 </objective>
+
+<context>
+Current state:
+- Project info exists: !`test -f .claude/project-info.toon && echo "yes" || echo "no"`
+- CLAUDE.md exists: !`test -f CLAUDE.md && echo "yes" || echo "no"`
+- Git status: !`git status --short 2>/dev/null | head -5`
+- Current branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
+- Settings statusLine: !`jq -r '.statusLine // "not configured"' ~/.claude/settings.json 2>/dev/null || echo "no settings file"`
+</context>
+
+<process>
+## Immediate User Notification
+
+```
+Starting project setup scan...
+```
+
+## Delegate to Setup Specialist
+
+Launch setup-specialist agent to handle the full workflow:
+
+```
+Task(subagent_type="luc:setup-specialist", prompt="""
+Execute idempotent project setup for the current directory.
+
+Current state from context:
+- project-info.toon: {exists or not from context}
+- CLAUDE.md: {exists or not from context}
+- Git branch: {from context}
+- Status line: {configured or not from context}
+
+Perform:
+1. Detect state (virgin/healthy/outdated/corrupted)
+2. Execute appropriate action (INITIALIZE/REPORT/MIGRATE/REPAIR)
+3. Validate CLAUDE.md behavioral coverage
+4. Report results with coverage percentages
+
+If CLAUDE.md needs updates, use AskUserQuestion to confirm before modifying.
+
+Template for new/updated CLAUDE.md: ~/.claude/plugins/luc@lucid-toolkit/templates/CLAUDE.md.template
+""")
+```
+
+## Present Results
+
+Report the agent's findings to the user with:
+- State detected and action taken
+- Files generated/modified
+- CLAUDE.md coverage status
+- Any user decisions needed
+</process>
+
+<verification>
+After agent completes:
+- .claude/project-info.toon exists and is valid TOON format
+- Status line configured in ~/.claude/settings.json
+- CLAUDE.md coverage percentage reported
+- User informed of any missing behavioral sections
+</verification>
+
+<success_criteria>
+**Idempotency:**
+- Running multiple times produces same result
+- Existing valid configuration preserved
+- Only regenerates when needed
+
+**Delegation:**
+- All complex logic handled by setup-specialist agent
+- Main context preserved for user communication
+- Agent handles state detection, scanning, file generation
+
+**User Communication:**
+- Clear progress indication
+- Summary of actions taken
+- CLAUDE.md coverage percentage shown
+- Missing sections explicitly listed
+</success_criteria>
 
 <schema_reference>
 ## Schema / Instance Relationship
 
 **Schema**: `luc/schemas/project-info-schema.toon` (read-only reference)
 **Instance**: `.claude/project-info.toon` (generated output)
+**Template**: `luc/templates/CLAUDE.md.template` (CLAUDE.md source)
 
 The schema defines structure with type annotations:
 - `→const` - Fixed value, copy exactly
@@ -24,343 +106,9 @@ The schema defines structure with type annotations:
 - `→enum[Name]` - One of defined values
 </schema_reference>
 
-<execution_model>
-This command uses a coordinator pattern:
-
-1. **Main context**: State detection, orchestration, user interaction, final output
-2. **Explore subagent**: Scan project structure (READ-ONLY)
-3. **Main context**: Generate project-info.toon directly (no toon-specialist needed for simple schema)
-
-IMPORTANT: Notify user immediately that setup is starting, then delegate scanning.
-</execution_model>
-
-<process>
-## Phase 1: Quick State Detection (Main Context)
-
-Notify user immediately:
-```
-Starting project setup scan...
-```
-
-Check state with minimal reads:
-1. Check if `.claude/project-info.toon` exists
-2. If exists: read first 15 lines to get version
-3. Determine action: initialize | repair | migrate | report
-
-| State | Condition | Action |
-|-------|-----------|--------|
-| **virgin** | File doesn't exist | Run INITIALIZE |
-| **healthy** | File exists and valid | Run REPORT |
-| **outdated** | File exists, version mismatch | Run MIGRATE |
-| **corrupted** | File exists, invalid/incomplete | Run REPAIR |
-
-## Phase 2: Project Scan (Explore Subagent)
-
-For INITIALIZE, MIGRATE, or REPAIR states, launch scanner:
-
-```
-Task(subagent_type="Explore", model="haiku", prompt="""
-Scan project for setup. Return ONLY this TOON format - no prose:
-
-@type: SoftwareSourceCode
-project.name: {basename of cwd}
-project.description: {from package.json description, pyproject.toml, or null}
-project.version: {from package.json version, pyproject.toml, or null}
-project.technology: {enum: typescript|javascript|python|rust|go|java|flutter|dotnet|unknown}
-project.entryPoint: {main entry file or null}
-
-repository.url: {git remote get-url origin, or null}
-repository.branch: {git branch --show-current, or null}
-repository.version: {git rev-parse --short HEAD, or null}
-repository.dateModified: {git log -1 --format=%cI, or null}
-
-dependencies.numberOfItems: {count from package.json/pyproject.toml, or 0}
-devDependencies.numberOfItems: {count, or 0}
-
-ide.name: {VS Code if .vscode/, IntelliJ IDEA if .idea/, none otherwise}
-ide.configPath: {.vscode/ or .idea/ or null}
-
-workspace.name: {from parent workspace-info.toon, or null if standalone}
-workspace.path: {relative path to workspace root, or null if standalone}
-workspace.infoFile: {relative path to workspace-info.toon, or null if standalone}
-
-Detection markers:
-- package.json with typescript in devDeps = typescript
-- package.json without typescript = javascript
-- pyproject.toml or requirements.txt = python
-- Cargo.toml = rust
-- go.mod = go
-- pubspec.yaml = flutter
-- pom.xml or build.gradle = java
-- *.csproj = dotnet
-
-Workspace detection:
-- Walk up parent directories looking for .claude/workspace-info.toon
-- If found, read workspace.name from it
-- Calculate relative path from project to workspace root
-""")
-```
-
-## Phase 3: Generate project-info.toon
-
-### Step 1: Ensure .claude/ directory exists
-```bash
-mkdir -p .claude
-```
-
-### Step 2: Generate project-info.toon
-
-Using scanner output, write `.claude/project-info.toon`:
-
-```toon
-# ═══════════════════════════════════════════════════════════════════════════
-# PROJECT-INFO.TOON
-# ═══════════════════════════════════════════════════════════════════════════
-# Generated by /luc:setup
-# Schema: luc/schemas/project-info-schema.toon
-# ═══════════════════════════════════════════════════════════════════════════
-
-# ─── METADATA ──────────────────────────────────────────────────────────────
-
-@context: https://schema.org
-@type: SoftwareSourceCode
-@id: project/{project.name}
-dateCreated: {current ISO timestamp}
-dateModified: {current ISO timestamp}
-softwareVersion: 1.0.0
-
-# ─── PROJECT ──────────────────────────────────────────────────────────────
-
-project@type: SoftwareSourceCode
-project.name: {from scanner}
-project.description: {from scanner or null}
-project.version: {from scanner or null}
-project.technology: {from scanner}
-project.entryPoint: {from scanner or null}
-
-# ─── REPOSITORY ───────────────────────────────────────────────────────────
-
-repository@type: CodeRepository
-repository.url: {from scanner or null}
-repository.branch: {from scanner or null}
-repository.version: {from scanner or null}
-repository.dateModified: {from scanner or null}
-
-# ─── DEPENDENCIES ─────────────────────────────────────────────────────────
-
-dependencies@type: ItemList
-dependencies.numberOfItems: {from scanner}
-devDependencies.numberOfItems: {from scanner}
-
-# ─── IDE INTEGRATION ──────────────────────────────────────────────────────
-
-ide@type: SoftwareApplication
-ide.name: {from scanner}
-ide.configPath: {from scanner or null}
-
-# ─── WORKSPACE REFERENCE ─────────────────────────────────────────────────
-
-workspace@type: Project
-workspace.name: {from scanner or null}
-workspace.path: {from scanner or null}
-workspace.infoFile: {from scanner or null}
-
-# ─── SESSION TRACKING ─────────────────────────────────────────────────────
-
-lastSession.id: null
-lastSession.timestamp: null
-lastSession.event: null
-```
-
-### Step 3: Configure Status Line
-
-Configure Claude Code to use the luc status line script. This provides a rich status display with:
-- Focus indicator, context window usage, cache stats
-- Git branch, worktree, lines changed, commits today
-- Current working directory
-
-**Status Line Script Location**: `~/.claude/plugins/luc@lucid-toolkit/scripts/status_line.py`
-
-The script reads `workspace.project_dir` from stdin and looks for `.claude/project-info.toon` or `.claude/workspace-info.toon` to get project context.
-
-**Configuration Steps:**
-
-1. Read current settings from `~/.claude/settings.json`
-2. Check if `statusLine` is already configured
-3. If not configured or different, update to use the luc status line script:
-
-```json
-{
-  "statusLine": "~/.claude/plugins/luc@lucid-toolkit/scripts/status_line.py"
-}
-```
-
-4. Use Edit tool to update settings.json (preserve existing settings)
-
-**Idempotency**: If statusLine already points to the luc script, skip this step and report "Status line: already configured".
-
-### Step 4: Offer CLAUDE.md creation
-
-If no `CLAUDE.md` exists at project root, ask user if they want one created with basic structure.
-
-## Phase 4: User Confirmation (INITIALIZE only)
-
-Present findings:
-```
-## Project Setup Complete
-
-Project: {name}
-Technology: {detected}
-Repository: {url or "local only"}
-
-### Generated
-- .claude/project-info.toon
-
-### Configured
-- Status line: {configured|already configured|skipped}
-
-Schema: project-info-schema.toon v1.1.0
-
-Would you like me to create a CLAUDE.md file with project instructions? [Y/n]
-```
-</process>
-
-<report_mode>
-For REPORT state (healthy project-info.toon exists):
-
-1. Read .claude/project-info.toon
-2. Check status line configuration in ~/.claude/settings.json
-3. Display formatted summary:
-
-```
-## Project Status
-
-{project.name} @ {repository.version}
-Technology: {project.technology}
-Last modified: {relative-time from dateModified}
-
-### Configuration
-- .claude/project-info.toon: valid (v{softwareVersion})
-- Status line: {configured|not configured}
-- CLAUDE.md: {exists|missing}
-
-### Repository
-{repository.url or "Local project (no git remote)"}
-Branch: {repository.branch}
-```
-</report_mode>
-
-<migrate_mode>
-For MIGRATE state (version mismatch):
-
-1. Read existing project-info.toon to preserve data
-2. Re-scan project for any new fields
-3. Write updated file with new version
-4. Report changes:
-
-```
-## Project Migrated
-
-From: v{old} → v{new}
-Preserved: project, repository, dependencies
-Updated: schema version, dateModified
-```
-</migrate_mode>
-
-<repair_mode>
-For REPAIR state (corrupted file):
-
-1. Scan project fresh
-2. Generate new project-info.toon
-3. Report:
-
-```
-## Project Repaired
-
-Regenerated: .claude/project-info.toon
-Previous file was corrupted/incomplete.
-```
-</repair_mode>
-
-<output_format>
-**Progress Notification** (immediate):
-```
-Starting project setup scan...
-```
-
-**INITIALIZE Complete**:
-```
-## Project Setup Complete
-
-{name} ({technology})
-Repository: {url or "local only"}
-
-Generated: .claude/project-info.toon
-Configured: Status line
-Schema: project-info-schema.toon v1.1.0
-
-Project is ready for Claude Code.
-```
-
-**REPORT Complete**:
-```
-## Project Status
-
-{name} @ {commit}
-Technology: {technology}
-Modified: {relative-time}
-
-Configuration valid.
-Status line: {configured|not configured}
-```
-
-**MIGRATE Complete**:
-```
-## Project Migrated
-
-Schema: v{old} → v{new}
-Data preserved and updated.
-```
-
-**REPAIR Complete**:
-```
-## Project Repaired
-
-Regenerated: .claude/project-info.toon
-Project is ready for Claude Code.
-```
-</output_format>
-
-<success_criteria>
-**Idempotency:**
-- Running multiple times produces same result
-- Existing valid configuration preserved
-- Only regenerates when needed
-- Status line only configured if not already set to luc script
-
-**TOON Validity:**
-- Output follows project-info-schema.toon exactly
-- All →const fields copied verbatim
-- Optional fields use null when empty
-- dateModified updated on every write
-
-**State Detection:**
-- Correctly identifies virgin/healthy/outdated/corrupted states
-- Appropriate action taken for each state
-
-**Status Line:**
-- Configured in ~/.claude/settings.json
-- Points to luc status line script
-- Preserves existing settings when updating
-
-**Minimal Impact:**
-- Does not modify existing valid files
-- Does not require specialized project structure
-- Works with any project type
-
-**User Communication:**
-- Clear progress indication
-- Summary of actions taken
-- Schema version displayed
-- Status line configuration status reported
-</success_criteria>
+<output>
+Files created/modified by agent:
+- `.claude/project-info.toon` - Project metadata in TOON format
+- `~/.claude/settings.json` - Status line configuration (if not already set)
+- `CLAUDE.md` - Behavioral instructions (only if user accepts)
+</output>

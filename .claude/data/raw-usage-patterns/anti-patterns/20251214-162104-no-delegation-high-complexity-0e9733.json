@@ -1,0 +1,111 @@
+{
+  "discovered_at": "2025-12-14T16:21:04.306145",
+  "run_id": "pd-20251214-162104",
+  "pattern": {
+    "pattern_type": "no-delegation-high-complexity",
+    "session_id": "ec369a72-3c29-42e8-84bf-6c0cea91f41e",
+    "violation_type": "context_exhaustion_risk",
+    "tool_sequence": [
+      {
+        "tool": "mcp__dart__list_devices",
+        "timestamp": "2025-12-14T03:47:05.933Z"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-14T03:47:06.853Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/scripts/run-with-emulator.sh"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-14T03:47:07.572Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/scripts/start-emulators.sh"
+      },
+      {
+        "tool": "mcp__dart__add_roots",
+        "timestamp": "2025-12-14T03:47:22.903Z"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-14T03:47:23.578Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/scripts/ensure-emulators.sh"
+      },
+      {
+        "tool": "Bash",
+        "timestamp": "2025-12-14T03:47:29.473Z",
+        "command": "cd /Users/rayk/Projects/lucid-apps/apps/openscheme && ./scri"
+      },
+      {
+        "tool": "mcp__dart__launch_app",
+        "timestamp": "2025-12-14T03:47:39.600Z"
+      },
+      {
+        "tool": "Glob",
+        "timestamp": "2025-12-14T03:48:06.736Z"
+      },
+      {
+        "tool": "Glob",
+        "timestamp": "2025-12-14T03:48:07.070Z"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-14T03:48:11.248Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/android/settings.gradle"
+      },
+      {
+        "tool": "Edit",
+        "timestamp": "2025-12-14T03:48:15.997Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/android/settings.gradle"
+      },
+      {
+        "tool": "mcp__dart__launch_app",
+        "timestamp": "2025-12-14T03:48:26.944Z"
+      },
+      {
+        "tool": "Bash",
+        "timestamp": "2025-12-14T03:50:05.014Z",
+        "command": "fvm flutter run -d 39131FDJG002N3 --dart-define=USE_FIREBASE"
+      },
+      {
+        "tool": "TaskOutput",
+        "timestamp": "2025-12-14T03:50:10.860Z"
+      },
+      {
+        "tool": "TaskOutput",
+        "timestamp": "2025-12-14T03:50:15.679Z"
+      },
+      {
+        "tool": "TaskOutput",
+        "timestamp": "2025-12-14T03:50:19.981Z"
+      },
+      {
+        "tool": "Grep",
+        "timestamp": "2025-12-14T03:55:56.724Z"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-14T03:55:57.348Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/lib/main.dart"
+      },
+      {
+        "tool": "Read",
+        "timestamp": "2025-12-14T03:56:07.433Z",
+        "file_path": "/Users/rayk/Projects/lucid-apps/apps/openscheme/lib/src/core/auth/auth_status_provider.dart"
+      },
+      {
+        "tool": "Glob",
+        "timestamp": "2025-12-14T03:56:08.263Z"
+      }
+    ],
+    "total_tool_calls": 136,
+    "context_summary": "136 tool calls with no Task delegation - context exhaustion risk",
+    "commonality_markers": [
+      "50+ tool calls",
+      "no Task tool",
+      "sequential execution"
+    ],
+    "ideal_approach": "Delegate sub-tasks to preserve main context",
+    "improvement_hypothesis": "CLAUDE.md should emphasize delegation for complex work"
+  },
+  "classification_confidence": "high",
+  "requires_review": false
+}

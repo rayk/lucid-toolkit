@@ -1,12 +1,12 @@
 {
   "analysisMetadata": {
-    "lastAnalyzedTimestamp": "2025-12-13T12:22:27.920Z",
-    "lastRunTimestamp": "2025-12-13T23:24:25Z",
-    "totalSessionsAnalyzed": 27,
+    "lastAnalyzedTimestamp": "2025-12-14T05:14:32.598000+00:00",
+    "lastRunTimestamp": "2025-12-14T05:21:21.626727+00:00",
+    "totalSessionsAnalyzed": 46,
     "totalPatternsDiscovered": {
-      "workflows": 6,
-      "anti_patterns": 3,
-      "enhancements": 4
+      "workflows": 9,
+      "anti_patterns": 12,
+      "enhancements": 8
     }
   },
   "runHistory": [
@@ -29,6 +29,16 @@
         "anti_patterns": 1,
         "enhancements": 2
       }
+    },
+    {
+      "run_id": "pd-20251214-162121",
+      "timestamp": "2025-12-14T05:21:21.626734+00:00",
+      "sessions_analyzed": 19,
+      "patterns_found": {
+        "workflows": 3,
+        "anti_patterns": 9,
+        "enhancements": 4
+      }
     }
   ],
   "patternIndex": {
@@ -38,18 +48,34 @@
       "20251213-200123-git-commit-workflow-g7h8i9.json",
       "20251213-232425-impl-flutter-multi-agent-sequence-a1b2c3.json",
       "20251213-232425-explore-then-implement-d4e5f6.json",
-      "20251213-232425-background-orchestration-g7h8i9.json"
+      "20251213-232425-background-orchestration-g7h8i9.json",
+      "20251214-162104-research-before-action-68b3f9.json",
+      "20251214-162104-research-before-action-d76197.json",
+      "20251214-162104-research-before-action-ab8235.json"
     ],
     "anti_patterns": [
       "20251213-200123-repeated-verification-p7q8r9.json",
       "20251213-200123-env-exploration-s1t2u3.json",
-      "20251213-232425-sequential-only-execution-j1k2l3.json"
+      "20251213-232425-sequential-only-execution-j1k2l3.json",
+      "20251214-162104-no-delegation-high-complexity-0e9733.json",
+      "20251214-162104-mechanical-bash-sequence-464740.json",
+      "20251214-162104-no-delegation-high-complexity-cb40c8.json",
+      "20251214-162104-mechanical-bash-sequence-73bc22.json",
+      "20251214-162104-no-delegation-high-complexity-545216.json",
+      "20251214-162104-mechanical-bash-sequence-cdad09.json",
+      "20251214-162104-mechanical-bash-sequence-704cac.json",
+      "20251214-162104-mechanical-bash-sequence-338883.json",
+      "20251214-162104-mechanical-bash-sequence-dffd4b.json"
     ],
     "enhancements": [
       "20251213-200123-research-orchestration-j1k2l3.json",
       "20251213-200123-decision-elevation-m4n5o6.json",
       "20251213-232425-agent-handoff-protocol-m4n5o6.json",
-      "20251213-232425-parallel-execution-guidance-p7q8r9.json"
+      "20251213-232425-parallel-execution-guidance-p7q8r9.json",
+      "20251214-162104-missed-analyst-research-94c370.json",
+      "20251214-162104-missed-analyst-research-b06434.json",
+      "20251214-162104-missed-architect-plugin-3cce80.json",
+      "20251214-162104-missed-analyst-research-aa2137.json"
     ]
   }
 }

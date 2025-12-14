@@ -1,16 +1,7 @@
 ---
 name: architecture-reviewer
 description: |
-  Reviews architecture documentation and code against LCA principles.
-
-  INVOKE when user mentions:
-  - "review the architecture", "architecture review", "structural review"
-  - "check LCA compliance", "validate architecture"
-  - "review ARCHITECTURE.md", "assess the design"
-  - "ask an architect to review", "get architect feedback"
-  - Any request for architectural assessment or validation
-
-  Trigger keywords: review architecture, architect review, LCA compliance, structural review, design review
+  Reviews architecture for LCA compliance and structural consistency. Use PROACTIVELY when user mentions "architect", "review design", "architecture review", or "structural review". MUST BE USED when reading ARCHITECTURE.md, assessing LCA compliance, or modifying component boundaries.
 tools: Read, Grep, Glob
 model: sonnet
 ---

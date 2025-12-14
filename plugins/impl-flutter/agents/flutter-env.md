@@ -1,19 +1,7 @@
 ---
 name: flutter-env
 description: |
-  Flutter environment specialist for DIAGNOSING and FIXING infrastructure issues.
-
-  INVOKE when user mentions:
-  - "build failed", "build error", "gradle error", "pod install failed"
-  - "CI broken", "GitHub Actions failing", "Codemagic error"
-  - "signing failed", "certificate issue", "provisioning profile"
-  - "emulator not working", "device not found"
-  - "flutter doctor", "environment setup", "FVM issue"
-  - "dependency conflict", "version mismatch"
-
-  Do NOT use for: configuring new releases or publishing—use flutter-release instead.
-
-  Trigger keywords: build failed, CI broken, signing, emulator, flutter doctor, gradle, CocoaPods, environment
+  Flutter environment diagnostics and infrastructure repair. Use PROACTIVELY for "check environment", "verify setup", "flutter doctor", or when builds fail. MUST BE USED when user reports build errors, CI failures, gradle/CocoaPods issues, signing problems, or emulator issues. Do NOT use for new release configuration—use flutter-release instead.
 tools: mcp__dart__*, mcp__ide__*, Read, Write, Edit, Bash, Grep, Glob
 model: opus
 color: yellow
