@@ -13,7 +13,7 @@
     {
       "name": "architect",
       "source": "./plugins/architect",
-      "description": "Architecture design and documentation following Lucid Composite Architecture (LCA) principles with hierarchy consistency checking, ADRs, and platform documentation",
+      "description": "Architecture design and documentation following Lucid Composite Architecture (LCA) principles. Manages structural hierarchy (Atoms, Composites, Conduits), ADRs, and maturity-aware documentation.",
       "version": "1.1.0",
       "category": "architecture",
       "tags": ["architecture", "documentation", "lca", "adr", "design", "hierarchy"]
@@ -29,7 +29,7 @@
     {
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
-      "description": "Flutter implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
+      "description": "Flutter implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
       "version": "2.2.0",
       "category": "development",
       "tags": ["flutter", "dart", "mobile", "implementation", "tdd", "riverpod", "fpdart"]
@@ -37,7 +37,7 @@
     {
       "name": "impl-python",
       "source": "./plugins/impl-python",
-      "description": "Python implementation specialist with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, API development, releases, and environment management",
+      "description": "Python implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, API development, releases, and environment management",
       "version": "2.0.0",
       "category": "development",
       "tags": ["python", "fastapi", "pydantic", "implementation", "tdd", "sqlalchemy"]
@@ -45,7 +45,7 @@
     {
       "name": "impl-neo4j",
       "source": "./plugins/impl-neo4j",
-      "description": "Neo4j graph database specialist with 6 specialized agents for graph modeling, Cypher queries, data import/export, performance tuning, driver integration, and environment management",
+      "description": "Neo4j graph database specialist plugin with 6 specialized agents for graph modeling, Cypher queries, data import/export, performance tuning, driver integration, and environment management",
       "version": "1.1.0",
       "category": "development",
       "tags": ["neo4j", "graph", "cypher", "database", "mcp", "apoc", "gds"]
@@ -53,8 +53,8 @@
     {
       "name": "luc",
       "source": "./plugins/luc",
-      "description": "Luc tools for Claude Code with status line, schemas, CLAUDE.md validation, and workspace utilities",
-      "version": "2.5.0",
+      "description": "Luc tools for Claude Code with status line, schemas, and workspace utilities",
+      "version": "2.7.0",
       "category": "workflow",
       "tags": ["schemas", "toon", "output", "workspace", "status-line", "setup"]
     },
