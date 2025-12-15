@@ -1,22 +1,27 @@
 {
   "name": "luc",
   "description": "Luc tools for Claude Code with status line, schemas, and workspace utilities",
-  "version": "2.5.0",
+  "version": "2.7.0",
   "author": {
     "name": "rayk"
   },
   "commands": [
     "./commands/setup.md",
-    "./commands/about.md"
+    "./commands/about.md",
+    "./commands/fix-escape.md"
   ],
   "skills": [
     "./skills/manage-markdown-docs",
     "./skills/never-guess",
     "./skills/render-output",
     "./skills/resolve-ambiguity",
-    "./skills/use-toon"
+    "./skills/use-toon",
+    "./skills/delegate-first",
+    "./skills/operation-tracker"
   ],
   "agents": [
-    "./agents/setup-specialist.md"
+    "./agents/setup-specialist.md",
+    "./agents/fix-phase.md",
+    "./agents/output-analyzer.md"
   ]
 }

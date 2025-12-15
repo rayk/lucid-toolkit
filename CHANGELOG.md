@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2025-12-15
+
+### Added
+- **luc plugin** (v2.6.0 → v2.7.0) - New `/luc:fix-escape` command
+  - Diagnoses IdeaVim escape key conflicts with Claude Code CLI in IntelliJ terminal
+  - Automatically fixes `~/.ideavimrc` sethandler directives
+  - Fixes `vim_settings.xml` enabled state across all JetBrains IDEs
+  - Reports manual steps for GitHub Copilot and Focus Editor keybindings
+  - Provides `Ctrl+[` fallback guidance
+
 ## [2.5.0] - 2025-12-15
 
 ### Added
