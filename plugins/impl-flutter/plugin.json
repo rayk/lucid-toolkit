@@ -1,11 +1,13 @@
 {
   "name": "impl-flutter",
   "description": "Flutter implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": {
     "name": "rayk"
   },
-  "commands": [],
+  "commands": [
+    "./commands/run.md"
+  ],
   "skills": [
     "./skills/dart-flutter-mcp"
   ],

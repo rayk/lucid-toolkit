@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2025-12-15
+
+### Added
+- **impl-flutter plugin** (v2.1.0 → v2.2.0) - New `/impl-flutter:run` command for interactive Flutter development sessions
+  - Orchestrates app lifecycle: start, monitor, restart with hot reload support
+  - Delegates all code changes to specialist agents (flutter-ux, flutter-debugger, etc.) to preserve main context
+  - Manages DTD (Dart Tooling Daemon) connection for hot reload capability
+  - Tracks session state: device ID, shell ID, VM Service URL (which changes on restart)
+  - Feedback loop protocol: classify user observation → delegate to specialist → hot reload → confirm
+  - Context-efficient design: never reads implementation files in main context
+  - Agent routing table maps request types to appropriate specialists
+
+### Changed
+- Marketplace version bumped to 2.5.0
+
 ## [2.3.0] - 2025-12-13
 
 ### Changed
