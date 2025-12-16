@@ -1,7 +1,7 @@
 {
   "name": "architect",
   "description": "Architecture design and documentation following Lucid Composite Architecture (LCA) principles. Manages structural hierarchy (Atoms, Composites, Conduits), ADRs, and maturity-aware documentation.",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": {
     "name": "lucid-toolkit"
   },

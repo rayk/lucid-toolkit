@@ -11,7 +11,7 @@ description: |
   - "check ADR naming", "find broken links"
 
   Trigger keywords: audit ADR, ADR consistency, ADR index, cross-reference, README sync, validate ADR, curate
-tools: Read, Glob, Grep, Edit, AskUserQuestion
+tools: Read, Bash, Edit, AskUserQuestion
 model: sonnet
 ---
 
@@ -155,31 +155,59 @@ Check patterns:
 </cross_reference_protocol>
 
 <curation_methodology>
-1. **Discovery Phase**
-   - Glob for `adr/adr-*.md` files
-   - Read README.md to get expected index
-   - Build inventory of actual vs expected
+## Phase 1: Run Audit Script
 
-2. **Fix-As-You-Go Audit**
-   For each issue found:
-   - If in autonomous fix list → Fix immediately, log the fix
-   - If in ask-user list → Queue question for batch asking
-   - Track: {issue, action_taken, result}
+First, run the mechanical audit script to detect all issues:
 
-3. **Batch User Questions**
-   After autonomous fixes complete:
-   - Group related questions
-   - Use AskUserQuestion with clear options
-   - Apply user decisions immediately
+```bash
+python /path/to/plugins/architect/hooks/adr-audit.py /path/to/adr/directory
+```
 
-4. **README Synchronization**
-   After all ADR fixes:
-   - Regenerate/update all 5 indices
-   - Ensure cross-reference map reflects current state
+The script outputs structured JSON with:
+- `naming_violations` - Files not matching `adr-{NNN}-{kebab-case}.md`
+- `missing_sections` - Required sections absent from ADRs
+- `xref_issues` - Broken or non-bidirectional cross-references
+- `stale_reviews` - Review dates in the past
+- `metadata_issues` - Missing or invalid Status/Date/Domain
+- `readme_sync` - Mismatches between README index and actual files
+- `number_gaps` - Informational list of missing ADR numbers
 
-5. **Final Validation**
-   - Re-scan to confirm all issues resolved
-   - Report summary of actions taken
+## Phase 2: Process Autonomous Fixes
+
+For each issue from the script, apply fixes per the decision matrix:
+
+| Issue Type (from JSON) | Action |
+|------------------------|--------|
+| `xref_issues.missing_backref` | Add back-reference using `suggested_fix` |
+| `stale_reviews` | Update Review Date to `suggested_date` |
+| `metadata_issues` (missing Review Date) | Add suggested value |
+| `readme_sync.missing_from_index` | Add entry to README tables |
+| `readme_sync.extra_in_index` | Remove from README tables |
+
+## Phase 3: Batch User Questions
+
+Queue issues requiring judgment, then ask in batches:
+
+| Issue Type (from JSON) | Question to Ask |
+|------------------------|-----------------|
+| `naming_violations` | "Rename {file} to {suggested}?" |
+| `missing_sections` | "ADR-XXX missing {section}. What content?" |
+| `metadata_issues` (invalid domain) | "Which domain for ADR-XXX?" |
+| `xref_issues.broken_ref` | "ADR-XXX references non-existent ADR-YYY. Remove reference?" |
+
+## Phase 4: Apply User Decisions
+
+Execute Edit operations based on user responses.
+
+## Phase 5: Re-run Audit
+
+Run script again to verify all issues resolved:
+
+```bash
+python /path/to/plugins/architect/hooks/adr-audit.py /path/to/adr/directory --quiet
+```
+
+Exit code 0 = clean. Report summary of actions taken.
 </curation_methodology>
 
 <output_format>
