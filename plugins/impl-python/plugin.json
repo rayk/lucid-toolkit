@@ -5,10 +5,6 @@
   "author": {
     "name": "rayk"
   },
-  "commands": [],
-  "skills": [
-    "./skills/python-dev-tools"
-  ],
   "agents": [
     "./agents/python-coder.md",
     "./agents/python-tester.md",

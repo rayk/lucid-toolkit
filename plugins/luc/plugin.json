@@ -10,15 +10,6 @@
     "./commands/about.md",
     "./commands/fix-escape.md"
   ],
-  "skills": [
-    "./skills/manage-markdown-docs",
-    "./skills/never-guess",
-    "./skills/render-output",
-    "./skills/resolve-ambiguity",
-    "./skills/use-toon",
-    "./skills/delegate-first",
-    "./skills/operation-tracker"
-  ],
   "agents": [
     "./agents/setup-specialist.md",
     "./agents/fix-phase.md",

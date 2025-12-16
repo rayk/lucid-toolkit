@@ -9,9 +9,5 @@
     "./commands/generate.md",
     "./commands/analyze.md",
     "./commands/validate.md"
-  ],
-  "skills": [
-    "./skills/execution-prompt-generator"
-  ],
-  "agents": []
+  ]
 }

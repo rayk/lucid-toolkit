@@ -8,9 +8,6 @@
   "commands": [
     "./commands/run.md"
   ],
-  "skills": [
-    "./skills/dart-flutter-mcp"
-  ],
   "agents": [
     "./agents/flutter-coder.md",
     "./agents/flutter-tester.md",

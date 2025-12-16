@@ -5,10 +5,6 @@
   "author": {
     "name": "rayk"
   },
-  "commands": [],
-  "skills": [
-    "./skills/neo4j-cypher"
-  ],
   "agents": [
     "./agents/neo4j-modeler.md",
     "./agents/neo4j-query.md",

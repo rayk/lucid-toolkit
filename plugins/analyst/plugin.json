@@ -12,9 +12,6 @@
     "./commands/debate.md",
     "./commands/swarm.md"
   ],
-  "skills": [
-    "./skills/consider"
-  ],
   "agents": [
     "./agents/research.md",
     "./agents/model-5-whys.md",
