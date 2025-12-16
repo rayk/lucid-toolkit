@@ -72,6 +72,25 @@ Drafts ADRs following LCA conventions with:
 - Considered options (minimum 2)
 - Explicit trade-offs (positive AND negative)
 
+**Partner:** adr-curator validates after creation.
+
+### adr-curator
+
+Audits and maintains ADR collection consistency:
+- Validates naming convention (`adr-{NNN}-{slug}.md`)
+- Ensures bidirectional cross-references
+- Syncs README index with actual files
+- Fixes stale review dates
+- Reports missing sections
+
+**Workflow:**
+1. Runs `hooks/adr-audit.py` for mechanical detection
+2. Auto-fixes unambiguous issues (dates, back-refs)
+3. Asks user about ambiguous issues (renames, content)
+4. Re-validates to confirm clean collection
+
+**Partner:** adr-writer creates ADRs that curator validates.
+
 ### consistency-checker
 
 Validates architecture hierarchy for conflicts:
@@ -79,6 +98,37 @@ Validates architecture hierarchy for conflicts:
 - Detects when constraints are relaxed (VIOLATION)
 - Validates against LCA immutable principles
 - Distinguishes valid extensions from prohibited overrides
+
+## Hooks
+
+### adr-audit.py
+
+Python script for mechanical ADR validation. Outputs structured JSON for agent consumption.
+
+**Usage:**
+```bash
+# Full audit with summary
+python3 hooks/adr-audit.py /path/to/adr/directory
+
+# JSON output only (for agent parsing)
+python3 hooks/adr-audit.py /path/to/adr --quiet
+
+# Summary only (human-readable)
+python3 hooks/adr-audit.py /path/to/adr --summary-only
+```
+
+**Detects:**
+- Naming violations with suggested fixes
+- Missing required sections (Context, Decision, Consequences, Links)
+- Broken cross-references (to non-existent ADRs)
+- Missing bidirectional references
+- Stale review dates (with suggested new dates)
+- README index sync issues
+
+**Benefits:**
+- Zero LLM tokens for detection (instant execution)
+- Consistent output format
+- Exit code indicates clean (0) or issues (1)
 
 ## Schemas
 

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2025-12-16
+
+### Changed
+- **architect plugin** (v1.3.0 → v1.4.0) - Integrated ADR workflow
+  - `adr-curator` updated with division of labor (writer creates, curator validates)
+  - `adr-audit.py` aligned with `templates/adr-template.md` required sections
+  - `/architect:adr` command now includes Phase 7 validation via curator
+  - `adr-writer` and `adr-curator` cross-reference each other as partners
+  - README updated with Hooks section documenting adr-audit.py usage
+  - Fixed section detection to handle both H2 and H3 headers (for Consequences)
+- Marketplace version bumped to 2.9.0
+
 ## [2.8.0] - 2025-12-16
 
 ### Added

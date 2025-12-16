@@ -154,6 +154,30 @@ After saving:
 - Suggest linking from ARCHITECTURE.md
 </phase_6_save>
 
+<phase_7_validate>
+**Post-creation validation (using adr-curator):**
+
+After saving the ADR, run validation:
+
+1. Use Task tool with `adr-curator` agent:
+   ```
+   Validate the newly created ADR at {path}.
+   Run adr-audit.py on the adr directory.
+   Fix any issues found (stale dates, missing sections, cross-refs).
+   Update README index if it exists.
+   ```
+
+2. Curator will:
+   - Run `adr-audit.py` to detect issues
+   - Auto-fix mechanical issues (review dates, formatting)
+   - Report any issues requiring user input
+
+3. If superseding another ADR:
+   - Curator verifies bidirectional references
+   - Old ADR updated with "Superseded by ADR-{NNN}"
+   - New ADR has "Supersedes ADR-{XXX}"
+</phase_7_validate>
+
 <success_criteria>
 - ADR follows LCA template structure
 - Context explains WHY the decision is needed
@@ -162,4 +186,7 @@ After saving:
 - Proper numbering (no gaps, no duplicates)
 - Saved to appropriate location
 - User informed about linking to ARCHITECTURE.md
+- **Validation passed** (adr-curator reports clean)
+- **README updated** (if index exists)
+- **Cross-references bidirectional** (if superseding)
 </success_criteria>

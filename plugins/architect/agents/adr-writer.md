@@ -10,6 +10,9 @@ description: |
   - "capture the trade-offs", "document options considered"
 
   Trigger keywords: ADR, decision record, document decision, trade-offs, architectural decision
+
+  Partner agent: adr-curator (validates and maintains ADR collections)
+  Related command: /architect:adr (orchestrates full ADR workflow)
 tools: Read, Glob
 model: sonnet
 ---

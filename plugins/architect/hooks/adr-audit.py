@@ -31,19 +31,19 @@ from typing import Optional
 NAMING_PATTERN = re.compile(r'^adr-(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)\.md$')
 TEMPLATE_FILE = 'adr-000-template.md'
 
+# Sections aligned with templates/adr-template.md
+# Pattern matching is flexible: "Context" matches "## Context and Problem Statement"
 REQUIRED_SECTIONS = [
-    'Context',
-    'Decision',
-    'Constraints',
-    'Related ADRs',
+    'Context',           # Matches "Context and Problem Statement"
+    'Decision',          # Matches "Decision Outcome" or "Decision Drivers"
+    'Consequences',      # Positive/Negative/Neutral consequences
+    'Links',             # Cross-references and external links
 ]
 
 OPTIONAL_SECTIONS = [
-    'Applies When',
-    'Implementation',
     'Decision Drivers',
     'Considered Options',
-    'Consequences',
+    'Pros and Cons',
     'Migration Path',
 ]
 
@@ -265,8 +265,9 @@ def check_sections(content: str, filename: str, adr_number: str) -> Optional[Mis
     missing = []
 
     for section in REQUIRED_SECTIONS:
-        # Look for ## Section or **Section**
-        pattern = rf'(?:^##\s*{re.escape(section)}|\*\*{re.escape(section)}\*\*)'
+        # Look for ## Section, ### Section, or **Section**
+        # Also handles "Context and Problem Statement" matching "Context"
+        pattern = rf'(?:^##\s*{re.escape(section)}|^###\s*{re.escape(section)}|\*\*{re.escape(section)}\*\*)'
         if not re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
             missing.append(section)
 
