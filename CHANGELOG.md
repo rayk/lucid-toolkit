@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2025-12-16
+
+### Added
+- **architect plugin** (v1.1.0 → v1.2.0) - New `adr-curator` agent
+  - Audits and maintains ADR collection consistency, cross-references, and README index
+  - Autonomous fixes for: README sync, bidirectional references, stale review dates, formatting
+  - Interactive resolution via AskUserQuestion for: naming violations, missing sections, domain classification, orphaned ADRs
+  - Fix decision matrix separates autonomous fixes from user-required decisions
+  - Complements `adr-writer` (writer creates, curator maintains)
+
+### Changed
+- Marketplace version bumped to 2.7.0
+
 ## [2.6.0] - 2025-12-15
 
 ### Added
