@@ -62,7 +62,7 @@
       "name": "exe",
       "source": "./plugins/exe",
       "description": "Execution planning with iterative refinement. Generates validated execution plans from tech specs, stress-tests them with 6 validation scripts, and iterates until 95% confidence.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "workflow",
       "tags": ["execution", "planning", "validation", "iteration", "automation"]
     }
