@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.0] - 2025-12-17
+
+### Changed
+- **exe plugin** (v1.1.0 → v1.2.0) - Migrated to JetBrains MCP server tools
+  - Replaced built-in tools (Read, Write, Edit, Glob, Grep, Bash) with JetBrains MCP equivalents
+  - `get_file_text_by_path` for reading, `create_new_file` for writing, `replace_text_in_file` for editing
+  - `find_files_by_glob` for file discovery, `search_in_files_by_text` for content search
+  - `execute_terminal_command` for running validation scripts
+  - Added tool mapping table in `<tool_efficiency>` section
+  - Updated all examples and enforcement rules to reference JetBrains MCP tools
+  - Updated `/exe:plan` command with JetBrains MCP tools in allowed-tools
+- Marketplace version bumped to 2.14.0
+
 ## [2.13.0] - 2025-12-17
 
 ### Changed

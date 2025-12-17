@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.13.0",
+    "version": "2.14.0",
     "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
@@ -62,7 +62,7 @@
       "name": "exe",
       "source": "./plugins/exe",
       "description": "Execution planning with iterative refinement. Generates validated execution plans from tech specs, stress-tests them with 6 validation scripts, and iterates until 95% confidence.",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "category": "workflow",
       "tags": ["execution", "planning", "validation", "iteration", "automation"]
     }

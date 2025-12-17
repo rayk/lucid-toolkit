@@ -2,7 +2,7 @@
 name: plan
 description: Generate an execution-plan.toon file from a tech specification, decomposing requirements into agent-executable tasks with validated dependencies
 argument-hint: <spec-path>
-allowed-tools: Task
+allowed-tools: Task, mcp__jetbrains__execute_terminal_command, mcp__jetbrains__find_files_by_glob
 ---
 
 <objective>
@@ -14,11 +14,16 @@ The plan will be validated for structural correctness and agent availability. Su
 <process>
 1. **Validate Input**
    - If `$ARGUMENTS` is empty, ask user for spec path
-   - Confirm spec file exists at `$ARGUMENTS`
+   - Confirm spec file exists at `$ARGUMENTS` using:
+     ```
+     mcp__jetbrains__find_files_by_glob(globPattern="**/$ARGUMENTS")
+     ```
    - File must be `.md` (markdown) or `.toon` format
    - Run validation script:
-     ```bash
-     python3 plugins/exe/scripts/validate-spec.py "$ARGUMENTS"
+     ```
+     mcp__jetbrains__execute_terminal_command(
+       command="python3 plugins/exe/scripts/validate-spec.py \"$ARGUMENTS\""
+     )
      ```
    - If validation fails (exit code 1), report errors and stop
 
