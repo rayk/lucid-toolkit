@@ -15,7 +15,7 @@ Three modes of elevation, expressed differently across plugins:
 | Mode | Human Role | Claude Role | Example |
 |------|------------|-------------|---------|
 | **Strategic Abstraction** | Defines what and why | Handles how | analyst, architect |
-| **Cognitive Offloading** | Reviews and approves | Executes mechanical work | plan, impl-* |
+| **Cognitive Offloading** | Reviews and approves | Executes mechanical work | exe, impl-* |
 | **Decision Elevation** | Makes choices | Provides options with trade-offs | architect ADRs, analyst voting |
 
 ### Inclusion Test
@@ -71,14 +71,14 @@ A behavior should be excluded if it:
 
 ---
 
-### plan
-**Purpose**: Transform human requirements into autonomous execution with cost transparency.
+### exe
+**Purpose**: Transform tech specs into validated execution plans with iterative refinement.
 
-**Behavior Test**: Include if it enables Claude to work independently while keeping human in control of scope and budget. Exclude if it requires human input during execution (breaks autonomy) or hides cost implications.
+**Behavior Test**: Include if it enables Claude to autonomously generate and validate execution plans. Exclude if validation is superficial or iteration doesn't converge on high-confidence plans.
 
 | Plugin | Category | Description |
 |--------|----------|-------------|
-| **[plan](plugins/plan/README.md)** | Development | Generates TDD execution prompts from design docs. Human approves scope and cost estimate before execution begins. 9-phase execution with checkpoints enables recovery. Cost breakdown by model tier (haiku/sonnet/opus). |
+| **[exe](plugins/exe/README.md)** | Workflow | Execution planning with iterative refinement. Generates validated execution plans from tech specs, stress-tests them with 6 validation scripts, and iterates until 95% confidence. |
 
 ---
 
