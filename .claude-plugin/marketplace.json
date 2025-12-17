@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.9.0",
+    "version": "2.10.0",
     "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
@@ -30,7 +30,7 @@
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
       "description": "Flutter implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
-      "version": "2.2.0",
+      "version": "2.3.0",
       "category": "development",
       "tags": ["flutter", "dart", "mobile", "implementation", "tdd", "riverpod", "fpdart"]
     },

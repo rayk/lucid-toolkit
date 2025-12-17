@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.10.0] - 2025-12-17
+
+### Changed
+- **impl-flutter plugin** (v2.2.0 → v2.3.0) - Major `flutter-coder` agent rewrite
+  - Cross-referenced with official docs: fpdart, Riverpod 3.0, fast_immutable_collections, mocktail
+  - Fixed critical error: fpdart has NO IList—must use `fast_immutable_collections` with `.lock`
+  - Fixed `ref.mounted` pattern—check BEFORE state update, not after
+  - Added Do notation for TaskEither chaining (fpdart major feature)
+  - Added `<clarification>` section: strict spec validation before coding
+    - Code review scoped to implementation
+    - CAN/CANNOT infer boundaries
+    - Spec readiness check format
+  - Added build_runner step: `fvm dart run build_runner build --delete-conflicting-outputs`
+  - Added `registerFallbackValue` requirement for mocktail custom types
+  - Added Records vs Freezed guidance
+  - Zero tolerance: 0 errors, 0 warnings, 0 info
+  - All code examples now lint-clean with proper class context
+  - Explicit `very_good_analysis` workflow: write → analyze → fix → format → repeat
+- Marketplace version bumped to 2.10.0
+
 ## [2.9.0] - 2025-12-16
 
 ### Changed
