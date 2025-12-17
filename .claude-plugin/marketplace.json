@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.10.0",
+    "version": "2.11.0",
     "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
@@ -65,6 +65,14 @@
       "version": "2.1.0",
       "category": "development",
       "tags": ["tdd", "execution", "prompt-generation"]
+    },
+    {
+      "name": "exe",
+      "source": "./plugins/exe",
+      "description": "Execution planning with iterative refinement. Generates validated execution plans from tech specs, stress-tests them with 6 validation scripts, and iterates until 95% confidence.",
+      "version": "1.0.0",
+      "category": "workflow",
+      "tags": ["execution", "planning", "validation", "iteration", "automation"]
     }
   ]
 }

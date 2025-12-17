@@ -1,0 +1,283 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# TECHNICAL-SPECIFICATION.TOON
+# ═══════════════════════════════════════════════════════════════════════════
+# Template for technical specification documents
+# Schema: schema.org + custom specification vocabulary
+# Source: Derived from apps/openscheme/lib/src/core/semantics/specification.md
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ─── DOCUMENT METADATA ────────────────────────────────────────────────────
+
+@context: https://schema.org
+@type: TechArticle
+@id: spec/{specification-id}
+dateCreated: {YYYY-MM-DD}
+dateModified: {YYYY-MM-DD}
+version: {semver}
+
+document@type: TechArticle
+document.name: {Specification Title}
+document.description: {One-line summary of what this specification defines}
+document.classification: technical-specification | design-specification | api-specification | integration-specification
+document.status: draft | review | approved | deprecated | superseded
+
+# ─── DOCUMENT RELATIONSHIPS ───────────────────────────────────────────────
+
+# Companion decision record (if any)
+companionAdr@type: CreativeWork
+companionAdr.name: {ADR-NNN: Title}
+companionAdr.url: {relative-path-to-adr.md}
+
+# Documents this specification supersedes
+supersedes@type: ItemList
+supersedes.itemListElement[]: {path-to-superseded-doc}
+
+# Documents this specification integrates with
+integrations@type: ItemList
+integrations.itemListElement[].name: {Related Doc Title}
+integrations.itemListElement[].url: {relative-path}
+integrations.itemListElement[].purpose: {brief integration description}
+
+# ─── ACCEPTANCE CRITERIA ──────────────────────────────────────────────────
+# Each criterion has: id, description, status, verification method
+
+acceptanceCriteria@type: ItemList
+acceptanceCriteria.numberOfItems: {count}
+
+# AC-1: First criterion
+acceptanceCriteria.item[0].identifier: AC-1
+acceptanceCriteria.item[0].name: {Short Criterion Name}
+acceptanceCriteria.item[0].description: {What must be true for this criterion to pass}
+acceptanceCriteria.item[0].status: PASS | PARTIAL | FAIL | PENDING
+acceptanceCriteria.item[0].verificationMethod: {How to verify - link to evidence section}
+acceptanceCriteria.item[0].notes: {Additional context if needed}
+
+# Template for additional criteria (copy and increment index)
+# acceptanceCriteria.item[N].identifier: AC-{N+1}
+# acceptanceCriteria.item[N].name: ...
+# acceptanceCriteria.item[N].description: ...
+# acceptanceCriteria.item[N].status: ...
+# acceptanceCriteria.item[N].verificationMethod: ...
+
+# ─── SCOPE BOUNDARIES ─────────────────────────────────────────────────────
+
+scope@type: DefinedTermSet
+scope.inScope[]: {item-in-scope}
+scope.outOfScope[]: {item-out-of-scope}
+
+# ─── DOCUMENT NAVIGATION ──────────────────────────────────────────────────
+# Maps queries to sections for fast lookup (critical for LLM comprehension)
+
+navigation@type: ItemList
+navigation.description: Query-to-section mapping for single-hop lookup
+
+# By Task (what user wants to do)
+navigation.byTask[].task: {Task description}
+navigation.byTask[].section: {#anchor-link}
+
+# By Component (what system element)
+navigation.byComponent[].component: {Component name}
+navigation.byComponent[].section: {#anchor-link}
+
+# By Audience (who is reading)
+navigation.byAudience[].audience: code-generator | human-reader | implementer | reviewer | architect
+navigation.byAudience[].startSection: {#anchor-link}
+
+# ─── PROBLEM STATEMENT ────────────────────────────────────────────────────
+
+problem@type: Thing
+problem.name: {Problem Title}
+problem.description: {What problem does this specification solve}
+
+# Current state analysis
+problem.currentState@type: ItemList
+problem.currentState.itemListElement[].system: {System/component name}
+problem.currentState.itemListElement[].purpose: {What it does}
+problem.currentState.itemListElement[].issue: {What's wrong with it}
+
+# Why solving this matters (consequences of not solving)
+problem.impact[]: {Impact statement}
+
+# ─── SOLUTION OVERVIEW ────────────────────────────────────────────────────
+
+solution@type: HowTo
+solution.name: {Solution Title}
+solution.description: {One-paragraph solution summary}
+
+# Key capabilities provided
+solution.capabilities@type: ItemList
+solution.capabilities.itemListElement[]: {Capability description}
+
+# ─── EVIDENCE ─────────────────────────────────────────────────────────────
+# Demonstrations that problems are real and solutions work
+# Each evidence item: id, problem demonstrated, before code, after code, verification
+
+evidence@type: ItemList
+evidence.numberOfItems: {count}
+
+evidence.item[0].identifier: E-1
+evidence.item[0].name: {Evidence Title}
+evidence.item[0].problemDemonstrated: {What problem this proves exists}
+evidence.item[0].beforePattern: {Code/behavior before solution - shows problem}
+evidence.item[0].afterPattern: {Code/behavior after solution - shows fix}
+evidence.item[0].verification: {How to verify this evidence}
+
+# ─── PRINCIPLE COMPLIANCE ─────────────────────────────────────────────────
+# Cross-reference showing alignment with architectural principles
+
+principleCompliance@type: ItemList
+
+principleCompliance.item[].specSection: {#section-anchor}
+principleCompliance.item[].principle: {Principle ID and name}
+principleCompliance.item[].status: COMPLIANT | PARTIAL | EXCEPTION
+principleCompliance.item[].notes: {Compliance notes or exception justification}
+
+# ─── COMPONENT SUMMARY ────────────────────────────────────────────────────
+# Overview of all components for implementation planning
+
+components@type: ItemList
+components.numberOfItems: {count}
+
+components.item[].name: {Component Name}
+components.item[].responsibility: {Single sentence - what it does}
+components.item[].publicInterface: {Methods/properties exposed}
+components.item[].dependencies: {Other components required}
+components.item[].specSection: {#detailed-section-anchor}
+
+# ─── COMPONENT DEPENDENCIES ───────────────────────────────────────────────
+# Dependency graph for implementation ordering
+
+dependencies@type: Graph
+dependencies.description: Implementation order based on dependencies
+
+# Leaf nodes (no dependencies) - start here
+dependencies.leafNodes[]: {Component name}
+
+# Dependency declarations
+dependencies.requires[].component: {Component name}
+dependencies.requires[].dependsOn[]: {Required component names}
+
+# Parallel groups (can be implemented concurrently)
+dependencies.parallelGroups[].phase: {Phase number}
+dependencies.parallelGroups[].components[]: {Component names}
+dependencies.parallelGroups[].prerequisite: {Phase that must complete first}
+
+# ─── TESTABLE CONTRACTS ───────────────────────────────────────────────────
+# Given/when/then specifications for each component
+
+contracts@type: ItemList
+
+contracts.item[].component: {Component name}
+contracts.item[].method: {Method/property name}
+contracts.item[].given: {Precondition}
+contracts.item[].when: {Action}
+contracts.item[].then: {Expected result}
+
+# Error cases per component
+contracts.errorCases[].component: {Component name}
+contracts.errorCases[].scenario: {Error scenario}
+contracts.errorCases[].input: {Input causing error}
+contracts.errorCases[].expected: {Expected error behavior}
+
+# ─── QUICK REFERENCE ──────────────────────────────────────────────────────
+# Essential patterns for fast lookup (LLM comprehension optimized)
+
+quickReference@type: HowToSection
+quickReference.description: Copy-paste ready patterns
+
+# Required imports
+quickReference.imports[].context: production | test
+quickReference.imports[].statement: {import statement}
+
+# Pattern lookup table
+quickReference.patterns[].task: {What to accomplish}
+quickReference.patterns[].pattern: {Code pattern}
+
+# Anti-patterns (common mistakes)
+quickReference.mistakes[].wrong: {Incorrect pattern}
+quickReference.mistakes[].correct: {Correct pattern}
+quickReference.mistakes[].why: {Why wrong is wrong}
+
+# ─── FILE STRUCTURE ───────────────────────────────────────────────────────
+
+fileStructure@type: ItemList
+fileStructure.root: {Root directory path}
+fileStructure.items[].path: {Relative file path}
+fileStructure.items[].purpose: {What this file contains}
+
+# ─── IMPLEMENTATION GUIDE ─────────────────────────────────────────────────
+# Operational guidance for LLM-assisted development
+
+implementationGuide@type: HowTo
+implementationGuide.targetAudience: LLM code generators (Claude Code, Copilot, etc.)
+
+# Core principles for code generation
+implementationGuide.principles[]: {Principle statement}
+
+# Task protocols (step-by-step for common operations)
+implementationGuide.protocols[].task: {Task name}
+implementationGuide.protocols[].steps[]: {Step description}
+implementationGuide.protocols[].example: {Code example}
+
+# Disambiguation protocol (what to do when uncertain)
+implementationGuide.disambiguation.trigger: {When to invoke}
+implementationGuide.disambiguation.steps[]: {Resolution steps}
+
+# Verification checklist
+implementationGuide.verification[]: {Checklist item}
+
+# ─── ARCHITECTURE DIAGRAMS ────────────────────────────────────────────────
+# Visual representations (mermaid format recommended)
+
+diagrams@type: ItemList
+
+diagrams.item[].name: {Diagram title}
+diagrams.item[].type: flowchart | sequence | class | component | layer
+diagrams.item[].format: mermaid | ascii
+diagrams.item[].section: {#anchor-where-diagram-appears}
+
+# ─── CORE TYPES ───────────────────────────────────────────────────────────
+# Type definitions (language-specific)
+
+types@type: ItemList
+
+types.item[].name: {Type name}
+types.item[].kind: extension-type | class | interface | enum | typedef
+types.item[].purpose: {What this type represents}
+types.item[].file: {Source file path}
+types.item[].specSection: {#detailed-section-anchor}
+
+# ─── TESTING UTILITIES ────────────────────────────────────────────────────
+# Test support provided by this specification
+
+testing@type: ItemList
+
+testing.utilities[].name: {Utility name}
+testing.utilities[].purpose: {What it helps test}
+testing.utilities[].usage: {Brief usage example}
+
+testing.patterns[].name: {Pattern name}
+testing.patterns[].description: {Pattern description}
+testing.patterns[].example: {Code example}
+
+# ─── CI/CD ENFORCEMENT ────────────────────────────────────────────────────
+# Automated checks to enforce specification compliance
+
+enforcement@type: ItemList
+
+enforcement.checks[].name: {Check name}
+enforcement.checks[].type: lint | test | static-analysis | pre-commit
+enforcement.checks[].description: {What it checks}
+enforcement.checks[].failureAction: block | warn
+
+# ─── MIGRATION NOTES ──────────────────────────────────────────────────────
+# Guidance for migrating from superseded approaches (if applicable)
+
+migration@type: HowTo
+migration.from: {What is being migrated from}
+migration.steps[]: {Migration step}
+migration.fallbackPattern: {Temporary pattern during migration}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# END TEMPLATE
+# ═══════════════════════════════════════════════════════════════════════════

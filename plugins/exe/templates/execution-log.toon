@@ -1,0 +1,158 @@
+# @docs execution-log.md (read only if field details needed)
+
+@type: Report
+@id: execution-log-{plan-id}
+name: Execution Log
+description: Runtime log for {plan-name}
+planRef: {path-to-execution-plan}
+dateStarted: {iso-datetime}
+dateCompleted: {iso-datetime}
+status: Running | Completed | Failed
+
+session:
+  @type: Thing
+  sessionId: {uuid}
+  transcript: ~/.claude/projects/{project-path-encoded}/{session-id}.jsonl
+  debugLog: ~/.claude/debug/{session-id}.txt
+
+# Execution summary
+summary:
+  @type: Thing
+  @id: {plan-id}-summary
+  totalPhases: {P}
+  completedPhases: {completed}
+  totalTasks: {N}
+  completedTasks: {completed}
+  failedTasks: {failed}
+  totalTokensUsed: {tokens}
+  totalDuration: {seconds}
+
+# =============================================================================
+# PHASE LOG TEMPLATE (one per phase)
+# =============================================================================
+
+{phase-id}:
+  @type: Phase
+  @id: {phase-id}-log
+  name: {phase-name}
+  status: Pending | Running | Completed | Failed | Skipped
+  dateStarted: {iso-datetime}
+  dateCompleted: {iso-datetime}
+  duration: {seconds}
+  tokensUsed: {tokens}
+  tokensEstimated: {tokens}
+  variancePercent: {percent}           # actual vs estimated ((used - estimated) / estimated * 100)
+
+  # Task execution log
+  # agentPlanned: agent assigned in execution plan
+  # agentActual: agent that executed the task (may differ if substituted)
+  # agents: general-purpose | Explore | Plan | {plugin}:{agent}
+  tasks[{N},]{taskId,status,agentPlanned,agentActual,dateStarted,dateCompleted,duration,tokensBudget,tokensUsed,parallelGroup}:
+    {task-id},{status},{planned-agent},{actual-agent},{iso-datetime},{iso-datetime},{seconds},{budget},{used},{group}
+
+  # Task outputs (artifacts produced)
+  taskOutputs[{N},]{taskId,path,type}:
+    {task-id},{path},doc | source | test | config | asset | other
+    ...
+
+  # Optional: task returns (key-value data returned for executor consumption)
+  # Not all tasks return values - number and type vary per task
+  taskReturns[{R},]{taskId,key,value}:
+    {task-id},{key},{value}
+    ...
+
+  # Errors encountered (if any)
+  errors[{E},]{taskId,timestamp,errorType,message,stackTrace}:
+    {task-id},{iso-datetime},{error-type},{message},{stack-trace-ref}
+    ...
+
+  # Retries attempted (if any)
+  retries[{R},]{taskId,attempt,timestamp,reason,outcome}:
+    {task-id},{1..N},{iso-datetime},{reason},success | failed
+    ...
+
+  # Phase commit (if squash commit made)
+  commit:
+    @type: Thing
+    sha: {commit-sha}
+    subject: {commitSubject-from-plan}
+    timestamp: {iso-datetime}
+
+# =============================================================================
+# EXAMPLE: Completed phase log
+# =============================================================================
+
+# phase-infrastructure:
+#   @type: Phase
+#   @id: phase-infrastructure-log
+#   name: Infrastructure
+#   status: Completed
+#   dateStarted: 2025-12-17T10:00:00Z
+#   dateCompleted: 2025-12-17T10:05:32Z
+#   duration: 332
+#   tokensUsed: 42000
+#   tokensEstimated: 45000
+#   variancePercent: -6.7
+#
+#   tasks[3,]{taskId,status,agentPlanned,agentActual,dateStarted,dateCompleted,duration,tokensBudget,tokensUsed,parallelGroup}:
+#     task-001,Completed,general-purpose,general-purpose,2025-12-17T10:00:00Z,2025-12-17T10:01:15Z,75,10000,8000,1
+#     task-002,Completed,impl-flutter:flutter-env,impl-flutter:flutter-env,2025-12-17T10:00:00Z,2025-12-17T10:02:30Z,150,15000,12000,1
+#     task-003,Completed,impl-flutter:flutter-coder,impl-flutter:flutter-debugger,2025-12-17T10:02:30Z,2025-12-17T10:05:32Z,182,20000,22000,0
+#
+#   taskOutputs[2,]{taskId,path,type}:
+#     task-001,src/config/database.ts,config
+#     task-002,src/config/cache.ts,config
+#
+#   taskReturns[6,]{taskId,key,value}:
+#     task-001,tokensConsumed,8000
+#     task-001,toolUseCount,12
+#     task-002,tokensConsumed,12000
+#     task-002,toolUseCount,18
+#     task-003,testCoverage,87.5
+#     task-003,testsPass,true
+#     task-003,lintErrors,0
+#     task-003,tokensConsumed,22000
+#     task-003,toolUseCount,45
+#
+#   errors[0,]{taskId,timestamp,errorType,message,stackTrace}:
+#
+#   commit:
+#     @type: Thing
+#     sha: a1b2c3d
+#     subject: Set up project infrastructure and database
+#     timestamp: 2025-12-17T10:05:35Z
+
+# =============================================================================
+# FINAL COMMIT (on plan completion)
+# =============================================================================
+
+finalCommit:
+  @type: Thing
+  status: Pending | Created | Failed
+  sha: {commit-sha}
+  message: |
+    {type}({scope}): {description}
+
+    - {phase-1-commitSubject}
+    - {phase-2-commitSubject}
+    - {phase-N-commitSubject}
+
+    Refs: {spec-id}
+  timestamp: {iso-datetime}
+
+# =============================================================================
+# EXECUTION TIMELINE
+# =============================================================================
+
+timeline[{T},]{timestamp,event,phaseId,taskId,details}:
+  {iso-datetime},plan-started,,,Execution plan started
+  {iso-datetime},phase-started,{phase-id},,Phase started
+  {iso-datetime},task-started,{phase-id},{task-id},Task started
+  {iso-datetime},task-completed,{phase-id},{task-id},Task completed successfully
+  {iso-datetime},task-failed,{phase-id},{task-id},Error: {message}
+  {iso-datetime},task-retry,{phase-id},{task-id},Retry attempt {N}
+  {iso-datetime},phase-completed,{phase-id},,Phase completed
+  {iso-datetime},checkpoint-passed,{phase-id},,Checkpoint validation passed
+  {iso-datetime},commit-created,{phase-id},,Squash commit {sha}
+  {iso-datetime},plan-completed,,,Execution plan completed
+  {iso-datetime},plan-failed,{phase-id},{task-id},Plan failed: {reason}
