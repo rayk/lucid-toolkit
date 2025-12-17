@@ -142,18 +142,117 @@ Message 3: search_in_files_by_text(...)  # Wasted turn
 <objective>
 Generate an execution plan that will succeed when executed.
 
-Success = All validation scripts pass + simulation passes + coverage is complete.
+Success = All validation scripts pass + simulation passes + coverage is complete + **every task has sufficient context**.
 </objective>
+
+<context-discovery>
+## Context Discovery (MANDATORY before DRAFT)
+
+Before generating tasks, discover the project's architectural context and relevant code. Tasks fail when agents lack context they need to search for.
+
+### Step 1: Discover Architecture Directory
+
+Search for architecture documentation in the target project:
+
+```
+mcp__jetbrains__find_files_by_glob(globPattern="**/architecture/**/*.md")
+mcp__jetbrains__find_files_by_glob(globPattern="**/docs/architecture/**/*.md")
+mcp__jetbrains__find_files_by_glob(globPattern="**/.architecture/**/*.md")
+mcp__jetbrains__find_files_by_glob(globPattern="**/ARCHITECTURE.md")
+```
+
+**Record all discovered architecture files.** These are candidates for taskInputs.
+
+### Step 2: Discover Relevant Code Paths
+
+For each component/type in the spec, search for existing related code:
+
+```
+# Find base classes and interfaces
+mcp__jetbrains__search_in_files_by_text(searchText="abstract class", fileMask="*.dart")
+mcp__jetbrains__search_in_files_by_text(searchText="interface ", fileMask="*.ts")
+
+# Find existing implementations of similar components
+mcp__jetbrains__find_files_by_glob(globPattern="**/domain/**/*.dart")
+mcp__jetbrains__find_files_by_glob(globPattern="**/core/**/*.dart")
+
+# Find utility/helper classes
+mcp__jetbrains__find_files_by_glob(globPattern="**/utils/**/*")
+mcp__jetbrains__find_files_by_glob(globPattern="**/helpers/**/*")
+```
+
+### Step 3: Map Context to Tasks
+
+For each task, determine required context:
+
+| Task Type | Required Context |
+|-----------|------------------|
+| `behaviour` (new component) | Architecture overview, base classes, similar existing components, patterns doc |
+| `behaviour` (modify existing) | Target file, dependent files, architecture decisions affecting it |
+| `infrastructure` | Directory structure doc, naming conventions, existing similar files |
+| `verification` | Component under test, test patterns doc, existing test examples |
+| `configuration` | Config schema, existing config files, environment docs |
+
+### Step 4: Build taskInputs
+
+Each task's `taskInputs` MUST include:
+
+1. **Architecture context** (at least one):
+   - System architecture overview (if exists)
+   - Component-specific architecture doc (if exists)
+   - Relevant ADRs (Architecture Decision Records)
+
+2. **Code context** (at least one):
+   - Base class/interface to extend
+   - Similar existing implementation as pattern
+   - Utility classes the task will use
+
+3. **Spec context**:
+   - Relevant spec section (`{spec-path}#{component}`)
+   - Patterns/imports from quickReference
+
+### Context Sufficiency Test
+
+For each task, verify the agent can answer WITHOUT searching:
+- "What architectural constraints apply?" → from architecture docs
+- "What base class do I extend?" → from code context
+- "How do similar components look?" → from pattern examples
+- "What utilities are available?" → from discovered helpers
+
+**If any answer requires searching → add missing context to taskInputs.**
+
+### Parallel Discovery Pattern
+
+Run all discovery searches in a single message:
+
+```
+Message 1: [
+  find_files_by_glob("**/architecture/**/*.md"),
+  find_files_by_glob("**/domain/**/*.dart"),
+  find_files_by_glob("**/core/**/*.dart"),
+  search_in_files_by_text("abstract class", "*.dart")
+]  ✅ All execute in parallel
+```
+</context-discovery>
 
 <core-loop>
 ## The Refinement Loop
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
+│  0. DISCOVER (see <context-discovery>)                           │
+│     Search for architecture directory and files                  │
+│     Search for base classes, interfaces, utilities               │
+│     Record all discovered paths for taskInputs                   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
 │  1. DRAFT                                                        │
 │     Check spec file size first (execute_terminal_command wc -c)  │
 │     If >100KB: use search_in_files_by_text / get_file with limit │
 │     Generate initial plan from spec                              │
+│     Include discovered context in taskInputs for each task       │
 │     create_new_file → {spec-dir}/execution-plan.toon             │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -276,6 +375,8 @@ When validation fails, apply fixes using `mcp__jetbrains__replace_text_in_file` 
 | Uncovered spec item | Add task at end of phase | `oldText="checkpoint:", newText="  task-new,checkpoint:"` |
 | Input not available | Add dependency | `oldText="inputs[]:", newText="inputs[]: task-a/output.dart"` |
 | Task too large | Split tokens | `oldText="tokens: 50000", newText="tokens: 25000"` |
+| Missing architecture context | Add architecture file to taskInputs | `oldText="taskInputs[2,]", newText="taskInputs[3,]"` + add row |
+| Missing code context | Add base class/pattern to taskInputs | `oldText="{task-id},static,spec#section", newText="{task-id},static,spec#section\n  {task-id},static,lib/base_class.dart"` |
 
 **After each fix:** Re-run the specific validation via `execute_terminal_command` to confirm the fix worked.
 
@@ -292,11 +393,20 @@ After scripts pass, mentally walk through execution:
    - Are the acceptance criteria testable?
    - What could go wrong?
 
-2. **For each phase transition:**
+2. **Context Sufficiency Check (CRITICAL):**
+   For each task, verify taskInputs provide answers to:
+   - "What architectural patterns must I follow?" → architecture doc in inputs?
+   - "What base class/interface do I extend?" → code path in inputs?
+   - "What do similar implementations look like?" → pattern example in inputs?
+   - "What utilities/helpers are available?" → utility paths in inputs?
+
+   **If any answer is "agent would need to search" → ADD MISSING INPUT**
+
+3. **For each phase transition:**
    - Is the checkpoint validation meaningful?
    - If rollback triggered, is the state recoverable?
 
-3. **Edge cases:**
+4. **Edge cases:**
    - What if a task produces unexpected output format?
    - What if an agent needs clarification?
    - What if a dependency task fails?

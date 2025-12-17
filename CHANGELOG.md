@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.15.0] - 2025-12-17
+
+### Changed
+- **exe plugin** (v1.2.0 → v1.3.0) - Context discovery for execution plans
+  - Added `<context-discovery>` section with mandatory discovery phase before drafting
+  - Step 0: DISCOVER added to core-loop (search architecture dirs, base classes, utilities)
+  - Architecture inputs: `**/architecture/**/*.md`, `**/ARCHITECTURE.md`, ADRs
+  - Codebase inputs: base classes, interfaces, pattern examples, utilities
+  - Task type → required context mapping table
+  - Context sufficiency test: tasks must not require agent searching
+  - Enhanced stress-testing with 4 context validation questions
+  - New fix strategies for missing architecture/code context
+  - Updated `context-assembly.md` with discovery patterns and richer examples
+- Marketplace version bumped to 2.15.0
+
 ## [2.14.0] - 2025-12-17
 
 ### Changed
