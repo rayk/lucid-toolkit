@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.12.0",
+    "version": "2.13.0",
     "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
@@ -14,7 +14,7 @@
       "name": "architect",
       "source": "./plugins/architect",
       "description": "Architecture design and documentation following Lucid Composite Architecture (LCA) principles. Manages structural hierarchy (Atoms, Composites, Conduits), ADRs, and maturity-aware documentation.",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "category": "architecture",
       "tags": ["architecture", "documentation", "lca", "adr", "design", "hierarchy"]
     },
