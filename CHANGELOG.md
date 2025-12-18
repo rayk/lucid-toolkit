@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.17.0] - 2025-12-18
+
+### Added
+- **impl-flutter plugin** (v2.3.0 → v2.6.0) - Interactive session system and agent improvements
+  - New `/interact/start` command - Start interactive debug or dev sessions on device
+  - New `/interact/stop` command - Stop session and generate diagnostic reports
+  - New `flutter-session-driver` agent - App lifecycle and DTD connection management
+  - New `flutter-session-recorder` agent - Issue diagnosis with confidence-scored diagnostics
+  - New `flutter-verifier` agent - Code review with categorized issues (critical/important/minor/nitpick)
+  - Renamed `flutter-tester` → `flutter-e2e-tester` - Focused on E2E test execution, not code fixes
+  - Updated `flutter-debugger` - Aligned methodology with philosophy (6 phases including REPRODUCE and TEST)
+  - Debug sessions output `plan/sess-debug-MM-DD-HH-mm.md` with fix confidence scores
+  - Dev sessions output `plan/sess-dev-MM-DD-HH-mm.md` with change logs
+- Marketplace version bumped to 2.17.0
+
 ## [2.16.0] - 2025-12-17
 
 ### Added

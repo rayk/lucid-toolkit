@@ -1,21 +1,26 @@
 {
   "name": "impl-flutter",
-  "description": "Flutter implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, UX, releases, and environment management",
-  "version": "2.3.0",
+  "description": "Flutter implementation specialist plugin with 11 specialized agents for code generation, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
+  "version": "2.6.0",
   "author": {
     "name": "rayk"
   },
   "commands": [
-    "./commands/run.md"
+    "./commands/run.md",
+    "./commands/interact/start.md",
+    "./commands/interact/stop.md"
   ],
   "agents": [
     "./agents/flutter-coder.md",
-    "./agents/flutter-tester.md",
+    "./agents/flutter-e2e-tester.md",
     "./agents/flutter-debugger.md",
+    "./agents/flutter-verifier.md",
     "./agents/flutter-env.md",
     "./agents/flutter-data.md",
     "./agents/flutter-platform.md",
     "./agents/flutter-release.md",
-    "./agents/flutter-ux.md"
+    "./agents/flutter-ux.md",
+    "./agents/flutter-session-driver.md",
+    "./agents/flutter-session-recorder.md"
   ]
 }
