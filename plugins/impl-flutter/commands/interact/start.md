@@ -18,7 +18,43 @@ This command bootstraps the app, establishes DTD connection, and activates the s
 Available devices: !`flutter devices --machine 2>/dev/null | head -20`
 Project root: !`pwd`
 Plan folder exists: !`test -d plan && echo "yes" || echo "no - will create"`
+Project info: !`cat .claude/project-info.toon 2>/dev/null | head -50 || echo "No project-info.toon found"`
 </context>
+
+<project_info_integration>
+## Using project-info.toon
+
+Check `.claude/project-info.toon` for Flutter run configuration. If present, look for these fields:
+
+```toon
+# ─── FLUTTER RUN CONFIGURATION ───────────────────────────────────────────────
+flutter.runScript: ./scripts/run.sh              # →path? (custom run script)
+flutter.runCommand: flutter run                   # →string (base command)
+flutter.debugArgs: --debug --dart-define=ENV=dev  # →string? (debug mode args)
+flutter.profileArgs: --profile                    # →string? (profile mode args)
+flutter.flavor: development                       # →string? (build flavor)
+flutter.target: lib/main_dev.dart                 # →path? (entry point override)
+```
+
+**Resolution Order:**
+1. If `flutter.runScript` exists and file is executable → use script
+2. If `flutter.runCommand` + args defined → use custom command
+3. Otherwise → fall back to `flutter run -d $DEVICE_ID --debug`
+
+**Building the Run Command:**
+```
+If runScript exists:
+  {runScript} -d $DEVICE_ID
+
+Else if runCommand defined:
+  {runCommand} -d $DEVICE_ID {debugArgs|profileArgs} \
+    [--flavor {flavor}] \
+    [--target {target}]
+
+Else:
+  flutter run -d $DEVICE_ID --debug
+```
+</project_info_integration>
 
 <session_initialization>
 ## Mode Detection
@@ -53,23 +89,45 @@ test -f pubspec.yaml && grep -q "flutter:" pubspec.yaml && echo "Flutter project
 mkdir -p plan
 ```
 
-**3. Start Flutter app in background:**
+**3. Resolve run command from project-info.toon:**
+
+Check `.claude/project-info.toon` for Flutter configuration:
 ```bash
+# Check for custom run script
+RUN_SCRIPT=$(grep "flutter.runScript:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
+# Check for custom command
+RUN_CMD=$(grep "flutter.runCommand:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
+DEBUG_ARGS=$(grep "flutter.debugArgs:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
+FLAVOR=$(grep "flutter.flavor:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
+TARGET=$(grep "flutter.target:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
+```
+
+**4. Start Flutter app in background:**
+
+Use resolved command (in priority order):
+```bash
+# Option A: Custom script (if flutter.runScript defined and exists)
+$RUN_SCRIPT -d $DEVICE_ID
+
+# Option B: Custom command with args (if flutter.runCommand defined)
+$RUN_CMD -d $DEVICE_ID $DEBUG_ARGS [--flavor $FLAVOR] [--target $TARGET]
+
+# Option C: Default fallback
 flutter run -d $DEVICE_ID --debug
 ```
 Run with `run_in_background: true`. Capture the shell ID.
 
-**4. Wait for startup indicators:**
+**5. Wait for startup indicators:**
 Monitor output for:
 - "Syncing files to device"
 - "Flutter run key commands"
 - "A Dart VM Service is available at:"
 
-**5. Extract VM Service URL:**
+**6. Extract VM Service URL:**
 Parse: `A Dart VM Service is available at: http://127.0.0.1:xxxxx/yyy=/`
 Convert to WebSocket: `ws://127.0.0.1:xxxxx/yyy=/ws`
 
-**6. Verify DTD connection:**
+**7. Verify DTD connection:**
 ```
 get_runtime_errors
 ```
@@ -206,10 +264,8 @@ When hot reload fails or app crashes:
    KillShell <shell_id>
    ```
 
-2. **Restart app:**
-   ```bash
-   flutter run -d $DEVICE_ID --debug
-   ```
+2. **Restart app using same run configuration:**
+   Use the same command resolved from `.claude/project-info.toon` during bootstrap.
    With `run_in_background: true`
 
 3. **Wait for startup** (check for "Flutter run key commands")
@@ -227,16 +283,18 @@ When hot reload fails or app crashes:
 2. If mode missing, ask user to choose debug or dev
 3. If device missing, list devices and ask user to select
 4. Verify Flutter project (pubspec.yaml exists)
-5. Create plan/ directory if needed
-6. Start app in background, capture shell ID
-7. Wait for VM Service URL, extract and convert to WebSocket
-8. Verify DTD connection with get_runtime_errors
-9. Initialize session state with session_id based on mode and timestamp
-10. Announce session started with mode-specific instructions
-11. Enter feedback loop:
+5. Check `.claude/project-info.toon` for run configuration
+6. Resolve run command (script → custom command → default)
+7. Create plan/ directory if needed
+8. Start app using resolved command, capture shell ID
+9. Wait for VM Service URL, extract and convert to WebSocket
+10. Verify DTD connection with get_runtime_errors
+11. Initialize session state with session_id based on mode and timestamp
+12. Announce session started with mode-specific instructions
+13. Enter feedback loop:
     - Debug mode: Record issues, delegate diagnostics to recorder
     - Dev mode: Delegate implementations to coder, apply hot reload
-12. On "stop" or "/interact/stop", trigger session end
+14. On "stop" or "/interact/stop", trigger session end
 </process>
 
 <user_instructions>
