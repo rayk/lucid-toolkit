@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.18.0] - 2025-12-18
+
+### Changed
+- **impl-flutter plugin** (v2.6.0 → v2.7.0) - schema.org vocabulary for project configuration
+  - Updated `interact/start` command to use schema.org types for localDevelopment config
+  - Updated `flutter-session-driver` agent to parse project-info.toon using Read tool
+  - Config uses SoftwareApplication, ActivateAction, PropertyValue types
+  - Replaced bash grep parsing with agent-based MCP workflow
+- Marketplace version bumped to 2.18.0
+
 ## [2.17.0] - 2025-12-18
 
 ### Added

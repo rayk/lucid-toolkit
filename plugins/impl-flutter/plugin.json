@@ -1,7 +1,7 @@
 {
   "name": "impl-flutter",
   "description": "Flutter implementation specialist plugin with 11 specialized agents for code generation, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "author": {
     "name": "rayk"
   },
