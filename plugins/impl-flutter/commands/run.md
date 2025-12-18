@@ -85,7 +85,7 @@ Route to specialist agent. Do NOT read implementation files in main context.
 
 | Classification | Agent | Prompt Template |
 |---------------|-------|-----------------|
-| UX/UI | `impl-flutter:flutter-ux` | "User on [screen]. Observes: [issue]. Check [suspected file] for [likely cause]. Return specific changes." |
+| UX/UI | `impl-flutter:flutter-ux-widget` | "User on [screen]. Observes: [issue]. Check [suspected file] for [likely cause]. Return specific changes." |
 | Runtime Error | `impl-flutter:flutter-debugger` | "User reports: [issue]. VM URL: [url]. Check logs and runtime state. Diagnose and fix." |
 | Data Issue | `impl-flutter:flutter-data` | "User reports: [data issue]. Check the [operation] flow in [area]. Return fix." |
 | New Feature | `impl-flutter:flutter-coder` | "Implement: [feature]. Follow project patterns. Return implementation." |

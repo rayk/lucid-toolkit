@@ -103,7 +103,7 @@ Defer to other specialists:
 - **Test infrastructure, integration tests, e2e** → flutter-tester
 - **Database, sync, offline patterns** → flutter-data
 - **Platform channels, native code** → flutter-platform
-- **Navigation, animations, theming** → flutter-ux
+- **Visual widgets, animations, theming** → flutter-ux-widget
 
 This agent CONFIGURES releases. flutter-env FIXES broken environments.
 </handoffs>

@@ -23,8 +23,8 @@ This plugin provides **deep Flutter expertise** through specialized agents that 
 ├─────────────┼─────────────┼─────────────┼─────────────────────────┤
 │        SPECIALIZE         │         INTEGRATE                    │
 ├─────────────┬─────────────┼─────────────┬─────────────────────────┤
-│ flutter-    │ flutter-    │ flutter-    │ flutter-platform       │
-│ data        │ ux          │ platform    │                        │
+│ flutter-    │ flutter-    │ flutter-    │                        │
+│ data        │ ux-widget   │ platform    │                        │
 └─────────────┴─────────────┴─────────────┴─────────────────────────┘
 ```
 
@@ -50,7 +50,7 @@ This plugin provides **deep Flutter expertise** through specialized agents that 
 | Agent | Domain | When to Use |
 |-------|--------|-------------|
 | **flutter-data** | Data persistence | Isar, Firebase, offline-first, sync strategies, secure storage |
-| **flutter-ux** | User experience | GoRouter, animations, theming (Material 3), i18n, accessibility |
+| **flutter-ux-widget** | Visual widgets | Layout, animations, theming (Material 3), accessibility, responsive design, assets |
 | **flutter-platform** | Native integration | Platform channels, Pigeon, FFI, web interop, desktop features |
 
 ## Agent Selection Guide
@@ -69,9 +69,9 @@ This plugin provides **deep Flutter expertise** through specialized agents that 
 | Set up Crashlytics | `flutter-release` |
 | Implement offline sync | `flutter-data` |
 | Set up Isar database | `flutter-data` |
-| Configure GoRouter | `flutter-ux` |
-| Add animations | `flutter-ux` |
-| Implement dark mode | `flutter-ux` |
+| Add animations | `flutter-ux-widget` |
+| Implement dark mode | `flutter-ux-widget` |
+| Fix layout overflow | `flutter-ux-widget` |
 | Write a platform channel | `flutter-platform` |
 | Add FFI bindings | `flutter-platform` |
 
@@ -164,7 +164,7 @@ User: "Add offline support for user profiles"
 1. flutter-data → Implements Isar schema, sync queue, offline-first repository
 2. flutter-coder → Generates Riverpod providers with fpdart error handling
 3. flutter-tester → Writes integration tests for offline scenarios
-4. flutter-ux → Adds connectivity indicator UI
+4. flutter-ux-widget → Adds connectivity indicator UI
 ```
 
 Each agent hands off to the next when it reaches the boundary of its domain.

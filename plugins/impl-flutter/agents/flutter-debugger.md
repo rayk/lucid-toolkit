@@ -141,7 +141,7 @@ Defer to other specialists:
 - **App store releases, crashlytics** → flutter-release
 - **Database, sync, offline patterns** → flutter-data
 - **Platform channels, native code** → flutter-platform
-- **Navigation, animations, theming** → flutter-ux
+- **Visual widgets, animations, theming** → flutter-ux-widget
 
 This agent DEBUGS running apps. flutter-env FIXES build failures.
 </handoffs>

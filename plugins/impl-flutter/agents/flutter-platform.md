@@ -116,7 +116,7 @@ Defer to other specialists:
 - **App store releases, crashlytics** → flutter-release
 - **Test infrastructure, integration tests, e2e** → flutter-tester
 - **Database, sync, offline patterns** → flutter-data
-- **Navigation, animations, theming** → flutter-ux
+- **Visual widgets, animations, theming** → flutter-ux-widget
 
 This agent OWNS platform bridging: channels, FFI, Pigeon, native plugins.
 </handoffs>

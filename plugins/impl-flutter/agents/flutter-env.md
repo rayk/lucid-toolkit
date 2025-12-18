@@ -149,7 +149,7 @@ Defer to other specialists:
 - **Test infrastructure, coverage** → flutter-tester
 - **Database, sync, offline patterns** → flutter-data
 - **Platform channels, native code** → flutter-platform
-- **Navigation, animations, theming** → flutter-ux
+- **Visual widgets, animations, theming** → flutter-ux-widget
 
 This agent FIXES broken environments. flutter-release CONFIGURES new releases.
 </handoffs>

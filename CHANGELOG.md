@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.19.0] - 2025-12-18
+
+### Changed
+- **impl-flutter plugin** (v2.7.0 → v2.8.0) - Renamed and optimized flutter-ux-widget agent
+  - Renamed `flutter-ux` → `flutter-ux-widget` for clearer widget/rendering focus
+  - Complete rewrite as TDD-first specialist (widget tests are "the sword")
+  - Added proactive invocation for ANY widget implementation, not just debugging
+  - Condensed from 731 → 163 lines (78% smaller) to preserve context for actual work
+  - Added non-obvious gotchas table: Opacity trap, AnimatedBuilder leak, image memory, etc.
+  - Added expert patterns: LeafRenderObjectWidget, Flow, CustomMultiChildLayout escalation
+  - Added `<not_my_domain>` section with clear boundaries and handoff targets
+  - Updated all agent handoff references across plugin
+- Marketplace version bumped to 2.19.0
+
 ## [2.18.0] - 2025-12-18
 
 ### Changed

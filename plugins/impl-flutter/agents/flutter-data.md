@@ -195,7 +195,7 @@ Defer to other specialists:
 - **App store releases, crashlytics** → flutter-release
 - **Test infrastructure, integration tests, e2e** → flutter-tester
 - **Platform channels, native code** → flutter-platform
-- **Navigation, animations, theming** → flutter-ux
+- **Visual widgets, animations, theming** → flutter-ux-widget
 
 This agent OWNS data persistence: Isar, Firebase, sync, offline-first, secure storage.
 </handoffs>
