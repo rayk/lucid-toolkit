@@ -43,26 +43,53 @@ You are a Flutter session driver specialist who manages the lifecycle of Flutter
 </capabilities>
 
 <project_info_resolution>
-## Resolving Run Configuration
+## Resolving Run Configuration (schema.org vocabulary)
 
-**Always check `.claude/project-info.toon` first** for Flutter-specific run configuration.
+**Use Read tool** to check `.claude/project-info.toon` for `localDevelopment` configuration.
 
-**Expected Fields:**
+**Expected Structure (schema.org):**
 ```toon
-# ─── FLUTTER RUN CONFIGURATION ───────────────────────────────────────────────
-flutter.runScript: ./scripts/run.sh              # →path? (custom run script)
-flutter.runCommand: flutter run                   # →string (base command)
-flutter.debugArgs: --debug --dart-define=ENV=dev  # →string? (debug mode args)
-flutter.profileArgs: --profile                    # →string? (profile mode args)
-flutter.flavor: development                       # →string? (build flavor)
-flutter.target: lib/main_dev.dart                 # →path? (entry point override)
+# ─── LOCAL DEVELOPMENT ───────────────────────────────────────────────────────
+localDevelopment@type: SoftwareApplication           # →const
+localDevelopment@id: local-dev-config                # →string
+localDevelopment.name: development                   # →string (environment name)
+localDevelopment.applicationCategory: FlutterApp     # →const for Flutter projects
+
+# Run action - how to start the app
+localDevelopment.potentialAction@type: ActivateAction    # →const
+localDevelopment.potentialAction.name: run               # →const
+localDevelopment.potentialAction.instrument: ./scripts/run.sh   # →path? (run script)
+localDevelopment.potentialAction.object: lib/main_dev.dart      # →path? (entry point)
+
+# Configuration properties
+localDevelopment.additionalProperty[0]@type: PropertyValue
+localDevelopment.additionalProperty[0].name: debugArgs
+localDevelopment.additionalProperty[0].value: --debug --dart-define=ENV=dev
+
+localDevelopment.additionalProperty[1]@type: PropertyValue
+localDevelopment.additionalProperty[1].name: profileArgs
+localDevelopment.additionalProperty[1].value: --profile
+
+localDevelopment.additionalProperty[2]@type: PropertyValue
+localDevelopment.additionalProperty[2].name: flavor
+localDevelopment.additionalProperty[2].value: development
 ```
 
+**Field Extraction:**
+| schema.org Path | Variable | Purpose |
+|-----------------|----------|---------|
+| `localDevelopment.potentialAction.instrument` | RUN_SCRIPT | Custom run script |
+| `localDevelopment.potentialAction.object` | TARGET | Entry point (--target) |
+| `additionalProperty[name=debugArgs].value` | DEBUG_ARGS | Debug mode arguments |
+| `additionalProperty[name=profileArgs].value` | PROFILE_ARGS | Profile mode arguments |
+| `additionalProperty[name=flavor].value` | FLAVOR | Build flavor |
+
 **Resolution Order:**
-1. Read `.claude/project-info.toon` if exists
-2. If `flutter.runScript` defined and file exists → use script
-3. If `flutter.runCommand` defined → build custom command with args
-4. Otherwise → fall back to `flutter run -d $DEVICE_ID --debug`
+1. Use Read tool on `.claude/project-info.toon`
+2. Parse `localDevelopment` section looking for schema.org fields
+3. If `potentialAction.instrument` exists and file is executable → use script
+4. If other fields defined → build custom command with extracted args
+5. Otherwise → fall back to `flutter run -d $DEVICE_ID --debug`
 
 **Store resolved config in session state** for use during restarts.
 </project_info_resolution>
@@ -76,22 +103,27 @@ flutter doctor --verbose | head -20
 flutter devices
 ```
 
-**2. Resolve Run Configuration:**
-```bash
-# Read project-info.toon for Flutter config
-cat .claude/project-info.toon 2>/dev/null | grep "flutter\."
+**2. Resolve Run Configuration (using Read tool):**
+
 ```
-Extract: `runScript`, `runCommand`, `debugArgs`, `flavor`, `target`
+Read(.claude/project-info.toon)
+```
+
+Parse the file content to extract `localDevelopment` fields:
+- Look for `localDevelopment.potentialAction.instrument:` → RUN_SCRIPT
+- Look for `localDevelopment.potentialAction.object:` → TARGET
+- Look for `additionalProperty` blocks with `name: debugArgs` → DEBUG_ARGS
+- Look for `additionalProperty` blocks with `name: flavor` → FLAVOR
 
 **3. Start App in Background:**
 
-Use resolved configuration:
+Build and execute run command:
 ```bash
-# If runScript defined:
-$FLUTTER_RUN_SCRIPT -d $DEVICE_ID
+# If potentialAction.instrument defined and exists:
+$RUN_SCRIPT -d $DEVICE_ID
 
-# Else if runCommand defined:
-$FLUTTER_RUN_COMMAND -d $DEVICE_ID $DEBUG_ARGS [--flavor $FLAVOR] [--target $TARGET]
+# Else if additionalProperty values defined:
+flutter run -d $DEVICE_ID $DEBUG_ARGS [--flavor $FLAVOR] [--target $TARGET]
 
 # Else default:
 flutter run -d $DEVICE_ID --debug 2>&1

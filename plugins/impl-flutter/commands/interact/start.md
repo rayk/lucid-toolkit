@@ -22,37 +22,62 @@ Project info: !`cat .claude/project-info.toon 2>/dev/null | head -50 || echo "No
 </context>
 
 <project_info_integration>
-## Using project-info.toon
+## Using project-info.toon (schema.org vocabulary)
 
-Check `.claude/project-info.toon` for Flutter run configuration. If present, look for these fields:
+Check `.claude/project-info.toon` for local development configuration using schema.org types.
 
+**Expected Structure:**
 ```toon
-# ─── FLUTTER RUN CONFIGURATION ───────────────────────────────────────────────
-flutter.runScript: ./scripts/run.sh              # →path? (custom run script)
-flutter.runCommand: flutter run                   # →string (base command)
-flutter.debugArgs: --debug --dart-define=ENV=dev  # →string? (debug mode args)
-flutter.profileArgs: --profile                    # →string? (profile mode args)
-flutter.flavor: development                       # →string? (build flavor)
-flutter.target: lib/main_dev.dart                 # →path? (entry point override)
+# ─── LOCAL DEVELOPMENT ───────────────────────────────────────────────────────
+localDevelopment@type: SoftwareApplication           # →const
+localDevelopment@id: local-dev-config                # →string
+localDevelopment.name: development                   # →string (environment name)
+localDevelopment.applicationCategory: FlutterApp     # →const for Flutter projects
+
+# Run action - how to start the app
+localDevelopment.potentialAction@type: ActivateAction    # →const
+localDevelopment.potentialAction.name: run               # →const
+localDevelopment.potentialAction.instrument: ./scripts/run.sh   # →path? (run script)
+localDevelopment.potentialAction.object: lib/main_dev.dart      # →path? (entry point)
+
+# Configuration properties (use additionalProperty for build args)
+localDevelopment.additionalProperty[0]@type: PropertyValue
+localDevelopment.additionalProperty[0].name: debugArgs
+localDevelopment.additionalProperty[0].value: --debug --dart-define=ENV=dev
+
+localDevelopment.additionalProperty[1]@type: PropertyValue
+localDevelopment.additionalProperty[1].name: profileArgs
+localDevelopment.additionalProperty[1].value: --profile
+
+localDevelopment.additionalProperty[2]@type: PropertyValue
+localDevelopment.additionalProperty[2].name: flavor
+localDevelopment.additionalProperty[2].value: development
 ```
 
+**Field Mapping:**
+| schema.org Path | Purpose |
+|-----------------|---------|
+| `localDevelopment.potentialAction.instrument` | Run script path |
+| `localDevelopment.potentialAction.object` | Entry point (--target) |
+| `additionalProperty[name=debugArgs].value` | Debug mode arguments |
+| `additionalProperty[name=profileArgs].value` | Profile mode arguments |
+| `additionalProperty[name=flavor].value` | Build flavor |
+
 **Resolution Order:**
-1. If `flutter.runScript` exists and file is executable → use script
-2. If `flutter.runCommand` + args defined → use custom command
+1. If `potentialAction.instrument` exists and file is executable → use script
+2. If `potentialAction.object` or `additionalProperty` defined → build custom command
 3. Otherwise → fall back to `flutter run -d $DEVICE_ID --debug`
 
 **Building the Run Command:**
 ```
-If runScript exists:
-  {runScript} -d $DEVICE_ID
-
-Else if runCommand defined:
-  {runCommand} -d $DEVICE_ID {debugArgs|profileArgs} \
-    [--flavor {flavor}] \
-    [--target {target}]
+If instrument (script) exists:
+  {instrument} -d $DEVICE_ID
 
 Else:
-  flutter run -d $DEVICE_ID --debug
+  flutter run -d $DEVICE_ID \
+    {additionalProperty[debugArgs].value} \
+    [--flavor {additionalProperty[flavor].value}] \
+    [--target {potentialAction.object}]
 ```
 </project_info_integration>
 
@@ -89,33 +114,46 @@ test -f pubspec.yaml && grep -q "flutter:" pubspec.yaml && echo "Flutter project
 mkdir -p plan
 ```
 
-**3. Resolve run command from project-info.toon:**
+**3. Resolve run configuration via session-driver agent:**
 
-Check `.claude/project-info.toon` for Flutter configuration:
-```bash
-# Check for custom run script
-RUN_SCRIPT=$(grep "flutter.runScript:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
-# Check for custom command
-RUN_CMD=$(grep "flutter.runCommand:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
-DEBUG_ARGS=$(grep "flutter.debugArgs:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
-FLAVOR=$(grep "flutter.flavor:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
-TARGET=$(grep "flutter.target:" .claude/project-info.toon 2>/dev/null | cut -d: -f2- | xargs)
+Delegate configuration resolution to `flutter-session-driver`:
+```
+Task(impl-flutter:flutter-session-driver)
+
+Operation: resolve-config
+Project: {current directory}
+Mode: $1 (debug or dev)
+Device: $2
+
+Read .claude/project-info.toon and extract localDevelopment configuration.
+Return resolved run command or indicate default should be used.
 ```
 
-**4. Start Flutter app in background:**
+The session-driver agent will:
+1. Read `.claude/project-info.toon` using Read tool
+2. Parse `localDevelopment` section (schema.org vocabulary)
+3. Extract: `potentialAction.instrument`, `potentialAction.object`, `additionalProperty` values
+4. Return structured config or "use-default"
 
-Use resolved command (in priority order):
-```bash
-# Option A: Custom script (if flutter.runScript defined and exists)
-$RUN_SCRIPT -d $DEVICE_ID
+**4. Start Flutter app using session-driver:**
 
-# Option B: Custom command with args (if flutter.runCommand defined)
-$RUN_CMD -d $DEVICE_ID $DEBUG_ARGS [--flavor $FLAVOR] [--target $TARGET]
-
-# Option C: Default fallback
-flutter run -d $DEVICE_ID --debug
+After config resolution, delegate app startup to session-driver:
 ```
-Run with `run_in_background: true`. Capture the shell ID.
+Task(impl-flutter:flutter-session-driver)
+
+Operation: startup
+Device: $DEVICE_ID
+Config: {resolved config from step 3}
+
+Start the Flutter app and return shell_id and vm_url.
+```
+
+The session-driver handles:
+- Building the correct run command from config
+- Running app in background
+- Extracting VM Service URL
+- Verifying DTD connection
+- Returning session info
 
 **5. Wait for startup indicators:**
 Monitor output for:
@@ -257,25 +295,30 @@ When mode is `dev`:
 <restart_protocol>
 ## App Restart Protocol
 
-When hot reload fails or app crashes:
+When hot reload fails or app crashes, delegate recovery to session-driver:
 
-1. **Kill background shell:**
-   ```
-   KillShell <shell_id>
-   ```
+```
+Task(impl-flutter:flutter-session-driver)
 
-2. **Restart app using same run configuration:**
-   Use the same command resolved from `.claude/project-info.toon` during bootstrap.
-   With `run_in_background: true`
+Operation: recovery
+Old Shell ID: {shell_id}
+Config: {run_config from session state}
 
-3. **Wait for startup** (check for "Flutter run key commands")
+Kill old process and restart app with same configuration.
+Return new shell_id and vm_url.
+```
 
-4. **Recapture VM URL** (it changes every restart)
+The session-driver handles:
+1. Killing the old shell
+2. Waiting for cleanup
+3. Restarting with cached run_config (no re-read of project-info.toon)
+4. Recapturing VM URL
+5. Verifying DTD connection
+6. Returning updated session info
 
-5. **Update session state** with new shell_id and vm_url
-
-6. **Notify user:**
-   "App restarted. New VM URL captured. Ready to continue."
+**After recovery:**
+Update session state with new shell_id and vm_url from driver response.
+Notify user: "App restarted. Ready to continue."
 </restart_protocol>
 
 <process>
@@ -283,18 +326,17 @@ When hot reload fails or app crashes:
 2. If mode missing, ask user to choose debug or dev
 3. If device missing, list devices and ask user to select
 4. Verify Flutter project (pubspec.yaml exists)
-5. Check `.claude/project-info.toon` for run configuration
-6. Resolve run command (script → custom command → default)
-7. Create plan/ directory if needed
-8. Start app using resolved command, capture shell ID
-9. Wait for VM Service URL, extract and convert to WebSocket
-10. Verify DTD connection with get_runtime_errors
-11. Initialize session state with session_id based on mode and timestamp
-12. Announce session started with mode-specific instructions
-13. Enter feedback loop:
-    - Debug mode: Record issues, delegate diagnostics to recorder
-    - Dev mode: Delegate implementations to coder, apply hot reload
-14. On "stop" or "/interact/stop", trigger session end
+5. Create plan/ directory if needed
+6. **Delegate to flutter-session-driver:**
+   - Resolve config from `.claude/project-info.toon` (schema.org localDevelopment)
+   - Start app with resolved command
+   - Return shell_id, vm_url, run_config
+7. Store session state from driver response
+8. Announce session started with mode-specific instructions
+9. Enter feedback loop:
+   - Debug mode: Record issues, delegate diagnostics to recorder
+   - Dev mode: Delegate implementations to coder, apply hot reload
+10. On "stop" or "/interact/stop", trigger session end
 </process>
 
 <user_instructions>
