@@ -1,6 +1,6 @@
 # Flutter Implementation Plugin
 
-A specialized implementation plugin for Flutter/Dart development with 8 domain-specific agents optimized for Claude Code CLI (Opus 4.5).
+A specialized implementation plugin for Flutter/Dart development with 12 domain-specific agents optimized for Claude Code CLI (Opus 4.5).
 
 ## Installation
 
@@ -51,6 +51,7 @@ This plugin provides **deep Flutter expertise** through specialized agents that 
 |-------|--------|-------------|
 | **flutter-data** | Data persistence | Isar, Firebase, offline-first, sync strategies, secure storage |
 | **flutter-ux-widget** | Visual widgets | Layout, animations, theming (Material 3), accessibility, responsive design, assets |
+| **flutter-gen-ui** | Generative UI | LLM-generated dynamic interfaces, flutter/genui, A2UI, disposable UI |
 | **flutter-platform** | Native integration | Platform channels, Pigeon, FFI, web interop, desktop features |
 
 ## Agent Selection Guide
@@ -72,6 +73,8 @@ This plugin provides **deep Flutter expertise** through specialized agents that 
 | Add animations | `flutter-ux-widget` |
 | Implement dark mode | `flutter-ux-widget` |
 | Fix layout overflow | `flutter-ux-widget` |
+| Build LLM-generated UI | `flutter-gen-ui` |
+| Integrate genui/A2UI | `flutter-gen-ui` |
 | Write a platform channel | `flutter-platform` |
 | Add FFI bindings | `flutter-platform` |
 

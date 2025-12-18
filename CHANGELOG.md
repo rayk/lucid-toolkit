@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.20.0] - 2025-12-18
+
+### Added
+- **impl-flutter plugin** (v2.8.0 → v2.9.0) - New `flutter-gen-ui` agent for Generative UI
+  - Implements LLM-generated dynamic interfaces using flutter/genui ecosystem
+  - Research-first disposition: never guesses, admits uncertainty, researches when stuck
+  - Knows theoretical foundations: Google Research paper, NN/g outcome-oriented design
+  - Covers genui, genui_firebase_ai, genui_google_generative_ai, genui_a2ui packages
+  - Collaborative pairing workflow with confidence-rated outputs
+  - Plugin now has 12 specialized agents
+- Marketplace version bumped to 2.20.0
+
 ## [2.19.0] - 2025-12-18
 
 ### Changed
