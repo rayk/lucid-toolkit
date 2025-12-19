@@ -8,14 +8,16 @@ allowed-tools: Task
 <objective>
 Generate a verified execution plan for Flutter implementation by analyzing technical specifications and architectural constraints.
 
-This command invokes the flutter-impl-planner agent which:
-- Analyzes specs at `$1` and constraints at `$2`
-- Decomposes work into agent-sized tasks (≤75% context each)
-- Plans parallel execution where dependencies allow
-- Validates 100% spec coverage before probability assessment
-- Produces execution-plan.toon with ≥95% success probability
+This command invokes the flutter-plan-orchestrator which coordinates specialized subagents:
+- plan-spec-analyzer (haiku) — Analyzes specs, returns structured summary
+- plan-constraint-analyzer (haiku) — Analyzes constraints, returns rules
+- plan-capability-mapper (haiku) — Maps agent capabilities
+- plan-context-builder (haiku) — Creates consolidated context files
+- plan-coverage-validator (sonnet) — Validates 100% spec coverage
+- plan-simulator (opus) — Runs mental simulation for probability
+- plan-writer (sonnet) — Generates execution-plan.toon
 
-The plan enables coordinated execution by flutter-coder, flutter-e2e-tester, flutter-ux-widget, flutter-debugger, and other implementation agents.
+The orchestrator delegates ALL heavy work to subagents, protecting its context.
 </objective>
 
 <context>
@@ -25,18 +27,22 @@ Project root: !`pwd`
 <process>
 1. Validate that spec path `$1` exists
 2. Validate that constraints path `$2` exists
-3. Launch flutter-impl-planner subagent with both paths
-4. Wait for planning to complete
-5. Report plan location and summary
+3. Launch flutter-plan-orchestrator with both paths
+4. Orchestrator launches parallel analyzers (Phase 1)
+5. Orchestrator synthesizes and decomposes (Phases 2-4)
+6. Coverage validation gate (must be 100%)
+7. Mental simulation gate (must be ≥95%)
+8. Plan written to disk
+9. Report location and summary
 
 If either path is missing, stop and inform the user.
 </process>
 
 <agent_invocation>
-Invoke the planner with this Task call:
+Invoke the orchestrator with this Task call:
 
 ```
-Task(impl-flutter:flutter-impl-planner)
+Task(impl-flutter:flutter-plan-orchestrator)
 Prompt: |
   Create an execution plan for Flutter implementation.
 
@@ -44,16 +50,17 @@ Prompt: |
   **Architectural Constraints Path:** $2
   **Project Root:** {current working directory}
 
-  Follow your complete workflow:
+  Follow your workflow:
   1. Validate inputs exist
-  2. Launch parallel analyzers (specs, constraints, codebase, agent capabilities)
+  2. Launch parallel analyzers (specs, constraints, codebase, capabilities)
   3. Synthesize summaries into implementation units
   4. Build dependency graph
   5. Decompose into context-sized tasks
-  6. Validate 100% spec coverage
-  7. Run mental simulation (up to 5 rounds)
-  8. If ≥95% probability: write execution-plan.toon and context files
-  9. If <95% probability: explain blockers
+  6. Launch context consolidation
+  7. Validate 100% spec coverage
+  8. Run mental simulation (up to 5 rounds)
+  9. If ≥95% probability: write execution-plan.toon
+  10. Report results
 
   Return the plan location and a summary of:
   - Total phases and tasks
@@ -65,14 +72,16 @@ Prompt: |
 
 <success_criteria>
 - Both input paths validated as existing
-- flutter-impl-planner agent successfully invoked
-- Plan produced with ≥95% success probability, OR
-- Clear explanation of why planning failed with recommendations
-- Plan location reported to user
+- Orchestrator successfully invoked
+- All subagents complete their phases
+- Coverage validation passes (100%)
+- Simulation passes (≥95% probability)
+- Plan produced with execution-plan.toon written
+- OR: Clear explanation of why planning failed with recommendations
 </success_criteria>
 
 <output>
-On success, the planner creates:
+On success, the orchestrator creates:
 - `execution-plan.toon` — The verified implementation plan
 - `phase-{N}-task-{M}-context.md` — Consolidated context files for each task
 

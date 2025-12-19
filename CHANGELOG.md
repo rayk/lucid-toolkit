@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.22.0] - 2025-12-19
+
+### Changed
+- **impl-flutter plugin** (v2.11.0 → v2.12.0) - Split monolithic planner into orchestrator + subagents
+  - **Architecture overhaul**: Replaced 1100-line `flutter-impl-planner` with modular system
+  - New `flutter-plan-orchestrator` (350 lines) - Lightweight coordinator that delegates all heavy work
+  - New `plan-spec-analyzer` (haiku) - Reads specs, returns structured summaries
+  - New `plan-constraint-analyzer` (haiku) - Reads constraints, returns architectural rules
+  - New `plan-capability-mapper` (haiku) - Queries agents, builds capability matrix
+  - New `plan-context-builder` (haiku) - Creates consolidated context files with source links
+  - New `plan-coverage-validator` (sonnet) - Validates 100% spec coverage
+  - New `plan-simulator` (opus) - Runs mental simulation for probability assessment
+  - New `plan-writer` (sonnet) - Generates execution-plan.toon
+  - **Benefits**: Max context load reduced from 1100 lines to ~200 lines per agent
+  - **Benefits**: Right-sized models (haiku for analysis, sonnet for validation, opus for simulation)
+  - Plugin now has 20 specialized agents (was 13)
+- Marketplace version bumped to 2.22.0
+
 ## [2.21.0] - 2025-12-19
 
 ### Added
