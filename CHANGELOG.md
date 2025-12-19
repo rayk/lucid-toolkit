@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.25.0] - 2025-12-19
+
+### Changed
+- **impl-flutter plugin** (v2.14.0 → v2.15.0) - Pure delegation architecture for plan/do commands
+  - **plan.md command**: Complete rewrite as thin dispatcher (326 → 90 lines)
+    - Added `<critical_behavior>` with PROHIBITED/REQUIRED actions
+    - Now takes 3 required args: spec-path, constraints-path, output-dir
+    - Only uses Task tool - all work delegated to orchestrator
+  - **do.md command**: Complete rewrite as thin dispatcher
+    - Added `<critical_behavior>` enforcing delegate-only pattern
+    - Token counting model: only subagent RETURNS count against context
+    - Plans can now complete in one context window via delegation
+  - **flutter-plan-orchestrator**: Removed Read/Write tools, added critical_behavior
+  - **New helper agents for /do command** (6 agents):
+    - `do-plan-reader` (haiku) - Reads plan, returns structured summary
+    - `do-log-writer` (haiku) - Writes execution-log.toon entries
+    - `do-git-ops` (haiku) - Git commit/rollback operations
+    - `do-checkpoint-validator` (haiku) - Validates phase checkpoints
+    - `do-resume-writer` (haiku) - Creates resume continuation points
+    - `do-resume-reader` (haiku) - Reads resume points for continuation
+  - Plugin now has 26 specialized agents (was 20)
+- Marketplace version bumped to 2.25.0
+
 ## [2.24.0] - 2025-12-19
 
 ### Changed

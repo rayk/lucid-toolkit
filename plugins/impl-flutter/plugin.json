@@ -1,7 +1,7 @@
 {
   "name": "impl-flutter",
-  "description": "Flutter implementation specialist plugin with 20 specialized agents for planning (orchestrator + 7 planning subagents), code generation, generative UI, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
-  "version": "2.14.0",
+  "description": "Flutter implementation specialist plugin with 26 specialized agents for planning (orchestrator + 7 planning subagents), execution (6 do-* helper agents), code generation, generative UI, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
+  "version": "2.15.0",
   "author": {
     "name": "rayk"
   },
@@ -32,6 +32,12 @@
     "./agents/flutter-ux-widget.md",
     "./agents/flutter-gen-ui.md",
     "./agents/flutter-session-driver.md",
-    "./agents/flutter-session-recorder.md"
+    "./agents/flutter-session-recorder.md",
+    "./agents/do-plan-reader.md",
+    "./agents/do-log-writer.md",
+    "./agents/do-git-ops.md",
+    "./agents/do-checkpoint-validator.md",
+    "./agents/do-resume-writer.md",
+    "./agents/do-resume-reader.md"
   ]
 }
