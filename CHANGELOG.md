@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.24.0] - 2025-12-19
+
+### Changed
+- **impl-flutter plugin** (v2.13.0 → v2.14.0) - Plan/Do integration overhaul for reliable execution
+  - **execution-plan.toon template**: Added `projectRoot`, `architectureRef` at plan level
+  - **execution-plan.toon template**: Added `agentInputs` section for agent-specific required inputs per task
+  - **plan.md command**: Updated with fully-qualified agent names (`impl-flutter:flutter-coder`)
+  - **plan.md command**: Added agentInputs requirements documentation for all Flutter agents
+  - **do.md command**: Now reads `agentInputs` from plan to construct prompts
+  - **do.md command**: Added context protection (85% threshold) with resume-continuation-point.md
+  - **do.md command**: Added `impl-flutter:flutter-ux-widget` prompt template
+  - **flutter-plan-orchestrator**: Updated with fully-qualified agent names and agentInputs generation
+  - **plan-writer**: Now generates plans with fully-qualified names and agentInputs
+  - **plan-simulator**: Validates agent names (fully-qualified) and agentInputs completeness
+  - **plan-coverage-validator**: Cross-checks agent validity and agentInputs presence
+  - **plan-capability-mapper**: All references now use fully-qualified agent names
+  - Plans now self-describing: executor dispatches directly without implicit knowledge
+- Marketplace version bumped to 2.24.0
+
 ## [2.23.0] - 2025-12-19
 
 ### Changed

@@ -2,185 +2,501 @@
 name: do
 description: Execute an execution-plan.toon file, running Flutter implementation tasks phase-by-phase with parallel groups
 argument-hint: <execution-plan-path>
+allowed-tools: Task, Read, Write, Edit, Bash, Glob
 ---
 
 <objective>
 Execute the tasks defined in `$ARGUMENTS` (an execution-plan.toon file) following dependency order and parallel group rules.
 
 This transforms a validated execution plan into actual Flutter implementation by:
-- Running tasks through specialized agents (flutter-coder, flutter-e2e-tester, etc.)
+- Dispatching tasks to specialized agents via prompts (flutter-coder, flutter-e2e-tester, etc.)
 - Respecting parallel groups for concurrent execution
 - Validating checkpoints between phases
-- Tracking progress and token usage
-- Producing an execution-log.toon with full audit trail
-
-The plan must have been created by flutter-impl-planner with ≥95% success probability.
+- Tracking progress in execution-log.toon
+- Managing git commits and rollbacks
+- **Protecting context by stopping at 85% usage with resume point**
 </objective>
+
+<orchestrator_boundaries>
+## What This Orchestrator Does (ONLY These)
+
+1. **Prompt Writing** — Construct and dispatch prompts to subagents via Task tool
+2. **Log Updates** — Write to execution-log.toon after each task completes
+3. **Git Operations** — Commits after phases, rollbacks on checkpoint failure
+4. **Context Monitoring** — Check context before phases, stop at 85%
+5. **Resume Points** — Save continuation state when stopping
+
+## What This Orchestrator Does NOT Do
+
+- Read task output files (subagents write to filesystem, next subagent reads)
+- Analyze or debug subagent failures (record error, mark failed, continue)
+- Make implementation decisions (plans specify everything)
+- Modify code files (only subagents modify code)
+- Read large context into memory (paths only, not contents)
+
+**Principle:** The orchestrator is a dispatcher and bookkeeper, not a worker.
+</orchestrator_boundaries>
 
 <context>
 - Execution plan: @$ARGUMENTS
 - Plan template: @plugins/impl-flutter/templates/execution-plan.toon
 </context>
 
+<context_protection>
+## Context Monitoring Protocol
+
+Before starting each phase, check remaining context capacity.
+
+**Decision Rule:**
+```
+estimatedPhaseTokens = phase.estimatedTokens * 0.1  # Orchestrator overhead only
+currentUsage = check context (via /context or estimate)
+
+IF currentUsage >= 85%:
+  → STOP execution
+  → Write resume-continuation-point.md
+  → Report to user with resume instructions
+```
+
+**Why 85%?** Leaves buffer for:
+- Writing the resume file
+- Final log update
+- User communication
+- Safety margin
+
+**Orchestrator Token Budget Per Phase:**
+- Read plan section: ~200 tokens
+- Construct prompts: ~300 tokens per task
+- Log updates: ~100 tokens per task
+- Git operations: ~200 tokens
+- Total per phase: ~1000-2000 tokens (NOT the task execution cost)
+
+Subagent execution happens in isolated contexts—their token costs don't affect the orchestrator.
+</context_protection>
+
+<resume_capability>
+## Resume Point Structure
+
+When stopping at 85% context, create `resume-continuation-point.md` in plan directory:
+
+```markdown
+# Execution Resume Point
+
+## Plan Reference
+- Plan: {path-to-execution-plan.toon}
+- Log: {path-to-execution-log.toon}
+
+## Execution State
+- Status: Paused (context limit)
+- Last Completed Phase: {phase-number} - {phase-name}
+- Last Completed Task: {task-id}
+- Next Phase: {phase-number} - {phase-name}
+
+## Completed Work
+Phases completed: {list}
+Tasks completed: {count}/{total}
+Tokens used: {actual}/{estimated}
+
+## Remaining Work
+Phases remaining: {list with task counts}
+Estimated tokens: {remaining-estimate}
+
+## Git State
+- Last commit: {sha} "{subject}"
+- Branch: {branch-name}
+
+## Resume Instructions
+
+To continue execution, run:
+```
+/do {plan-path} --resume {this-file-path}
+```
+
+The orchestrator will:
+1. Read this resume point
+2. Skip completed phases
+3. Continue from phase {next-phase-number}
+4. Append to existing execution-log.toon
+```
+
+## Resuming Execution
+
+When `--resume` flag is present:
+1. Read the resume-continuation-point.md
+2. Verify git state matches (warn if not)
+3. Read execution-log.toon to confirm state
+4. Skip to the next incomplete phase
+5. Continue normal execution from there
+</resume_capability>
+
 <process>
-1. **Load and Validate Plan**
-   - Read plan from `$ARGUMENTS`
-   - Confirm plan has `successProbability >= 0.95`
-   - Extract: phases, tasks, dependencies, executionOrder, taskInputs, taskReturns
-   - Report plan summary to user
+## Execution Process
 
-2. **Initialize Execution**
-   - Create `execution-log.toon` in same directory as plan
-   - Set status: Running, dateStarted: now
-   - Report execution start
+### 1. Parse Arguments
+```
+planPath = $ARGUMENTS[0]
+resumePath = $ARGUMENTS[--resume] if present
+```
 
-3. **Execute Phases**
-   For each phase in order:
+### 2. Load and Validate Plan
+- Read plan from `planPath`
+- Confirm plan has `successProbability >= 0.95`
+- Extract: phases, tasks, dependencies, executionOrder, taskInputs, taskReturns
+- Report plan summary to user
 
-   a. **Start Phase**
-      - Report: `🔷 Phase {N}/{total}: {name}`
-      - Log phase start event
+### 3. Handle Resume (if --resume)
+- Read resume-continuation-point.md
+- Verify git state
+- Set startPhase to next incomplete phase
+- Report resume state to user
 
-   b. **Execute Parallel Groups**
-      For each parallelGroup (in order):
-      - Report: `  Running {count} task(s) in parallel...`
-      - Launch ALL tasks in group simultaneously using Task tool
-      - Each task uses the agent specified in plan
-      - Wait for all to complete
-      - Report each result as it completes
+### 4. Initialize Execution
+- Create or append to `execution-log.toon` in same directory as plan
+- Set status: Running, dateStarted: now (or dateResumed)
+- Report execution start
 
-   c. **Report Task Results**
-      For each completed task:
-      - Success: `  ✅ {task-name} ({tokens} tokens)`
-      - Failure: `  ❌ {task-name}: {error-summary}`
-      - Record outputs and returns in log
+### 5. Execute Phases
+For each phase starting from startPhase:
 
-   d. **Validate Checkpoint**
-      - Run checkpoint.validation criteria
-      - Pass: `  ✓ Checkpoint passed`
-      - Fail: Handle per checkpoint.onFail (pause or rollback)
+a. **Context Check** (CRITICAL)
+   - Estimate orchestrator overhead for this phase
+   - If context usage >= 85%: STOP and write resume point
+   - Report: `⚠️ Context at {X}%, saving resume point...`
 
-   e. **Phase Summary**
-      - Report: `  📊 {actual}/{estimated} tokens | {completed}/{total} tasks`
-      - Include meaningful taskReturns (testsPassed, coverage, etc.)
+b. **Start Phase**
+   - Report: `🔷 Phase {N}/{total}: {name}`
+   - Log phase start event
 
-4. **Finalize**
-   - Update log: status, dateCompleted, summary totals
-   - Create final commit using plan's commitMessage
-   - Report completion summary
+c. **Execute Parallel Groups**
+   For each parallelGroup (in order):
+   - Report: `  Running {count} task(s) in parallel...`
+   - Launch ALL tasks in group simultaneously using Task tool
+   - Each task uses the agent specified in plan
+   - Wait for all to complete
+   - Report each result as it completes
 
-5. **Report Results**
-   - Total phases, tasks, tokens
-   - Success rate
-   - Path to execution-log.toon
-   - Final commit reference
+d. **Record Task Results** (immediately after each completes)
+   - Update execution-log.toon with:
+     - status: Completed | Failed
+     - tokensUsed (from subagent return)
+     - filesCreated (paths only, NOT contents)
+     - error (if failed, brief message only)
+   - Do NOT read output files into orchestrator context
+
+e. **Validate Checkpoint**
+   - Run checkpoint.validation criteria
+   - Pass: `  ✓ Checkpoint passed`
+   - Fail: Handle per checkpoint.onFail
+
+f. **Git Commit** (if checkpoint passed)
+   - Stage files from taskOutputs paths
+   - Commit with phase's commitSubject
+   - Report: `  💾 Commit: {short-sha}`
+
+g. **Phase Summary**
+   - Report: `📊 {actual}/{estimated} tokens | {completed}/{total} tasks`
+
+### 6. Finalize (on completion)
+- Update log: status=Completed, dateCompleted
+- Create final commit using plan's commitMessage
+- Report completion summary
+
+### 7. Handle Failure (on unrecoverable error)
+- Update log: status=Failed
+- Write resume-continuation-point.md
+- Report failure with recovery instructions
 </process>
 
 <task_invocation>
 ## Invoking Tasks
 
-### Agent-Specific Dispatch Rules
+### Reading agentInputs from Plan
 
-**For flutter-coder:**
-The agent has non-negotiable behaviors that MUST be respected. Never provide:
-- Complete implementations as context
-- Bash verification commands (agent uses mcp__dart__ tools)
-- Suggestions to skip TDD or analyzer checks
+The execution plan includes an `agentInputs` section for each phase that provides required inputs per task:
 
-**For flutter-e2e-tester, flutter-verifier:**
-Integration/E2E context is appropriate. Reference test targets, not implementations.
+```toon
+agentInputs[{A},]{taskId,inputKey,inputValue}:
+  task-1-1,projectRoot,/path/to/project
+  task-1-1,targetPaths,lib/domain/entities/
+  task-1-1,architectureRef,docs/adr/
+  task-1-1,spec,Create User entity with id, email, name
+```
 
-**For flutter-ux-widget, flutter-gen-ui:**
-Design context is appropriate. Reference design specs and component patterns.
+The executor reads these and constructs the prompt using them directly.
 
-### flutter-coder Task Template
+### Prompt Construction Rules
+
+1. **Read agentInputs from plan** — Use the values directly; they are pre-validated
+2. **Never include file contents** — Only paths; subagent reads files itself
+3. **Include acceptance criteria** — From taskDetails
+4. **Include token budget** — From task.tokens
+5. **Agent name from plan** — Use the fully-qualified name in task.agent column
+
+### Agent Dispatch Table
+
+Plans use fully-qualified agent names. The executor dispatches directly:
+
+| Agent (fully-qualified) | Model | Use For |
+|------------------------|-------|---------|
+| impl-flutter:flutter-coder | sonnet | Domain, application, simple widgets, tests |
+| impl-flutter:flutter-ux-widget | opus | Visual widgets, animations, a11y |
+| impl-flutter:flutter-e2e-tester | opus | E2E tests, integration tests |
+| impl-flutter:flutter-verifier | opus | Code review, architecture compliance |
+| Explore | haiku | Codebase exploration (builtin) |
+| general-purpose | sonnet | Multi-step research (builtin) |
+
+### impl-flutter:flutter-coder Prompt Template
 
 ```
-Task(impl-flutter:flutter-coder, model: {model}):
-"Implement: {task-name}
+Task({task.agent}, model: {task.model}):
+"Implement: {task.name}
 
 Objective: {taskDetails.description}
 
-**Required Inputs:**
-- projectRoot: {project-root-path}
-- targetPaths: {List taskOutputs directories}
-- architectureRef: {path-to-adr-folder-or-architecture-doc}
+**Required Inputs (from agentInputs):**
+- projectRoot: {agentInputs[task-id].projectRoot}
+- targetPaths: {agentInputs[task-id].targetPaths}
+- architectureRef: {agentInputs[task-id].architectureRef}
+- spec: {agentInputs[task-id].spec}
 
-Scope (read ONLY these paths for patterns):
-{List taskInputs paths - DO NOT include file contents}
+Context (read these paths for patterns):
+{list taskInputs paths}
 
 Expected Outputs:
-{List taskOutputs with paths}
+{list taskOutputs with paths}
 
 Acceptance Criteria:
 {taskDetails.acceptance}
 
-Codegen Required: {yes/no - if Freezed/Riverpod used}
+Codegen Required: {yes/no based on taskDetails}
 
-**CRITICAL: Follow your non-negotiable behaviors:**
+**Non-negotiable behaviors:**
 1. TDD required — Write tests BEFORE implementation
 2. Use mcp__dart__run_tests — NOT Bash flutter test
 3. Use mcp__dart__analyze_files — Must achieve 0 errors, 0 warnings, 0 info
 4. If codegen needed — build_runner MUST run before final test
 5. Complete or FAIL — No 'pending verification'
-6. Do NOT delegate to flutter-coder — You ARE flutter-coder
-7. Read architectureRef FIRST for patterns and constraints
+6. Read architectureRef FIRST for patterns and constraints
 
 Token Budget: {task.tokens} tokens
 
-When complete, return:
+Return:
 - status: Completed | Failed
 - filesCreated: [paths]
 - testsPassed: true | false
-- analyzerClean: true | false (0/0/0)
-- error: {if failed, specific reason}"
+- analyzerClean: true | false
+- tokensUsed: {actual}
+- error: {if failed}"
 ```
 
-**Note:** If `architectureRef` is not available in the plan, the orchestrator should:
-1. Check for `docs/adr/`, `docs/architecture/`, or `ARCHITECTURE.md` in project root
-2. Check for `constraints.md` or `CONSTRAINTS.md`
-3. If none found, include a warning in the task that architecture patterns cannot be verified
-
-### Other Agent Task Template
+### impl-flutter:flutter-ux-widget Prompt Template
 
 ```
-Task(impl-flutter:{agent}, model: {model}):
-"Execute: {task-name}
+Task({task.agent}, model: {task.model}):
+"Implement widget: {task.name}
 
 Objective: {taskDetails.description}
 
-Context:
-{Read each file in taskInputs and include relevant content}
+**Required Inputs (from agentInputs):**
+- projectRoot: {agentInputs[task-id].projectRoot}
+- targetPaths: {agentInputs[task-id].targetPaths}
+- architectureRef: {agentInputs[task-id].architectureRef}
+- designSpec: {agentInputs[task-id].designSpec}
+- spec: {agentInputs[task-id].spec}
+
+Context (read these paths for patterns):
+{list taskInputs paths}
 
 Expected Outputs:
-{List taskOutputs with paths}
+{list taskOutputs with paths}
 
 Acceptance Criteria:
 {taskDetails.acceptance}
 
-Token Budget: {task.tokens} tokens (variance: {task.variance}%)
+**Non-negotiable behaviors:**
+1. Widget tests BEFORE implementation
+2. 0/0/0 analyzer compliance
+3. 60fps performance target
+4. Touch targets ≥48px
 
-When complete, return:
+Token Budget: {task.tokens} tokens
+
+Return:
 - status: Completed | Failed
 - filesCreated: [paths]
-- {each key from taskReturns}: {value}
+- testsPassed: true | false
+- analyzerClean: true | false
 - tokensUsed: {actual}
-- error: {if failed, brief description}"
+- error: {if failed}"
 ```
 
-**Parallel Execution:**
-When tasks share the same parallelGroup, launch them in a SINGLE message with multiple Task tool calls. This runs them concurrently.
+### impl-flutter:flutter-e2e-tester Prompt Template
+
+```
+Task({task.agent}, model: {task.model}):
+"Write E2E tests: {task.name}
+
+Objective: {taskDetails.description}
+
+**Required Inputs (from agentInputs):**
+- projectRoot: {agentInputs[task-id].projectRoot}
+- userFlowSpec: {agentInputs[task-id].userFlowSpec}
+- targetPaths: {agentInputs[task-id].targetPaths}
+
+Expected Outputs:
+{list taskOutputs with paths}
+
+Acceptance Criteria:
+{taskDetails.acceptance}
+
+Token Budget: {task.tokens} tokens
+
+Return:
+- status: Completed | Failed
+- filesCreated: [paths]
+- testsWritten: {count}
+- tokensUsed: {actual}
+- error: {if failed}"
+```
+
+### impl-flutter:flutter-verifier Prompt Template
+
+```
+Task({task.agent}, model: {task.model}):
+"Verify: {task.name}
+
+Objective: {taskDetails.description}
+
+**Required Inputs (from agentInputs):**
+- projectRoot: {agentInputs[task-id].projectRoot}
+- architectureRef: {agentInputs[task-id].architectureRef}
+- filePaths: {agentInputs[task-id].filePaths}
+
+Verification Criteria:
+{taskDetails.acceptance}
+
+Token Budget: {task.tokens} tokens
+
+Return:
+- status: Completed | Failed
+- violations: [{path, rule, severity}]
+- compliant: true | false
+- tokensUsed: {actual}
+- error: {if failed}"
+```
+
+### Builtin Agent Prompt Template (Explore, general-purpose)
+
+```
+Task({task.agent}, model: {task.model}):
+"Execute: {task.name}
+
+Objective: {taskDetails.description}
+
+Context:
+{list taskInputs paths}
+
+Expected Outputs:
+{list taskOutputs with paths}
+
+Acceptance Criteria:
+{taskDetails.acceptance}
+
+Token Budget: {task.tokens} tokens
+
+Return:
+- status: Completed | Failed
+- filesCreated: [paths]
+- {keys from taskReturns}: {values}
+- tokensUsed: {actual}
+- error: {if failed}"
+```
+
+### Parallel Execution
+
+When tasks share the same parallelGroup, launch them in a SINGLE message with multiple Task tool calls:
+
+```
+# Phase 2, Parallel Group 1: tasks A, B, C
+Task(impl-flutter:flutter-coder): "Implement: Task A..."
+Task(impl-flutter:flutter-coder): "Implement: Task B..."
+Task(impl-flutter:flutter-ux-widget): "Implement: Task C..."
+```
+
+All Task calls in a single message execute concurrently.
 </task_invocation>
 
-<progress_reporting>
-## Clean Progress Reporting
+<failure_handling>
+## Failure Handling
 
-Use clean, scannable output without tree characters:
+### Subagent Failure (task returns status: Failed)
+
+1. **Record immediately** — Write to execution-log.toon:
+   ```
+   {task-id}:
+     status: Failed
+     error: {brief error from subagent return}
+     tokensUsed: {actual}
+   ```
+
+2. **Do NOT investigate** — The orchestrator doesn't debug failures
+   - Don't read the files the subagent created
+   - Don't analyze what went wrong
+   - Don't attempt to fix
+
+3. **Continue to checkpoint** — Let checkpoint validation decide next step
+
+### Checkpoint Failure
+
+Based on `checkpoint.onFail`:
+
+- **pause**: Stop execution, save resume point, report to user
+- **rollback**:
+  1. `git reset --hard {checkpoint.rollbackTo-commit}`
+  2. Retry the phase once
+  3. If fails again: pause
+- **continue**: Log warning, proceed to next phase
+
+### Context Exhaustion (85% reached)
+
+1. Stop immediately (don't start new phase)
+2. Write resume-continuation-point.md
+3. Commit any pending work
+4. Report to user:
+   ```
+   ⚠️ Context limit reached (85%)
+
+   Progress saved to: {resume-point-path}
+
+   To continue:
+   /do {plan-path} --resume {resume-point-path}
+   ```
+
+### Unrecoverable Failure
+
+- Git command failures
+- Plan file corruption
+- Missing required files
+
+Response:
+1. Set log status: Failed
+2. Write resume-continuation-point.md with error details
+3. Report failure and manual recovery steps
+</failure_handling>
+
+<progress_reporting>
+## Progress Output Format
 
 **Execution Start:**
 ```
 🚀 Executing: {plan-name}
    {totalPhases} phases, {totalTasks} tasks, ~{estimatedTokens} tokens
+```
+
+**Resume Start:**
+```
+🔄 Resuming: {plan-name}
+   From phase {N}/{total}, {remainingTasks} tasks remaining
 ```
 
 **Phase Start:**
@@ -193,7 +509,7 @@ Use clean, scannable output without tree characters:
    Running {count} task(s) in parallel...
 ```
 
-**Task Results (report immediately as each completes):**
+**Task Results:**
 ```
    ✅ {task-name} ({tokensUsed} tokens)
    ❌ {task-name}: {brief-error}
@@ -208,12 +524,12 @@ Use clean, scannable output without tree characters:
 **Phase Summary:**
 ```
    📊 {actual}/{estimated} tokens | {completed}/{total} tasks
-   📊 {actual}/{estimated} tokens | Returns: testsPassed=true, coverage=94%
+   💾 Commit: {short-sha}
 ```
 
-**Commit (if applicable):**
+**Context Warning:**
 ```
-   💾 Commit: {short-sha}
+   ⚠️ Context at {X}%, saving resume point...
 ```
 
 **Execution Complete:**
@@ -224,10 +540,23 @@ Use clean, scannable output without tree characters:
    Phases: {completed}/{total}
    Tasks: {completed}/{total}
    Tokens: {actual}/{estimated} ({variance}%)
-   Duration: {time}
 
 📄 Log: {path-to-execution-log.toon}
 💾 Commit: {sha} "{commit-subject}"
+```
+
+**Execution Paused (context limit):**
+```
+⏸️ Execution paused (context limit)
+
+📊 Progress
+   Phases: {completed}/{total}
+   Tasks: {completed}/{total}
+
+📄 Resume: {path-to-resume-point}
+
+To continue:
+/do {plan-path} --resume {resume-point-path}
 ```
 
 **Execution Failed:**
@@ -241,60 +570,66 @@ Use clean, scannable output without tree characters:
 🔴 Failure: {error-description}
 
 📄 Log: {path-to-execution-log.toon}
+📄 Resume: {path-to-resume-point}
 ```
 </progress_reporting>
 
-<error_handling>
-## Error Handling
+<execution_log_format>
+## Execution Log Structure
 
-**Task Failure:**
-1. Log error with timestamp, task ID, error type, message
-2. Mark task as Failed in log
-3. Continue to checkpoint validation
+The execution-log.toon is updated after EACH task (not batched):
 
-**Checkpoint Failure:**
-- `onFail: pause` → Stop execution, report to user, set log status to Paused
-- `onFail: rollback` → Revert changes, retry phase once
-- `onFail: continue` → Log warning, proceed to next phase
+```
+@type: ItemList
+@id: execution-log-{plan-id}
+name: Execution Log
+status: Running | Completed | Failed | Paused
+dateStarted: {iso-datetime}
+dateCompleted: {iso-datetime}
+dateResumed: {iso-datetime}  # if resumed
 
-**Unrecoverable Failure:**
-- Set log status to Failed
-- Report failure details and recovery suggestions
-- Preserve partial progress in log
-</error_handling>
+summary:
+  phasesCompleted: {N}
+  tasksCompleted: {N}
+  tasksFailed: {N}
+  tokensUsed: {total}
+  tokensEstimated: {from-plan}
 
-<orchestrator_context>
-## Protecting Orchestrator Context
+phases[]:
+  {phase-id}:
+    status: Completed | Failed | InProgress | Pending
+    dateStarted: {iso-datetime}
+    dateCompleted: {iso-datetime}
+    commit: {sha}
+    tokensUsed: {actual}
 
-Remember: Each subagent runs in isolated context. The orchestrator (this command execution) only grows by taskReturns.
+    tasks[]:
+      {task-id}:
+        status: Completed | Failed | InProgress | Pending
+        dateStarted: {iso-datetime}
+        dateCompleted: {iso-datetime}
+        tokensUsed: {actual}
+        filesCreated: [paths]
+        returns: {key-value pairs from taskReturns}
+        error: {if failed}
 
-**Keep orchestrator lean:**
-- Don't read task output files into orchestrator context
-- Record file paths in log, not file contents
-- taskReturns should be ≤500 tokens each
-- Total orchestrator context should stay under 10K tokens
-
-**Data flows through file system:**
-- Task 1 writes file → Task 2 reads file directly
-- Orchestrator only tracks: paths, status, metrics
-</orchestrator_context>
-
-<output>
-Files created/modified:
-- `{plan-dir}/execution-log.toon` - Execution audit trail
-- Task output files as specified in taskOutputs
-- Git commits per phase (if configured)
-- Final commit on completion
-</output>
+events[]:
+  - timestamp: {iso-datetime}
+    type: PhaseStart | PhaseEnd | TaskStart | TaskEnd | Checkpoint | Commit | Error | Pause | Resume
+    details: {relevant info}
+```
+</execution_log_format>
 
 <success_criteria>
 - Plan loaded and validated (≥95% probability)
-- All phases executed in dependency order
+- All phases executed in dependency order (or paused with resume point)
 - Parallel groups executed concurrently
 - All checkpoints validated
 - Execution log accurately tracks: times, tokens, outputs, errors
-- Final commit created on success
+- Git commits created per phase
+- Context stayed under 85% OR resume point saved
 - Clean progress reporting throughout
+- Orchestrator context protected (paths only, no file contents)
 </success_criteria>
 
 <example>
@@ -324,6 +659,27 @@ Files created/modified:
    💾 Commit: b2c3d4e
    📊 20,700/22,000 tokens | 3/3 tasks
 
+⚠️ Context at 87%, saving resume point...
+
+⏸️ Execution paused (context limit)
+
+📊 Progress
+   Phases: 2/4
+   Tasks: 6/12
+
+📄 Resume: specs/user-auth/resume-continuation-point.md
+
+To continue:
+/do specs/user-auth/execution-plan.toon --resume specs/user-auth/resume-continuation-point.md
+```
+
+**Then in a new session:**
+```
+/do specs/user-auth/execution-plan.toon --resume specs/user-auth/resume-continuation-point.md
+
+🔄 Resuming: user-auth-implementation
+   From phase 3/4, 6 tasks remaining
+
 🔷 Phase 3/4: Infrastructure Layer
    Running 2 task(s) in parallel...
    ✅ Implement FirebaseAuthRepository (9,800 tokens)
@@ -340,7 +696,7 @@ Files created/modified:
    ✅ Provider tests (5,400 tokens)
    ✓ Checkpoint passed
    💾 Commit: d4e5f6g
-   📊 19,500/20,000 tokens | Returns: testsPassed=true, coverage=96%
+   📊 19,500/20,000 tokens | 4/4 tasks
 
 ✅ Execution complete!
 
@@ -348,7 +704,6 @@ Files created/modified:
    Phases: 4/4
    Tasks: 12/12
    Tokens: 67,100/72,000 (-6.8%)
-   Duration: 3m 42s
 
 📄 Log: specs/user-auth/execution-log.toon
 💾 Commit: e5f6g7h "feat(auth): implement user authentication system"

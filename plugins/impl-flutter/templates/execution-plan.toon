@@ -8,6 +8,10 @@ dateCreated: {iso-datetime}
 executionLog: {path-to-execution-log}
 status: Draft
 
+# Project context for all agents
+projectRoot: {absolute-path-to-project}
+architectureRef: {path-to-adr-or-constraints}
+
 source:
   @type: TechArticle
   @id: {spec-id}
@@ -38,6 +42,15 @@ commitMessage: |
 
 phases[{P}]: {phase-id-1},{phase-id-2},...,{phase-id-P}
 
+# Agent Reference (fully-qualified names for executor dispatch)
+# ──────────────────────────────────────────────────────────────
+# impl-flutter:flutter-coder     — Domain, application, simple widgets, tests (sonnet)
+# impl-flutter:flutter-ux-widget — Visual widgets, animations, a11y (opus)
+# impl-flutter:flutter-e2e-tester — E2E tests, integration tests (opus)
+# impl-flutter:flutter-verifier  — Code review, architecture compliance (opus)
+# Explore                        — Codebase exploration (haiku, builtin)
+# general-purpose                — Multi-step research (sonnet, builtin)
+
 {phase-id}:
   @type: Phase
   @id: {phase-id}
@@ -49,27 +62,39 @@ phases[{P}]: {phase-id-1},{phase-id-2},...,{phase-id-P}
   estimatedTokens: {tokens}
   varianceBudget: {percent}
 
+  # Agent column uses fully-qualified names: impl-flutter:flutter-coder
   tasks[{N},]{@type,@id,name,type,complexity,model,agent,tokens,variance,parallelGroup,status}:
     Action,{task-id},{task-name},{type},{complexity},{model},{agent},{tokens},{%},{group},PotentialActionStatus
 
   taskDetails[{N},]{taskId,description,acceptance}:
     {task-id},{description},{acceptance-criteria}
 
+  # taskInputs: paths only (executor reads file contents OR passes paths to agent)
   taskInputs[{I},]{taskId,source,ref}:
     {task-id},{source},{ref}
 
   taskOutputs[{O},]{taskId,path,type}:
     {task-id},{path},{type}
 
+  # taskReturns: minimal data only (≤500 tokens per task)
   taskReturns[{R},]{taskId,key,valueType,description}:
     {task-id},{key},{valueType},{description}
+
+  # agentInputs: agent-specific required inputs (executor constructs prompt from these)
+  # ────────────────────────────────────────────────────────────────────────────────────
+  # For flutter-coder: projectRoot, targetPaths, architectureRef, spec
+  # For flutter-ux-widget: projectRoot, targetPaths, architectureRef, designSpec, spec
+  # For flutter-e2e-tester: projectRoot, userFlowSpec, targetPaths
+  # For flutter-verifier: architectureRef, filePaths, projectRoot
+  agentInputs[{A},]{taskId,inputKey,inputValue}:
+    {task-id},{inputKey},{inputValue}
 
   checkpoint:
     @type: Checkpoint
     validation: {validation-criteria}
     rollbackTo: {previous-phase-id}
     onPass: {action}
-    onFail: {action}
+    onFail: {pause|rollback|continue}
 
 dependencies[{D},]{taskId,dependsOn,reason}:
   {task-id},{dependency-task-id},{reason}

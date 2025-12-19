@@ -23,6 +23,7 @@ For each round:
 Walk through tasks in execution order:
 - At each task: "Does the agent have everything it needs?"
 - Check: context available? Dependencies complete? Acceptance criteria clear?
+- **Verify agentInputs are complete for the assigned agent**
 
 ### 2. Identify Risks
 - Ambiguous requirements → agent may guess wrong
@@ -30,6 +31,8 @@ Walk through tasks in execution order:
 - Oversized tasks → context exhaustion
 - Wrong agent assignment → capability mismatch
 - Circular dependencies → deadlock
+- **Missing agentInputs → executor can't construct prompt**
+- **Invalid agent name → executor dispatch fails**
 
 ### 3. Stress Test Edge Cases
 - What if a task fails? Is rollback possible?
@@ -43,6 +46,8 @@ Walk through tasks in execution order:
 - Reassign to better-suited agents
 - Add explicit checkpoints
 - Clarify acceptance criteria
+- **Add missing agentInputs**
+- **Fix invalid agent names**
 
 ### 5. Reassess Probability
 After improvements, recalculate success probability.
@@ -58,12 +63,15 @@ After improvements, recalculate success probability.
 | Unresolved dependency | -20% per instance |
 | No checkpoint after critical task | -5% per phase |
 | Large spec without consolidation | -10% |
+| **Missing agentInputs** | -15% per task |
+| **Invalid agent name (not fully-qualified)** | -10% per task |
+| **Task assigned to unavailable agent** | -20% (unresolvable) |
 </risk_penalties>
 
 <probability_factors>
 Score each factor 0-100%, then calculate weighted average:
 
-1. **Specification Clarity** (20%)
+1. **Specification Clarity** (15%)
    - Are requirements unambiguous?
    - Are acceptance criteria testable?
    - Are edge cases defined?
@@ -73,7 +81,7 @@ Score each factor 0-100%, then calculate weighted average:
    - Are file paths and patterns clear?
    - Are examples provided where helpful?
 
-3. **Decomposition Quality** (20%)
+3. **Decomposition Quality** (15%)
    - Do all tasks fit within 75% context?
    - Are dependencies correctly identified?
    - Are parallel groups correctly isolated?
@@ -82,12 +90,51 @@ Score each factor 0-100%, then calculate weighted average:
    - Is each task assigned to the right agent?
    - Does the agent have required tools?
    - Is complexity appropriate for model?
+   - **Is the agent name fully-qualified?**
 
-5. **Execution Robustness** (20%)
+5. **Agent Inputs Complete** (15%)
+   - Does each task have all required agentInputs?
+   - Are agentInputs correct for the assigned agent?
+   - Is projectRoot an absolute path?
+
+6. **Execution Robustness** (15%)
    - Are checkpoints in place?
    - Is rollback possible on failure?
    - Are parallel conflicts avoided?
 </probability_factors>
+
+<valid_agents>
+## Valid Agents for Plans
+
+During simulation, verify tasks ONLY use these agents with FULLY-QUALIFIED names:
+
+| Agent | Fully-Qualified Name | Valid Task Types | Required agentInputs | Model | Tokens |
+|-------|---------------------|-----------------|---------------------|-------|--------|
+| flutter-coder | `impl-flutter:flutter-coder` | domain, application, simple widget, unit/widget test | projectRoot, targetPaths, architectureRef, spec | sonnet | 15-25K |
+| flutter-ux-widget | `impl-flutter:flutter-ux-widget` | visual widget, animation, custom paint, a11y | projectRoot, targetPaths, architectureRef, designSpec, spec | opus | 25-40K |
+| flutter-e2e-tester | `impl-flutter:flutter-e2e-tester` | E2E test, integration test, user flow test, golden test | projectRoot, userFlowSpec, targetPaths | opus | 25-40K |
+| flutter-verifier | `impl-flutter:flutter-verifier` | code verification, architecture review, post-impl check | architectureRef, filePaths, projectRoot | opus | 25-40K |
+| Explore | `Explore` | codebase search, file finding | (none) | haiku | 8K |
+| general-purpose | `general-purpose` | multi-step research, complex exploration | (none) | sonnet | 25K |
+
+**Validation Rules:**
+1. Flutter agents MUST use `impl-flutter:` prefix
+2. Builtin agents (Explore, general-purpose) have no prefix
+3. Each Flutter agent task MUST have all required agentInputs
+4. Short names (`flutter-coder` without prefix) are INVALID
+
+**Pre-Flight Validation:**
+All Flutter agents support `--dry-run`. For complex or uncertain tasks, simulate pre-flight:
+```
+Task(impl-flutter:{agent}, --dry-run)
+  "Can you {task-description}?"
+  Required inputs: {inputs}
+```
+
+**If task uses unavailable agent (flutter-debugger, flutter-env, etc.), apply -20% penalty and flag as unresolvable blocker.**
+**If task uses short agent name instead of fully-qualified, apply -10% penalty and flag for correction.**
+**If task missing required agentInputs, apply -15% penalty and flag for resolution.**
+</valid_agents>
 
 <output_format>
 ```markdown
@@ -110,8 +157,24 @@ Score each factor 0-100%, then calculate weighted average:
 | Specification Clarity | 95% | Clear acceptance criteria |
 | Context Availability | 90% | All context consolidated |
 | Decomposition Quality | 95% | Tasks properly sized |
-| Agent-Task Match | 100% | Correct assignments |
+| Agent-Task Match | 100% | Correct assignments, fully-qualified names |
+| Agent Inputs Complete | 100% | All agentInputs provided |
 | Execution Robustness | 90% | Checkpoints in place |
+
+### Agent Name Validation
+
+| Task | Agent | Format | Status |
+|------|-------|--------|--------|
+| task-1-1 | impl-flutter:flutter-coder | Fully-qualified | OK |
+| task-1-2 | impl-flutter:flutter-ux-widget | Fully-qualified | OK |
+| task-2-1 | Explore | Builtin | OK |
+
+### Agent Inputs Validation
+
+| Task | Agent | Required Inputs | Status |
+|------|-------|-----------------|--------|
+| task-1-1 | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec | Complete |
+| task-1-2 | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, designSpec, spec | Complete |
 
 ### Risks Identified & Resolved
 
@@ -144,6 +207,7 @@ If further improvements needed:
 - **90-94% after 5 rounds** → NEEDS WORK, suggest improvements
 - **<90% after 5 rounds** → FAIL, explain blockers
 - **Unresolvable blocker** → FAIL immediately
+- **Any task with unavailable agent** → FAIL (unresolvable)
 </stopping_conditions>
 
 <constraints>
@@ -152,4 +216,7 @@ If further improvements needed:
 - Must apply risk penalties mathematically
 - Cannot pass probability without justification
 - Be pessimistic—overconfidence causes failures
+- Reject plans with tasks assigned to unavailable agents
+- Reject plans with short agent names (must be fully-qualified)
+- Reject plans with missing agentInputs for Flutter agents
 </constraints>
