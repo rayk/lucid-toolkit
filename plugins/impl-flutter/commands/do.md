@@ -79,7 +79,69 @@ The plan must have been created by flutter-impl-planner with ≥95% success prob
 <task_invocation>
 ## Invoking Tasks
 
-For each task, invoke the specified agent:
+### Agent-Specific Dispatch Rules
+
+**For flutter-coder:**
+The agent has non-negotiable behaviors that MUST be respected. Never provide:
+- Complete implementations as context
+- Bash verification commands (agent uses mcp__dart__ tools)
+- Suggestions to skip TDD or analyzer checks
+
+**For flutter-e2e-tester, flutter-verifier:**
+Integration/E2E context is appropriate. Reference test targets, not implementations.
+
+**For flutter-ux-widget, flutter-gen-ui:**
+Design context is appropriate. Reference design specs and component patterns.
+
+### flutter-coder Task Template
+
+```
+Task(impl-flutter:flutter-coder, model: {model}):
+"Implement: {task-name}
+
+Objective: {taskDetails.description}
+
+**Required Inputs:**
+- projectRoot: {project-root-path}
+- targetPaths: {List taskOutputs directories}
+- architectureRef: {path-to-adr-folder-or-architecture-doc}
+
+Scope (read ONLY these paths for patterns):
+{List taskInputs paths - DO NOT include file contents}
+
+Expected Outputs:
+{List taskOutputs with paths}
+
+Acceptance Criteria:
+{taskDetails.acceptance}
+
+Codegen Required: {yes/no - if Freezed/Riverpod used}
+
+**CRITICAL: Follow your non-negotiable behaviors:**
+1. TDD required — Write tests BEFORE implementation
+2. Use mcp__dart__run_tests — NOT Bash flutter test
+3. Use mcp__dart__analyze_files — Must achieve 0 errors, 0 warnings, 0 info
+4. If codegen needed — build_runner MUST run before final test
+5. Complete or FAIL — No 'pending verification'
+6. Do NOT delegate to flutter-coder — You ARE flutter-coder
+7. Read architectureRef FIRST for patterns and constraints
+
+Token Budget: {task.tokens} tokens
+
+When complete, return:
+- status: Completed | Failed
+- filesCreated: [paths]
+- testsPassed: true | false
+- analyzerClean: true | false (0/0/0)
+- error: {if failed, specific reason}"
+```
+
+**Note:** If `architectureRef` is not available in the plan, the orchestrator should:
+1. Check for `docs/adr/`, `docs/architecture/`, or `ARCHITECTURE.md` in project root
+2. Check for `constraints.md` or `CONSTRAINTS.md`
+3. If none found, include a warning in the task that architecture patterns cannot be verified
+
+### Other Agent Task Template
 
 ```
 Task(impl-flutter:{agent}, model: {model}):

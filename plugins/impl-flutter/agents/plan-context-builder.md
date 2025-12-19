@@ -25,6 +25,8 @@ For each task in the provided list:
 </task>
 
 <context_file_format>
+## Standard Context File Format
+
 ```markdown
 # Context for {task-name}
 
@@ -55,6 +57,66 @@ For each task in the provided list:
 ## Outputs
 {files this task should create}
 ```
+
+## flutter-coder Context File Format
+
+For tasks assigned to flutter-coder, use this TDD-compatible format:
+
+```markdown
+# Context for {task-name}
+
+## Required Inputs
+- **projectRoot:** {absolute-path-to-project}
+- **targetPaths:** {directories where files will be created}
+- **architectureRef:** {path-to-adr-folder-or-architecture-doc}
+
+## Source Documents
+- **Specification:** {spec-file-path}
+- **Constraints:** {constraints-file-path}
+
+## Task
+{what this task must accomplish — WHAT, not HOW}
+
+## Specifications
+{requirements from spec — behavior, not implementation}
+
+## Constraints
+{architectural rules that apply}
+
+## Scope (Read These for Patterns)
+> Read these files to understand existing patterns:
+- `{path-1}` — {brief note: e.g., "Repository interface pattern"}
+- `{path-2}` — {brief note: e.g., "Entity structure with Freezed"}
+- `{test-path}` — {brief note: e.g., "Test structure for entities"}
+
+Stack notes: {e.g., "Uses Freezed for entities, fpdart Either for errors"}
+
+## Acceptance Criteria
+- {testable criterion 1}
+- {testable criterion 2}
+- All tests pass
+- Analyzer clean (0 errors, 0 warnings, 0 info)
+
+## Expected Outputs
+- `{output-path-1}` — {file type}
+- `{test-output-path}` — {test file}
+
+## Codegen Required
+{yes/no — if yes, build_runner must run before final tests}
+```
+
+**Key differences:**
+- Required Inputs section with projectRoot, targetPaths, architectureRef
+- No code blocks or implementation examples
+- "Scope" section with paths only (agent reads files itself)
+- Explicit "Codegen Required" field
+- Acceptance criteria includes TDD verification requirements
+
+**Finding architectureRef:**
+1. Check `docs/adr/` for Architecture Decision Records
+2. Check `docs/architecture/` or `ARCHITECTURE.md`
+3. Check `constraints.md` or project-level CLAUDE.md
+4. If none found, note in context that architecture patterns cannot be verified
 </context_file_format>
 
 <source_linking>
@@ -75,12 +137,42 @@ For each task in the provided list:
 **The subagent decides** whether to read source documents—the context file should be sufficient for most tasks, but the escape hatch exists.
 </source_linking>
 
+<agent_specific_rules>
+## Agent-Specific Context Rules
+
+**For flutter-coder tasks:**
+- DO NOT include full code implementations as patterns
+- Include ONLY: file paths, class/method signatures, architectural notes
+- The agent must discover patterns by reading files itself (scoped exploration)
+- Reason: flutter-coder uses TDD; providing implementations defeats the purpose
+
+Example for flutter-coder:
+```markdown
+## Patterns to Follow
+> Read these files to understand existing patterns:
+- `lib/src/auth/domain/auth_repository.dart` — Repository interface pattern
+- `lib/src/auth/domain/user_entity.dart` — Entity structure with Freezed
+- `test/src/auth/domain/user_entity_test.dart` — Test structure for entities
+
+Note: Uses Freezed for entities, fpdart Either for errors.
+```
+
+**For other agents (flutter-ux-widget, flutter-gen-ui, etc.):**
+- Include relevant design patterns and component structures
+- Code examples are appropriate for UI/visual work
+
+**For flutter-e2e-tester, flutter-verifier:**
+- Include test target descriptions and expected behaviors
+- Reference implementation files but don't include full code
+</agent_specific_rules>
+
 <sizing>
 Each context file should be:
 - Focused on ONE task
 - 200-400 lines max
 - No redundant information
 - Self-contained (agent doesn't need to search)
+- For flutter-coder: PATHS only, no code blocks
 </sizing>
 
 <output>

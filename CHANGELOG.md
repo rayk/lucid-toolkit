@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.23.0] - 2025-12-19
+
+### Changed
+- **impl-flutter plugin** (v2.12.0 → v2.13.0) - Agent autonomy and TDD enforcement improvements
+  - **flutter-coder agent**: Added architecture reference requirement in pre-flight check
+  - **flutter-coder agent**: Added capabilities query response in TOON format (schema.org)
+  - **flutter-coder agent**: Added dry run mode for deep verification before execution
+  - **flutter-coder agent**: Added "no handoffs after acceptance" rule - once accepted, agent owns completion
+  - **flutter-ux-widget agent**: Complete rewrite to align with flutter-coder behavior patterns
+  - **flutter-ux-widget agent**: Added 10 non-negotiable behaviors including theme-aware and accessible
+  - **flutter-ux-widget agent**: Added design spec requirement in pre-flight check
+  - **flutter-ux-widget agent**: Clarified visual specialization preference (complex animations, custom paint)
+  - **flutter-ux-widget agent**: Renamed `<handoffs>` → `<rejection_guidance>` (pre-flight only, not mid-task)
+  - **plan-context-builder agent**: Added flutter-coder specific context format (paths only, no code blocks)
+  - **plan-context-builder agent**: Added architectureRef discovery guidance
+  - **do command**: Added flutter-coder task template with required inputs (projectRoot, targetPaths, architectureRef)
+  - **do command**: Added codegen field and architecture reference requirement
+  - Both coding agents now: REJECT at pre-flight OR complete/fail (no mid-task handoffs)
+- Marketplace version bumped to 2.23.0
+
 ## [2.22.0] - 2025-12-19
 
 ### Changed
