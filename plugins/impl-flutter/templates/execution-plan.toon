@@ -1,0 +1,77 @@
+# @docs execution-plan.md (read only if field details needed)
+
+@type: ItemList
+@id: execution-plan-{spec-id}
+name: Execution Plan
+description: Implementation tasks derived from {spec-name}
+dateCreated: {iso-datetime}
+executionLog: {path-to-execution-log}
+status: Draft
+
+source:
+  @type: TechArticle
+  @id: {spec-id}
+  name: {spec-name}
+  url: {spec-path}
+  version: {spec-version}
+
+metadata:
+  @type: Thing
+  @id: {spec-id}-meta
+  totalPhases: {P}
+  totalTasks: {N}
+  estimatedTokens: {total-tokens}
+  successProbability: {0.0-1.0}
+  estimatedModels:
+    haiku: {haiku-count}
+    sonnet: {sonnet-count}
+    opus: {opus-count}
+
+commitMessage: |
+  {type}({scope}): {description}
+
+  - {phase-1-commitSubject}
+  - {phase-2-commitSubject}
+  - {phase-N-commitSubject}
+
+  Refs: {spec-id}
+
+phases[{P}]: {phase-id-1},{phase-id-2},...,{phase-id-P}
+
+{phase-id}:
+  @type: Phase
+  @id: {phase-id}
+  name: {phase-name}
+  description: {phase-description}
+  order: {1..P}
+  category: {category}
+  commitSubject: {single-line-summary}
+  estimatedTokens: {tokens}
+  varianceBudget: {percent}
+
+  tasks[{N},]{@type,@id,name,type,complexity,model,agent,tokens,variance,parallelGroup,status}:
+    Action,{task-id},{task-name},{type},{complexity},{model},{agent},{tokens},{%},{group},PotentialActionStatus
+
+  taskDetails[{N},]{taskId,description,acceptance}:
+    {task-id},{description},{acceptance-criteria}
+
+  taskInputs[{I},]{taskId,source,ref}:
+    {task-id},{source},{ref}
+
+  taskOutputs[{O},]{taskId,path,type}:
+    {task-id},{path},{type}
+
+  taskReturns[{R},]{taskId,key,valueType,description}:
+    {task-id},{key},{valueType},{description}
+
+  checkpoint:
+    @type: Checkpoint
+    validation: {validation-criteria}
+    rollbackTo: {previous-phase-id}
+    onPass: {action}
+    onFail: {action}
+
+dependencies[{D},]{taskId,dependsOn,reason}:
+  {task-id},{dependency-task-id},{reason}
+
+executionOrder[{N}]: {task-id-1},{task-id-2},...,{task-id-N}

@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.0] - 2025-12-19
+
+### Added
+- **impl-flutter plugin** (v2.10.0 → v2.11.0) - Execution planning system
+  - New `flutter-impl-planner` agent for creating verified execution plans
+    - Accepts technical specs + architectural constraints as inputs
+    - Dynamic agent capability discovery via parallel Task queries
+    - Aggressive context conservation (delegates all analysis to subagents)
+    - Coverage validation: 100% spec coverage required before probability assessment
+    - Mental simulation (5 rounds max) with risk identification
+    - Produces execution-plan.toon with ≥95% success probability
+    - Subagent context isolation model: taskReturns ≤500 tokens each
+  - New `/plan` command - Invoke flutter-impl-planner with spec and constraint paths
+  - New `/do` command - Execute execution-plan.toon files
+    - Runs tasks phase-by-phase with parallel group support
+    - Clean emoji-based progress reporting (no tree characters)
+    - Orchestrator context protection via minimal taskReturns
+    - Checkpoint validation between phases
+  - Plugin now has 13 specialized agents
+
+### Changed
+- **exe plugin** (v1.4.0 → v1.4.1) - execution-planner agent improvements
+- Marketplace version bumped to 2.21.0
+
 ## [2.20.0] - 2025-12-18
 
 ### Added

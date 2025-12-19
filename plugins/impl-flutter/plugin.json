@@ -1,16 +1,19 @@
 {
   "name": "impl-flutter",
-  "description": "Flutter implementation specialist plugin with 12 specialized agents for code generation, generative UI, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
-  "version": "2.9.0",
+  "description": "Flutter implementation specialist plugin with 13 specialized agents for planning, code generation, generative UI, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
+  "version": "2.11.0",
   "author": {
     "name": "rayk"
   },
   "commands": [
+    "./commands/plan.md",
+    "./commands/do.md",
     "./commands/run.md",
     "./commands/interact/start.md",
     "./commands/interact/stop.md"
   ],
   "agents": [
+    "./agents/flutter-impl-planner.md",
     "./agents/flutter-coder.md",
     "./agents/flutter-e2e-tester.md",
     "./agents/flutter-debugger.md",
