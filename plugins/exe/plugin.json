@@ -1,6 +1,6 @@
 {
   "name": "exe",
-  "description": "Execution plugin",
+  "description": "Execution planning and running. Generates validated execution plans from tech specs, executes them phase-by-phase with parallel task groups, and tracks progress in execution logs.",
   "version": "1.4.2",
   "author": {
     "name": "rayk"
