@@ -1,7 +1,7 @@
 {
   "name": "impl-flutter",
   "description": "Flutter implementation specialist plugin with 26 specialized agents for planning (orchestrator + 7 planning subagents), execution (6 do-* helper agents), code generation, generative UI, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
-  "version": "2.15.4",
+  "version": "2.15.5",
   "author": {
     "name": "rayk"
   },

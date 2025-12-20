@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.30.0] - 2025-12-20
+
+### Fixed
+- **impl-flutter plugin** (v2.15.4 → v2.15.5) - Complete fix for memory exhaustion in /plan command
+  - **Root cause:** Nested orchestrator pattern with parallel Task spawning exhausted 16GB heap
+  - **Solution:** Eliminated orchestrator layer; /plan command now orchestrates directly
+  - **plan.md command:** Rewrote as direct orchestrator with sequential Task execution
+    - Runs subagents ONE AT A TIME (no parallelism)
+    - Each Task completes before next starts (memory released between calls)
+    - Peak memory reduced from 4x to 1x (~2-4GB vs 16GB+)
+  - **flutter-plan-orchestrator agent:** Deprecated with explicit error message
+    - Removed all tools (`tools: []`)
+    - Returns deprecation error if invoked
+    - Agent file kept for reference but is non-functional
+  - Previous fix (v2.15.4) was insufficient - only removed Task from one subagent
+- Marketplace version bumped to 2.30.0
+
 ## [2.29.0] - 2025-12-20
 
 ### Fixed

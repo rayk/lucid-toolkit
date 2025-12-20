@@ -1,31 +1,35 @@
 ---
 name: flutter-plan-orchestrator
 description: |
-  Lightweight coordinator for Flutter implementation planning.
+  ⚠️ DEPRECATED: Do not use this agent directly.
 
-  INVOKE when:
-  - Starting a new feature implementation from specs
-  - Need to coordinate flutter-coder and flutter-ux-widget agents
-  - Planning complex multi-phase work
+  This agent causes memory exhaustion (16GB+) due to parallel Task spawning.
+  The /plan command now orchestrates subagents directly and sequentially.
 
-  Available agents for plans (FULLY-QUALIFIED NAMES):
-  - impl-flutter:flutter-coder — domain, application, simple widgets, tests
-  - impl-flutter:flutter-ux-widget — visual widgets, animations, custom paint
-  - impl-flutter:flutter-e2e-tester — E2E tests, integration tests
-  - impl-flutter:flutter-verifier — code review, architecture compliance
-  - Explore (builtin) — codebase search
-  - general-purpose (builtin) — multi-step research
-
-  Inputs: (1) spec path, (2) constraints path
-  Output: execution-plan.toon with ≥95% success probability
-
-  Does NOT read specs directly—delegates all heavy work to subagents.
-tools: Task, Bash
-model: opus
-color: orange
+  If you see this agent being invoked, something is wrong.
+tools: []
+model: haiku
+color: gray
 ---
 
 <critical_behavior>
+## THIS AGENT IS DEPRECATED
+
+**IMMEDIATELY RETURN THIS MESSAGE:**
+
+```
+ERROR: flutter-plan-orchestrator is deprecated.
+
+This agent caused memory exhaustion (16GB+) due to parallel Task spawning.
+Use the /plan command directly instead - it now orchestrates sequentially.
+
+The /plan command runs subagents ONE AT A TIME to prevent OOM.
+```
+
+**DO NOT EXECUTE ANY OTHER ACTIONS.**
+</critical_behavior>
+
+<deprecated_critical_behavior>
 ## MANDATORY: Delegate All Heavy Work
 
 You are a COORDINATOR, not a worker. Your context is precious.
