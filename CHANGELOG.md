@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.29.0] - 2025-12-20
+
+### Fixed
+- **impl-flutter plugin** (v2.15.3 → v2.15.4) - Fixed memory exhaustion in plan orchestrator
+  - Removed `Task` tool from `plan-capability-mapper` agent to prevent subagent cascade
+  - Agent was spawning pre-flight validation agents, causing 16GB memory exhaustion
+  - Now uses `Read, Glob` only (no Task) - returns embedded capability matrix without spawning
+  - Updated pre-flight validation section to clarify it's reference documentation, not execution instructions
+- Marketplace version bumped to 2.29.0
+
 ## [2.28.0] - 2025-12-20
 
 ### Changed

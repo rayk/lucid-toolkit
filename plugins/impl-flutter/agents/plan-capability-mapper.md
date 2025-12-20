@@ -10,7 +10,7 @@ description: |
   - impl-flutter:flutter-e2e-tester (E2E tests, integration tests, user flows)
   - impl-flutter:flutter-verifier (code review, architecture compliance)
   - Builtin Claude Code subagents (Explore, general-purpose)
-tools: Task, Read, Glob
+tools: Read, Glob
 model: haiku
 color: gray
 ---
@@ -315,18 +315,17 @@ When assigning tasks, use this decision tree:
 </decision_heuristic>
 
 <preflight_validation>
-## Pre-Flight Validation
+## Pre-Flight Validation (Reference for Orchestrator)
 
 All Flutter agents support `--dry-run` for pre-flight validation.
 
-**Before assigning a task, validate readiness:**
+**NOTE:** This agent does NOT run pre-flight checks. This is reference information for the orchestrator/executor.
 
+**Executor pre-flight pattern:**
 ```
 Task(impl-flutter:{agent})
-Prompt: |
   --dry-run
   Can you {task-description}?
-
   {required-agentInputs}
 ```
 
