@@ -7,7 +7,7 @@ description: |
   Writes validated plan in TOON format with schema.org types.
 tools: Write, Read
 model: sonnet
-color: green
+color: purple
 ---
 
 <role>

@@ -3,6 +3,7 @@ name: think-validator
 description: Adversarial validation specialist who stress-tests synthesized conclusions for blind spots and edge cases.
 tools: Read, WebSearch
 model: opus
+color: green
 ---
 
 <role>

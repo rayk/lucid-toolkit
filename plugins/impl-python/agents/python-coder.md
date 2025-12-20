@@ -5,6 +5,7 @@ tools:
   - mcp__ide__*
   - Bash
 model: sonnet
+color: blue
 ---
 
 # Python Code Generation Specialist

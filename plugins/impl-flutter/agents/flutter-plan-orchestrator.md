@@ -9,7 +9,6 @@ description: |
   If you see this agent being invoked, something is wrong.
 tools: []
 model: haiku
-color: gray
 ---
 
 <critical_behavior>

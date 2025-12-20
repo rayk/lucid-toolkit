@@ -9,6 +9,7 @@ tools:
   - Grep
   - Glob
 model: sonnet
+color: orange
 ---
 
 # Python Platform Integration Specialist

@@ -7,7 +7,7 @@ description: |
   Writes focused context files that give agents what they need.
 tools: Write, Read
 model: haiku
-color: gray
+color: purple
 ---
 
 <role>

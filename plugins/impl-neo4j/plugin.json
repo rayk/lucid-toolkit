@@ -1,7 +1,7 @@
 {
   "name": "impl-neo4j",
   "description": "Neo4j graph database specialist plugin with 6 specialized agents for graph modeling, Cypher queries, data import/export, performance tuning, driver integration, and environment management",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": {
     "name": "rayk"
   },

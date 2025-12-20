@@ -9,6 +9,7 @@ tools:
   - Grep
   - Glob
 model: sonnet
+color: blue
 ---
 
 # Neo4j Driver Specialist

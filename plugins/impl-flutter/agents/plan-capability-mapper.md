@@ -12,7 +12,7 @@ description: |
   - Builtin Claude Code subagents (Explore, general-purpose)
 tools: Read, Glob
 model: haiku
-color: gray
+color: purple
 ---
 
 <role>

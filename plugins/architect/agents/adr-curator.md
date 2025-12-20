@@ -17,6 +17,7 @@ description: |
   Audit script: hooks/adr-audit.py (mechanical validation)
 tools: Read, Bash, Edit, AskUserQuestion
 model: sonnet
+color: yellow
 ---
 
 <role>

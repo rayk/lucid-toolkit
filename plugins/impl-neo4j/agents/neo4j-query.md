@@ -12,6 +12,7 @@ tools:
   - mcp__neo4j-cypher__write_neo4j_cypher
   - mcp__neo4j-cypher__get_neo4j_schema
 model: sonnet
+color: blue
 ---
 
 # Neo4j Query Specialist

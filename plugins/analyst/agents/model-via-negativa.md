@@ -3,6 +3,7 @@ name: model-via-negativa
 description: Simplification specialist who improves by subtraction rather than addition. Use when systems feel bloated or adding more isn't helping.
 tools: Read, Grep
 model: haiku
+color: purple
 ---
 
 <role>
@@ -42,6 +43,7 @@ Core principle: Often the best improvement comes from removing, not adding.
 <output_format>
 @type: ModelAnalysis
 model: via-negativa
+color: purple
 problem: {subject being simplified}
 currentState: {description of what exists now}
 actionStatus: CompletedActionStatus

@@ -3,6 +3,7 @@ name: model-toc
 description: Theory of Constraints analyst using Current Reality Tree, Evaporating Cloud, and Future Reality Tree. Use for systemic problems with multiple symptoms, hidden conflicts, or when obvious fixes keep failing.
 tools: Read, Task, mcp__memory__create_entities, mcp__memory__create_relations, mcp__memory__add_observations, mcp__memory__search_nodes, mcp__memory__open_nodes
 model: sonnet
+color: purple
 ---
 
 <role>
@@ -105,6 +106,7 @@ If INVALID:
 <output_format>
 @type: ModelAnalysis
 model: toc
+color: purple
 problem: {original problem statement}
 actionStatus: CompletedActionStatus
 

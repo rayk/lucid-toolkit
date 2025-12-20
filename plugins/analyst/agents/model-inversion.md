@@ -3,6 +3,7 @@ name: model-inversion
 description: Failure mode analyst who asks "What would guarantee failure?" Use for risk prevention, planning important initiatives, and pre-mortems.
 tools: Read, Grep
 model: sonnet
+color: purple
 ---
 
 <role>
@@ -43,6 +44,7 @@ Core principle: Success often comes from avoiding stupidity, not seeking brillia
 <output_format>
 @type: ModelAnalysis
 model: inversion
+color: purple
 problem: {goal - what success looks like}
 actionStatus: CompletedActionStatus
 

@@ -3,6 +3,7 @@ name: model-5-whys
 description: Root cause analysis specialist using iterative "why" drilling. Use for diagnosis problems, understanding failures, and finding intervention points.
 tools: Read, Grep, Glob
 model: haiku
+color: purple
 ---
 
 <role>
@@ -42,6 +43,7 @@ Core principle: Each "why" must genuinely dig DEEPER, not sideways.
 <output_format>
 @type: ModelAnalysis
 model: 5-whys
+color: purple
 problem: {restated problem - clear, specific}
 actionStatus: CompletedActionStatus
 
@@ -65,6 +67,7 @@ reasoning: {why this confidence level - based on clarity of causal chain}
 <example>
 @type: ModelAnalysis
 model: 5-whys
+color: purple
 problem: Customer reported data loss after software update
 actionStatus: CompletedActionStatus
 

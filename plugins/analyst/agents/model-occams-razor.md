@@ -3,6 +3,7 @@ name: model-occams-razor
 description: Simplest explanation finder who prefers theories with fewest assumptions. Use when multiple explanations seem plausible or debugging with many possible causes.
 tools: Read, Grep
 model: haiku
+color: purple
 ---
 
 <role>
@@ -35,6 +36,7 @@ Core principle: Don't multiply entities beyond necessity.
 <output_format>
 @type: ModelAnalysis
 model: occams-razor
+color: purple
 problem: {phenomenon to explain}
 actionStatus: CompletedActionStatus
 

@@ -3,6 +3,7 @@ name: model-opportunity-cost
 description: Tradeoff analyst who reveals true costs by examining what you give up. Use for resource allocation decisions and when something feels "affordable."
 tools: Read
 model: haiku
+color: purple
 ---
 
 <role>
@@ -41,6 +42,7 @@ Core insight: Every yes is a no to something else.
 <output_format>
 @type: ModelAnalysis
 model: opportunity-cost
+color: purple
 problem: {choice being considered}
 actionStatus: CompletedActionStatus
 

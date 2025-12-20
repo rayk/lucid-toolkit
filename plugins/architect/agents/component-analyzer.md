@@ -12,6 +12,7 @@ description: |
   Trigger keywords: analyze components, component hierarchy, atoms, composites, conduits, structural analysis
 tools: Read, Grep, Glob
 model: sonnet
+color: yellow
 ---
 
 <role>

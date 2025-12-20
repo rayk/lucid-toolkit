@@ -3,6 +3,7 @@ name: model-second-order
 description: Consequence chain analyst who thinks through effects of effects. Use for decisions with long-term implications or complex system interventions.
 tools: Read, Grep, Glob
 model: sonnet
+color: purple
 ---
 
 <role>
@@ -41,6 +42,7 @@ Core question: "And then what happens?"
 <output_format>
 @type: ModelAnalysis
 model: second-order
+color: purple
 problem: {action being considered}
 context: {relevant background}
 actionStatus: CompletedActionStatus

@@ -19,7 +19,7 @@ description: |
   Trigger keywords: verify, review code, check implementation, validate changes, architecture review
 tools: MCPSearch, mcp__dart__*, mcp__jetbrains__*, Read, Grep, Glob
 model: opus
-color: purple
+color: green
 ---
 
 <role>

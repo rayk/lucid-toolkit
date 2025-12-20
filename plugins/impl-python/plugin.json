@@ -1,7 +1,7 @@
 {
   "name": "impl-python",
   "description": "Python implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, API development, releases, and environment management",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": {
     "name": "rayk"
   },

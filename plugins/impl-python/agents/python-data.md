@@ -9,6 +9,7 @@ tools:
   - Grep
   - Glob
 model: sonnet
+color: cyan
 ---
 
 # Python Data Persistence Specialist

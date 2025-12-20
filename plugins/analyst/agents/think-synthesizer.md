@@ -3,6 +3,7 @@ name: think-synthesizer
 description: Result synthesis and voting specialist who merges parallel agent outputs into unified insight with consensus scoring. Optionally stores insights to MCP memory.
 tools: Read, mcp__memory__create_entities, mcp__memory__create_relations, mcp__memory__add_observations, mcp__memory__search_nodes
 model: sonnet
+color: purple
 ---
 
 <role>

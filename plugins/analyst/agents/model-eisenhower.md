@@ -3,6 +3,7 @@ name: model-eisenhower
 description: Urgency/importance prioritizer using the four-quadrant matrix. Use when overwhelmed, everything feels urgent, or reactive mode is taking over.
 tools: Read
 model: haiku
+color: purple
 ---
 
 <role>
@@ -42,6 +43,7 @@ Core insight: Urgent rarely equals important. Protect Q2 time.
 <output_format>
 @type: ModelAnalysis
 model: eisenhower
+color: purple
 problem: {what being prioritized}
 actionStatus: CompletedActionStatus
 

@@ -7,7 +7,7 @@ description: |
   Returns compressed summary, NOT raw file contents.
 tools: Read, Glob, Grep
 model: haiku
-color: gray
+color: purple
 ---
 
 <role>

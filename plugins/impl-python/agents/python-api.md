@@ -9,6 +9,7 @@ tools:
   - Grep
   - Glob
 model: sonnet
+color: magenta
 ---
 
 # Python API Development Specialist

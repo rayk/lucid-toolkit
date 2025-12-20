@@ -15,6 +15,7 @@ description: |
   Related command: /architect:adr (orchestrates full ADR workflow)
 tools: Read, Glob
 model: sonnet
+color: yellow
 ---
 
 <role>

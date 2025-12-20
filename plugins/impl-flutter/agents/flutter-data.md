@@ -14,7 +14,7 @@ description: |
   Trigger keywords: database, Isar, Firebase, Firestore, offline, sync, secure storage, cache
 tools: MCPSearch, mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
-color: teal
+color: cyan
 ---
 
 <role>

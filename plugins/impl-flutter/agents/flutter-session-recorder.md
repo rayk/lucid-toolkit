@@ -13,7 +13,7 @@ description: |
   Trigger keywords: record issue, diagnose, analyze issue, session report, defect, enhancement
 tools: MCPSearch, mcp__dart__*, mcp__ide__*, Read, Grep, Glob
 model: opus
-color: orange
+color: magenta
 ---
 
 <role>

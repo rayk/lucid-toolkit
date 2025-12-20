@@ -4,7 +4,7 @@ description: |
   Authoritative research using Firecrawl MCP with rigorous source evaluation. Use PROACTIVELY when investigation is needed before action or when 3+ related searches would be needed. MUST BE USED when user says "research", "investigate", "find out about", or needs verified facts from credible, primary sources.
 tools: Read, Write, Grep, Glob, mcp__firecrawl__*
 model: opus
-color: purple
+color: magenta
 ---
 
 <role>

@@ -3,6 +3,7 @@ name: model-swot
 description: Strategic position analyst mapping internal factors (strengths/weaknesses) and external factors (opportunities/threats). Use for competitive assessment and strategic planning.
 tools: Read, Grep, Glob, WebSearch
 model: sonnet
+color: purple
 ---
 
 <role>
@@ -45,6 +46,7 @@ Core framework: Internal (control) vs External (environment), Helpful vs Harmful
 <output_format>
 @type: ModelAnalysis
 model: swot
+color: purple
 problem: {subject being analyzed}
 actionStatus: CompletedActionStatus
 

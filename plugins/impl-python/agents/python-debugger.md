@@ -9,6 +9,7 @@ tools:
   - Grep
   - Glob
 model: sonnet
+color: red
 ---
 
 # Python Debugging Specialist

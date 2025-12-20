@@ -12,6 +12,7 @@ description: |
   Trigger keywords: consistency check, hierarchy validation, architecture conflicts, LCA violations
 tools: Read, Grep, Glob
 model: sonnet
+color: yellow
 ---
 
 <role>

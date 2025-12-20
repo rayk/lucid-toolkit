@@ -3,6 +3,7 @@ name: think-orchestrator
 description: Model selection and coordination specialist who selects mental models and plans their parallel or sequential execution.
 tools: Task
 model: sonnet
+color: purple
 ---
 
 <role>

@@ -7,7 +7,7 @@ description: |
   Returns coverage matrix and pass/fail status.
 tools: Read
 model: sonnet
-color: yellow
+color: purple
 ---
 
 <role>

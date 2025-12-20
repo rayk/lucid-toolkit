@@ -3,6 +3,7 @@ name: think-classifier
 description: Problem classification specialist who identifies problem type and characteristics for model selection. Use at start of /think:consider.
 tools: Read
 model: haiku
+color: purple
 ---
 
 <role>

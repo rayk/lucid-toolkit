@@ -16,7 +16,7 @@ description: |
   Trigger keywords: release, app store, Play Store, TestFlight, pub.dev, Crashlytics, version, Fastlane
 tools: MCPSearch, mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
-color: cyan
+color: orange
 ---
 
 <role>

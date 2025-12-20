@@ -11,6 +11,7 @@ tools:
   - mcp__neo4j__execute_query
   - mcp__neo4j__get_schema
 model: sonnet
+color: cyan
 ---
 
 # Neo4j Performance Specialist

@@ -13,7 +13,7 @@ description: |
   Trigger keywords: session, app lifecycle, start app, stop app, restart app, DTD connection, VM service
 tools: MCPSearch, mcp__dart__*, Bash, Read, Write, KillShell, TaskOutput
 model: sonnet
-color: cyan
+color: magenta
 ---
 
 <role>

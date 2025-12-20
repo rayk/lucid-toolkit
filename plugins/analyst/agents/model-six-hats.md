@@ -3,6 +3,7 @@ name: model-six-hats
 description: Parallel thinking facilitator using De Bono's Six Thinking Hats. Use for group decisions, exploring ideas from multiple angles, or when emotions and logic need separation.
 tools: Read
 model: sonnet
+color: purple
 ---
 
 <role>
@@ -74,6 +75,7 @@ Blue → White → Red → Yellow → Black → Green → Blue
 <output_format>
 @type: ModelAnalysis
 model: six-hats
+color: purple
 problem: {decision or problem being analyzed}
 actionStatus: CompletedActionStatus
 
@@ -114,6 +116,7 @@ reasoning: {based on completeness of hat coverage and quality of alternatives}
 <example>
 @type: ModelAnalysis
 model: six-hats
+color: purple
 problem: Should our team adopt a 4-day work week?
 actionStatus: CompletedActionStatus
 

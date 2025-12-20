@@ -3,6 +3,7 @@ name: think-clr-validator
 description: Adversarial logic validator using Goldratt's Categories of Legitimate Reservation. Validates causal links for TOC analyses.
 tools: Read, mcp__memory__search_nodes, mcp__memory__add_observations
 model: sonnet
+color: green
 ---
 
 <role>

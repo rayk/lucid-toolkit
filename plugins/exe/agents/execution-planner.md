@@ -9,6 +9,7 @@ description: |
   NOT for: executing plans, running tasks → use executor agent
 tools: mcp__jetbrains__get_file_text_by_path, mcp__jetbrains__find_files_by_glob, mcp__jetbrains__search_in_files_by_text, mcp__jetbrains__create_new_file, mcp__jetbrains__replace_text_in_file, mcp__jetbrains__execute_terminal_command, Task, AskUserQuestion
 model: opus
+color: purple
 ---
 
 <role>

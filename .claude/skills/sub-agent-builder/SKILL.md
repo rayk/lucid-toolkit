@@ -29,6 +29,7 @@ name: code-reviewer
 description: Expert code reviewer. Use proactively after code changes to review for quality, security, and best practices.
 tools: Read, Grep, Glob, Bash
 model: sonnet
+color: green
 ---
 
 <role>
@@ -82,6 +83,31 @@ Project-level subagents override user-level when names conflict.
 - `inherit`: uses same model as main conversation
 - If omitted: defaults to configured subagent model (usually sonnet)
 </field>
+
+<field name="color">
+- Visual distinction in terminal output
+- Supported colors: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `cyan`, `magenta`
+- Assign based on agent category (see color classification below)
+- If omitted: no colored badge displayed
+</field>
+
+<color_classification>
+Use consistent colors based on agent function:
+
+| Category | Color | Use For |
+|----------|-------|---------|
+| Code Generation | `blue` | Agents that write/generate code (coder, writer, generator) |
+| Testing & Verification | `green` | Agents that test or verify (tester, verifier, validator) |
+| Debugging | `red` | Agents that diagnose/fix problems (debugger, fix) |
+| Planning & Analysis | `purple` | Agents that plan/analyze (planner, analyzer, orchestrator, model-*) |
+| Infrastructure & Ops | `orange` | Agents for env, platform, release (env, platform, release) |
+| Data & Persistence | `cyan` | Agents for data layer (data, query, persist) |
+| Research & Interactive | `magenta` | Agents for research, sessions (research, session, api) |
+| Architecture & Docs | `yellow` | Agents for architecture (architect, adr, component) |
+| Helper & Utility | (none) | Background support agents (do-*, helper) |
+
+**Full documentation**: See `docs/agent-colors.md` for complete classification guide.
+</color_classification>
 </configuration>
 
 <execution_model>

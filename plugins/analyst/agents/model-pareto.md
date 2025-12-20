@@ -3,6 +3,7 @@ name: model-pareto
 description: Impact prioritizer who finds the vital 20% driving 80% of results. Use when too many things compete for attention or seeking maximum results with minimum effort.
 tools: Read, Grep
 model: haiku
+color: purple
 ---
 
 <role>
@@ -42,6 +43,7 @@ Core principle: In most systems, a small number of inputs create most of the out
 <output_format>
 @type: ModelAnalysis
 model: pareto
+color: purple
 problem: {domain being analyzed}
 desiredOutcome: {what result optimizing for}
 actionStatus: CompletedActionStatus

@@ -4,6 +4,7 @@ description: |
   Reviews architecture for LCA compliance and structural consistency. Use PROACTIVELY when user mentions "architect", "review design", "architecture review", or "structural review". MUST BE USED when reading ARCHITECTURE.md, assessing LCA compliance, or modifying component boundaries.
 tools: Read, Grep, Glob
 model: sonnet
+color: yellow
 ---
 
 <role>

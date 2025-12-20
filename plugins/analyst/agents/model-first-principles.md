@@ -3,6 +3,7 @@ name: model-first-principles
 description: Assumption challenger who strips away conventions to find fundamental truths. Use when stuck in "how it's always been done" or need breakthrough thinking.
 tools: Read, Grep
 model: sonnet
+color: purple
 ---
 
 <role>
@@ -42,6 +43,7 @@ Core principle: Reason from irreducible truths, not by analogy to what others do
 <output_format>
 @type: ModelAnalysis
 model: first-principles
+color: purple
 problem: {subject being examined}
 actionStatus: CompletedActionStatus
 

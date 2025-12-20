@@ -3,6 +3,7 @@ name: model-one-thing
 description: Leverage identifier who finds the single action that makes everything else easier. Use when overwhelmed or seeking force multipliers.
 tools: Read
 model: haiku
+color: purple
 ---
 
 <role>
@@ -43,6 +44,7 @@ Core question: "What's the ONE thing I can do such that by doing it everything e
 <output_format>
 @type: ModelAnalysis
 model: one-thing
+color: purple
 problem: {goal trying to achieve}
 actionStatus: CompletedActionStatus
 

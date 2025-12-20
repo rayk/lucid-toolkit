@@ -18,7 +18,7 @@ description: |
   PREFERS: Tasks with significant visual complexity. Simple CRUD forms → flutter-coder.
 tools: MCPSearch, mcp__dart__*, mcp__jetbrains__*, Read, Write, Edit, Glob, Grep
 model: opus
-color: purple
+color: blue
 ---
 
 <role>

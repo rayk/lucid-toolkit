@@ -6,7 +6,7 @@
     "email": "rayk@lucid-toolkit.dev"
   },
   "metadata": {
-    "version": "2.30.0",
+    "version": "2.31.0",
     "description": "Development and analysis tools for Claude Code"
   },
   "plugins": [
@@ -14,7 +14,7 @@
       "name": "architect",
       "source": "./plugins/architect",
       "description": "Architecture design and documentation following Lucid Composite Architecture (LCA) principles. Manages structural hierarchy (Atoms, Composites, Conduits), ADRs, and maturity-aware documentation.",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "category": "architecture",
       "tags": ["architecture", "documentation", "lca", "adr", "design", "hierarchy"]
     },
@@ -22,7 +22,7 @@
       "name": "analyst",
       "source": "./plugins/analyst",
       "description": "Analysis, research, and structured thinking tools with 14 mental models, multi-agent problem solving, and rigorous fact-checking",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "category": "analysis",
       "tags": ["analysis", "research", "mental-models", "decision-making", "fact-checking"]
     },
@@ -30,7 +30,7 @@
       "name": "impl-flutter",
       "source": "./plugins/impl-flutter",
       "description": "Flutter implementation specialist plugin with 26 specialized agents for planning (orchestrator + 7 planning subagents), execution (6 do-* helper agents), code generation, generative UI, E2E testing, debugging, verification, data persistence, platform integration, UX, releases, environment management, and interactive session support",
-      "version": "2.15.5",
+      "version": "2.15.6",
       "category": "development",
       "tags": ["flutter", "dart", "mobile", "implementation", "tdd", "riverpod", "fpdart"]
     },
@@ -38,7 +38,7 @@
       "name": "impl-python",
       "source": "./plugins/impl-python",
       "description": "Python implementation specialist plugin with 8 specialized agents for code generation, testing, debugging, data persistence, platform integration, API development, releases, and environment management",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "category": "development",
       "tags": ["python", "fastapi", "pydantic", "implementation", "tdd", "sqlalchemy"]
     },
@@ -46,7 +46,7 @@
       "name": "impl-neo4j",
       "source": "./plugins/impl-neo4j",
       "description": "Neo4j graph database specialist plugin with 6 specialized agents for graph modeling, Cypher queries, data import/export, performance tuning, driver integration, and environment management",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "development",
       "tags": ["neo4j", "graph", "cypher", "database", "mcp", "apoc", "gds"]
     },
@@ -62,7 +62,7 @@
       "name": "exe",
       "source": "./plugins/exe",
       "description": "Execution planning and running. Generates validated execution plans from tech specs, executes them phase-by-phase with parallel task groups, and tracks progress in execution logs.",
-      "version": "1.4.1",
+      "version": "1.4.2",
       "category": "workflow",
       "tags": ["execution", "planning", "validation", "iteration", "automation"]
     }

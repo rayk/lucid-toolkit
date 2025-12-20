@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.31.0] - 2025-12-20
+
+### Added
+- **Agent color classification system** - Unified color scheme for all 69 agents across marketplace
+  - New `docs/agent-colors.md` documentation with complete classification guide
+  - 8 categories: Code Gen (blue), Testing (green), Debugging (red), Planning (purple), Infrastructure (orange), Data (cyan), Research (magenta), Architecture (yellow)
+  - Decision tree for consistent color assignment
+
+### Changed
+- **analyst plugin** (v2.0.0 → v2.0.1) - Added colors to all 20 agents
+  - 14 model-* agents → purple (planning/analysis)
+  - think-orchestrator, think-classifier, think-synthesizer → purple
+  - think-validator, think-clr-validator → green (verification)
+  - research → magenta (research)
+- **architect plugin** (v1.5.0 → v1.5.1) - Added colors to all 5 agents → yellow (architecture)
+- **exe plugin** (v1.4.1 → v1.4.2) - Added color to execution-planner → purple
+- **impl-flutter plugin** (v2.15.5 → v2.15.6) - Updated colors across 16 agents
+  - flutter-coder, flutter-gen-ui → blue (code generation)
+  - flutter-verifier, flutter-e2e-tester → green (testing)
+  - flutter-debugger → red (debugging)
+  - Planning agents → purple, env/release → orange, data → cyan
+  - Removed gray from do-* helper agents (no color = utility)
+- **impl-neo4j plugin** (v1.1.0 → v1.1.1) - Added colors to all 6 agents
+  - neo4j-modeler, neo4j-driver → blue, neo4j-env → orange, rest → cyan
+- **impl-python plugin** (v2.0.0 → v2.0.1) - Added colors to all 8 agents
+  - python-coder → blue, python-tester → green, python-debugger → red
+  - python-env/release/platform → orange, python-data → cyan, python-api → magenta
+- **sub-agent-builder skill** - Added color field documentation and classification reference
+- Marketplace version bumped to 2.31.0
+
 ## [2.30.0] - 2025-12-20
 
 ### Fixed

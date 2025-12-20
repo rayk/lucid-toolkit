@@ -5,7 +5,6 @@ description: |
   Helper agent for /do command orchestrator.
 tools: Bash, Read
 model: haiku
-color: gray
 ---
 
 <role>
