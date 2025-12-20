@@ -47,14 +47,53 @@ If output directory doesn't exist, create it:
 mkdir -p "$3"
 ```
 
+## Phase 0.5: Check Test Framework Dependencies
+
+Before capability mapping, verify test framework availability:
+
+```bash
+# Check for flutter_test in pubspec.yaml
+if grep -q "flutter_test:" "$1/pubspec.yaml" 2>/dev/null; then
+  echo "HAS_FLUTTER_TEST"
+else
+  echo "MISSING_FLUTTER_TEST"
+fi
+
+# Check for Flutter SDK
+if command -v flutter &> /dev/null; then
+  echo "HAS_FLUTTER_SDK"
+else
+  echo "MISSING_FLUTTER_SDK"
+fi
+```
+
+**Store results as `test_framework_status`.**
+
+If `MISSING_FLUTTER_TEST` and plan will include widget/integration tests:
+- Add setup task to Phase 0 of generated plan:
+  ```toon
+  task-0-1:
+    @type: Action
+    name: Add flutter_test dependency
+    agent: general-purpose
+    spec: |
+      Add to pubspec.yaml dev_dependencies:
+        flutter_test:
+          sdk: flutter
+      Then run: melos bootstrap (if monorepo) or flutter pub get
+  ```
+
+If `MISSING_FLUTTER_SDK` and plan will include any Flutter tasks:
+- **STOP** and report blocker: "Flutter SDK not available. Install Flutter before running this plan."
+
 ## Phase 1: Analyze Specifications (ONE Task)
 
 ```
 Task(impl-flutter:plan-spec-analyzer, model: haiku)
 Prompt: |
   Analyze specs at: $1
-  Return structured summary (features, entities, criteria, API, UI).
-  Max 500 tokens response.
+  Return structured summary (features, entities, criteria, API, UI, documentation requirements, LLM agent support).
+  Max 600 tokens response.
 ```
 
 **Wait for response. Store as `spec_summary`.**

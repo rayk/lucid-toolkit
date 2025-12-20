@@ -40,6 +40,40 @@ Walk through tasks in execution order:
 - What if parallel tasks conflict? Are outputs isolated?
 - What if specs are ambiguous? Will agent ask or guess?
 
+### 3b. Detect Import-Order Violations in Parallel Groups
+
+For each parallel group, verify:
+1. No task A imports files created by task B in same group
+2. No "hub file" that aggregates other files in same group
+3. No barrel/index file in same group as files it exports
+
+**Import Dependency Patterns:**
+```
+# INVALID - sem.dart imports scope classes, cannot be parallel
+P1: [sem.dart, app_scope.dart, net_scope.dart, data_scope.dart]
+
+# VALID - scope classes don't import each other
+P1: [app_scope.dart, net_scope.dart, data_scope.dart]
+P2: [sem.dart]  # waits for P1
+
+# INVALID - index.dart exports all widgets
+P1: [index.dart, button.dart, card.dart]
+
+# VALID - widgets don't depend on each other
+P1: [button.dart, card.dart]
+P2: [index.dart]  # barrel file waits
+```
+
+**Detection heuristics:**
+- File named `index.dart`, `barrel.dart`, or matches `*_all.dart` → likely aggregator
+- Contains `export` statements for other files in group → must wait for exports
+- Contains `part of` or `part` directives → sequentialize with library file
+- Task description mentions "entry point", "main", "aggregator" → check imports
+
+**Resolution:**
+- Move aggregator tasks to later parallel group
+- Or add explicit dependency in dependencies[] section
+
 ### 4. Apply Improvements
 - Add missing context to taskInputs
 - Split oversized tasks
@@ -64,8 +98,11 @@ After improvements, recalculate success probability.
 | No checkpoint after critical task | -5% per phase |
 | Large spec without consolidation | -10% |
 | **Missing agentInputs** | -15% per task |
+| **Missing contextFile** | -10% per task |
 | **Invalid agent name (not fully-qualified)** | -10% per task |
 | **Task assigned to unavailable agent** | -20% (unresolvable) |
+| **Import-order violation in parallel group** | -25% per instance |
+| **Aggregator file in parallel with dependencies** | -25% per instance |
 </risk_penalties>
 
 <probability_factors>
@@ -110,10 +147,10 @@ During simulation, verify tasks ONLY use these agents with FULLY-QUALIFIED names
 
 | Agent | Fully-Qualified Name | Valid Task Types | Required agentInputs | Model | Tokens |
 |-------|---------------------|-----------------|---------------------|-------|--------|
-| flutter-coder | `impl-flutter:flutter-coder` | domain, application, simple widget, unit/widget test | projectRoot, targetPaths, architectureRef, spec | sonnet | 15-25K |
-| flutter-ux-widget | `impl-flutter:flutter-ux-widget` | visual widget, animation, custom paint, a11y | projectRoot, targetPaths, architectureRef, designSpec, spec | opus | 25-40K |
-| flutter-e2e-tester | `impl-flutter:flutter-e2e-tester` | E2E test, integration test, user flow test, golden test | projectRoot, userFlowSpec, targetPaths | opus | 25-40K |
-| flutter-verifier | `impl-flutter:flutter-verifier` | code verification, architecture review, post-impl check | architectureRef, filePaths, projectRoot | opus | 25-40K |
+| flutter-coder | `impl-flutter:flutter-coder` | domain, application, simple widget, unit/widget test | projectRoot, targetPaths, architectureRef, contextFile, spec | sonnet | 15-25K |
+| flutter-ux-widget | `impl-flutter:flutter-ux-widget` | visual widget, animation, custom paint, a11y | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec | opus | 25-40K |
+| flutter-e2e-tester | `impl-flutter:flutter-e2e-tester` | E2E test, integration test, user flow test, golden test | projectRoot, contextFile, userFlowSpec, targetPaths | opus | 25-40K |
+| flutter-verifier | `impl-flutter:flutter-verifier` | code verification, architecture review, post-impl check | projectRoot, architectureRef, contextFile, filePaths | opus | 25-40K |
 | Explore | `Explore` | codebase search, file finding | (none) | haiku | 8K |
 | general-purpose | `general-purpose` | multi-step research, complex exploration | (none) | sonnet | 25K |
 
@@ -173,8 +210,18 @@ Task(impl-flutter:{agent}, --dry-run)
 
 | Task | Agent | Required Inputs | Status |
 |------|-------|-----------------|--------|
-| task-1-1 | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec | Complete |
-| task-1-2 | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, designSpec, spec | Complete |
+| task-1-1 | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, contextFile, spec | Complete |
+| task-1-2 | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec | Complete |
+
+### Parallel Group Import-Order Validation
+
+| Parallel Group | Tasks | Import Order | Status |
+|----------------|-------|--------------|--------|
+| P1 | task-1-1, task-1-2 | No cross-imports | OK |
+| P2 | task-2-1, task-2-2, task-2-3 | task-2-1 is aggregator | VIOLATION |
+
+**Violations Found:**
+- P2: task-2-1 (index.dart) exports task-2-2, task-2-3 → move to P3
 
 ### Risks Identified & Resolved
 

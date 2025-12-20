@@ -42,8 +42,23 @@ For each task in the provided list:
 ## Specifications
 {copied relevant sections from spec summary}
 
+## Embedded Implementation Spec
+> **CRITICAL:** This section contains the ACTUAL implementation specification.
+> Implement EXACTLY as shown. Do not deviate.
+
+```dart
+{actual code from spec, not summarized}
+```
+
 ## Constraints
 {relevant architectural rules}
+
+## Documentation Requirements
+{documentation patterns required for this task}
+- `## When To Use` section: {required/optional}
+- `## Example` section: {required/optional}
+- `{@template}` usage: {required/optional}
+- Code examples in doc comments: {required/optional}
 
 ## Patterns to Follow
 {examples from codebase if applicable}
@@ -80,6 +95,30 @@ For tasks assigned to flutter-coder, use this TDD-compatible format:
 ## Specifications
 {requirements from spec — behavior, not implementation}
 
+## Embedded Implementation Spec
+> **CRITICAL:** If the spec provides actual code, embed it here EXACTLY.
+> The agent must implement this code, not a summary of it.
+
+```dart
+/// Example from spec (lines X-Y of DESIGN.md):
+///
+/// ## When To Use
+/// {doc section from spec}
+///
+/// ## Example
+/// ```dart
+/// {example code from spec}
+/// ```
+{actual implementation code from spec}
+```
+
+## Documentation Requirements
+> These doc patterns are REQUIRED for this task:
+- `## When To Use` section: {required/optional}
+- `## Example` section: {required/optional}
+- `{@template}` usage: {required/optional}
+- Test examples in docs: {required/optional}
+
 ## Constraints
 {architectural rules that apply}
 
@@ -96,6 +135,7 @@ Stack notes: {e.g., "Uses Freezed for entities, fpdart Either for errors"}
 - {testable criterion 2}
 - All tests pass
 - Analyzer clean (0 errors, 0 warnings, 0 info)
+- Documentation includes required sections (see above)
 
 ## Expected Outputs
 - `{output-path-1}` — {file type}
@@ -103,14 +143,23 @@ Stack notes: {e.g., "Uses Freezed for entities, fpdart Either for errors"}
 
 ## Codegen Required
 {yes/no — if yes, build_runner must run before final tests}
+
+## Test Specifications
+> If spec provides test cases, embed them here:
+
+```dart
+{test code from spec, not summarized}
+```
 ```
 
-**Key differences:**
+**Key differences from standard format:**
 - Required Inputs section with projectRoot, targetPaths, architectureRef
-- No code blocks or implementation examples
-- "Scope" section with paths only (agent reads files itself)
+- **Embedded Implementation Spec** with ACTUAL code from spec (not summaries)
+- **Documentation Requirements** section with required doc patterns
+- **Test Specifications** section with actual test code from spec
+- "Scope" section with paths only (agent reads files itself for patterns)
 - Explicit "Codegen Required" field
-- Acceptance criteria includes TDD verification requirements
+- Acceptance criteria includes TDD verification AND documentation requirements
 
 **Finding architectureRef:**
 1. Check `docs/adr/` for Architecture Decision Records
@@ -169,10 +218,18 @@ Note: Uses Freezed for entities, fpdart Either for errors.
 <sizing>
 Each context file should be:
 - Focused on ONE task
-- 200-400 lines max
+- 200-600 lines max (larger if embedding implementation specs)
 - No redundant information
-- Self-contained (agent doesn't need to search)
-- For flutter-coder: PATHS only, no code blocks
+- Self-contained (agent doesn't need to search for spec)
+- For flutter-coder:
+  - Scope section: PATHS only (agent reads for patterns)
+  - Embedded Implementation Spec: ACTUAL CODE from spec (agent implements this exactly)
+  - Test Specifications: ACTUAL TEST CODE from spec (if provided)
+
+**When to embed vs reference:**
+- Spec provides actual code → EMBED it in context file
+- Spec describes behavior only → summarize and let agent read source for details
+- Spec provides test cases → EMBED them in Test Specifications section
 </sizing>
 
 <output>

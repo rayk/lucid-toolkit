@@ -84,7 +84,8 @@ This is required for the executor to dispatch tasks correctly.
 - projectRoot: Absolute path
 - targetPaths: Where to create files
 - architectureRef: Path to ADRs/constraints
-- spec: Behavioral specification
+- contextFile: Path to consolidated context file (./phase-N-task-M-context.md)
+- spec: Behavioral specification summary (agent reads contextFile for full details)
 
 **TOKEN BUDGET:** 15-25K (sonnet)
 </flutter_coder_capabilities>
@@ -130,8 +131,9 @@ This is required for the executor to dispatch tasks correctly.
 - projectRoot: Absolute path
 - targetPaths: Where to create widget files
 - architectureRef: Path to design system docs
+- contextFile: Path to consolidated context file (./phase-N-task-M-context.md)
 - designSpec: Visual specification (mockup, Figma, description)
-- spec: Behavioral spec (states, interactions, animations)
+- spec: Behavioral spec summary (agent reads contextFile for full details)
 
 **TOKEN BUDGET:** 25-40K (opus)
 </flutter_ux_widget_capabilities>
@@ -156,6 +158,7 @@ This is required for the executor to dispatch tasks correctly.
 
 **REQUIRED agentInputs:**
 - projectRoot: Absolute path to project/package
+- contextFile: Path to consolidated context file (./phase-N-task-M-context.md)
 - userFlowSpec: User flow specification (steps, preconditions, acceptance criteria)
 - targetPaths: Where to create test files (default: integration_test/flows/)
 
@@ -190,9 +193,10 @@ This is required for the executor to dispatch tasks correctly.
 - Confidence scores for all issues
 
 **REQUIRED agentInputs:**
-- architectureRef: Path to ADRs/constraints (REQUIRED)
-- filePaths: Files to review (REQUIRED)
 - projectRoot: Absolute path to project/package
+- architectureRef: Path to ADRs/constraints (REQUIRED)
+- contextFile: Path to consolidated context file (./phase-N-task-M-context.md)
+- filePaths: Files to review (REQUIRED)
 
 **PRE-FLIGHT:** `--dry-run` returns architecture docs found or blockers
 
@@ -230,10 +234,10 @@ These agents do NOT require structured agentInputs.
 
 | Agent (Fully-Qualified) | Can Handle | Cannot Handle | Required agentInputs | Model | Tokens |
 |------------------------|------------|---------------|---------------------|-------|--------|
-| impl-flutter:flutter-coder | entity, repo, provider, simple widget, unit/widget test | animations, e2e, verification | projectRoot, targetPaths, architectureRef, spec | sonnet | 15-25K |
-| impl-flutter:flutter-ux-widget | visual widgets, animations, custom paint, a11y | business logic, e2e, verification | projectRoot, targetPaths, architectureRef, designSpec, spec | opus | 25-40K |
-| impl-flutter:flutter-e2e-tester | E2E tests, integration tests, robot pattern, golden tests | unit tests, widget tests, fixing code | projectRoot, userFlowSpec, targetPaths | opus | 25-40K |
-| impl-flutter:flutter-verifier | code review, architecture compliance, anti-patterns | fixing code, writing tests, modifications | architectureRef, filePaths, projectRoot | opus | 25-40K |
+| impl-flutter:flutter-coder | entity, repo, provider, simple widget, unit/widget test | animations, e2e, verification | projectRoot, targetPaths, architectureRef, contextFile, spec | sonnet | 15-25K |
+| impl-flutter:flutter-ux-widget | visual widgets, animations, custom paint, a11y | business logic, e2e, verification | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec | opus | 25-40K |
+| impl-flutter:flutter-e2e-tester | E2E tests, integration tests, robot pattern, golden tests | unit tests, widget tests, fixing code | projectRoot, contextFile, userFlowSpec, targetPaths | opus | 25-40K |
+| impl-flutter:flutter-verifier | code review, architecture compliance, anti-patterns | fixing code, writing tests, modifications | projectRoot, architectureRef, contextFile, filePaths | opus | 25-40K |
 | Explore | file search, code search, structure discovery | writing code, modifications | (none) | haiku | 8K |
 | general-purpose | multi-step research, complex exploration | - | (none) | sonnet | 25K |
 
@@ -244,24 +248,24 @@ These agents do NOT require structured agentInputs.
 
 | Task Type | Primary Agent (Fully-Qualified) | Required agentInputs |
 |-----------|--------------------------------|---------------------|
-| Entity creation | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec |
-| Repository impl | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec |
-| Provider/Notifier | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec |
-| Use case impl | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec |
-| Simple widget | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec |
-| Unit/widget tests | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, spec |
-| Animated widget | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, designSpec, spec |
-| Custom painter | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, designSpec, spec |
-| Data visualization | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, designSpec, spec |
-| Design system component | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, designSpec, spec |
-| Complex visual | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, designSpec, spec |
-| E2E test | impl-flutter:flutter-e2e-tester | projectRoot, userFlowSpec, targetPaths |
-| Integration test | impl-flutter:flutter-e2e-tester | projectRoot, userFlowSpec, targetPaths |
-| User flow test | impl-flutter:flutter-e2e-tester | projectRoot, userFlowSpec, targetPaths |
-| Golden test | impl-flutter:flutter-e2e-tester | projectRoot, userFlowSpec, targetPaths |
-| Code verification | impl-flutter:flutter-verifier | architectureRef, filePaths, projectRoot |
-| Architecture review | impl-flutter:flutter-verifier | architectureRef, filePaths, projectRoot |
-| Post-implementation check | impl-flutter:flutter-verifier | architectureRef, filePaths, projectRoot |
+| Entity creation | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| Repository impl | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| Provider/Notifier | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| Use case impl | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| Simple widget | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| Unit/widget tests | impl-flutter:flutter-coder | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| Animated widget | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec |
+| Custom painter | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec |
+| Data visualization | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec |
+| Design system component | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec |
+| Complex visual | impl-flutter:flutter-ux-widget | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec |
+| E2E test | impl-flutter:flutter-e2e-tester | projectRoot, contextFile, userFlowSpec, targetPaths |
+| Integration test | impl-flutter:flutter-e2e-tester | projectRoot, contextFile, userFlowSpec, targetPaths |
+| User flow test | impl-flutter:flutter-e2e-tester | projectRoot, contextFile, userFlowSpec, targetPaths |
+| Golden test | impl-flutter:flutter-e2e-tester | projectRoot, contextFile, userFlowSpec, targetPaths |
+| Code verification | impl-flutter:flutter-verifier | projectRoot, architectureRef, contextFile, filePaths |
+| Architecture review | impl-flutter:flutter-verifier | projectRoot, architectureRef, contextFile, filePaths |
+| Post-implementation check | impl-flutter:flutter-verifier | projectRoot, architectureRef, contextFile, filePaths |
 | Find files/patterns | Explore | (none) |
 | Multi-file research | general-purpose | (none) |
 ```

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.32.0] - 2025-12-20
+
+### Changed
+- **impl-flutter plugin** (v2.15.6 → v2.16.0) - Planning system reliability improvements
+  - **TOON quoting rules**: Added `<toon_quoting>` section to plan-writer with explicit quoting examples for comma/colon-containing values
+  - **contextFile binding**: Added `contextFile` to agentInputs schema for all Flutter agents (explicit context file reference instead of implicit task ID correlation)
+  - **Import-order analysis**: Added section 3b to plan-simulator for detecting parallel group violations (aggregator files, barrel imports)
+  - **flutter_test detection**: Added Phase 0.5 to plan.md command for test framework dependency checking before capability mapping
+  - **Documentation requirements**: Added extraction of doc patterns and LLM Agent Support sections in plan-spec-analyzer (600 token limit, up from 500)
+  - **Embedded specs**: Updated plan-context-builder to embed actual code from specs instead of summaries (200-600 lines, up from 200-400)
+  - **Cross-check expansion**: Added questions 9-10 to plan-coverage-validator (test framework, melos bootstrap)
+  - **Risk penalties**: Added import-order violation (-25%) and missing contextFile (-10%) to plan-simulator
+- Marketplace version bumped to 2.32.0
+
 ## [2.31.0] - 2025-12-20
 
 ### Added

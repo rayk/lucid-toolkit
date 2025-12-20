@@ -48,7 +48,9 @@ Before declaring coverage complete, answer:
 5. **Constraints:** Is every architectural constraint referenced in task context?
 6. **Acceptance:** Does every acceptance criterion map to a verification task?
 7. **Valid Agents:** Does every task use only valid, fully-qualified agent names?
-8. **Agent Inputs:** Does every Flutter agent task have all required agentInputs?
+8. **Agent Inputs:** Does every Flutter agent task have all required agentInputs (including contextFile)?
+9. **Test Framework:** If any task uses widget/integration tests, is flutter_test available? (Check test_framework_status from Phase 0.5)
+10. **Melos Bootstrap:** If project is a monorepo (has melos.yaml), does plan include melos bootstrap after dependency changes?
 
 **If ANY answer is NO → coverage is incomplete.**
 </cross_check_questions>
@@ -60,10 +62,10 @@ Tasks may ONLY be assigned to these agents (FULLY-QUALIFIED NAMES):
 
 | Agent | Fully-Qualified Name | Use For | Required agentInputs |
 |-------|---------------------|---------|---------------------|
-| flutter-coder | `impl-flutter:flutter-coder` | Domain, application, simple widgets, unit/widget tests | projectRoot, targetPaths, architectureRef, spec |
-| flutter-ux-widget | `impl-flutter:flutter-ux-widget` | Visual widgets, animations, custom paint, a11y | projectRoot, targetPaths, architectureRef, designSpec, spec |
-| flutter-e2e-tester | `impl-flutter:flutter-e2e-tester` | E2E tests, integration tests, user flow testing | projectRoot, userFlowSpec, targetPaths |
-| flutter-verifier | `impl-flutter:flutter-verifier` | Code review, architecture compliance verification | architectureRef, filePaths, projectRoot |
+| flutter-coder | `impl-flutter:flutter-coder` | Domain, application, simple widgets, unit/widget tests | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| flutter-ux-widget | `impl-flutter:flutter-ux-widget` | Visual widgets, animations, custom paint, a11y | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec |
+| flutter-e2e-tester | `impl-flutter:flutter-e2e-tester` | E2E tests, integration tests, user flow testing | projectRoot, contextFile, userFlowSpec, targetPaths |
+| flutter-verifier | `impl-flutter:flutter-verifier` | Code review, architecture compliance verification | projectRoot, architectureRef, contextFile, filePaths |
 | Explore | `Explore` | Codebase exploration (builtin) | (none) |
 | general-purpose | `general-purpose` | Multi-step research (builtin) | (none) |
 
@@ -117,7 +119,9 @@ Tasks may ONLY be assigned to these agents (FULLY-QUALIFIED NAMES):
 5. Constraints: YES/NO — {detail}
 6. Acceptance: YES/NO — {detail}
 7. Valid Agents: YES/NO — {list any invalid agent assignments}
-8. Agent Inputs: YES/NO — {list any missing agentInputs}
+8. Agent Inputs: YES/NO — {list any missing agentInputs, especially contextFile}
+9. Test Framework: YES/NO — {flutter_test available or setup task included}
+10. Melos Bootstrap: YES/NO/NA — {bootstrap task after dependency changes, or NA if not monorepo}
 
 ### Missing Items
 1. {item}: {what's needed to cover}

@@ -56,7 +56,8 @@ agentInputs:
   {task-id},projectRoot,{absolute-project-path}
   {task-id},targetPaths,{output directories}
   {task-id},architectureRef,{path-to-adr-or-constraints}
-  {task-id},spec,{behavioral-specification}
+  {task-id},contextFile,{path-to-context-md}
+  {task-id},spec,"{behavioral-specification-summary}"
 ```
 
 ### impl-flutter:flutter-ux-widget
@@ -65,24 +66,27 @@ agentInputs:
   {task-id},projectRoot,{absolute-project-path}
   {task-id},targetPaths,{output directories}
   {task-id},architectureRef,{path-to-design-system}
-  {task-id},designSpec,{visual-specification}
-  {task-id},spec,{behavioral-specification}
+  {task-id},contextFile,{path-to-context-md}
+  {task-id},designSpec,"{visual-specification}"
+  {task-id},spec,"{behavioral-specification-summary}"
 ```
 
 ### impl-flutter:flutter-e2e-tester
 ```
 agentInputs:
   {task-id},projectRoot,{absolute-project-path}
-  {task-id},userFlowSpec,{user-flow-description}
+  {task-id},contextFile,{path-to-context-md}
+  {task-id},userFlowSpec,"{user-flow-description}"
   {task-id},targetPaths,{integration_test directories}
 ```
 
 ### impl-flutter:flutter-verifier
 ```
 agentInputs:
-  {task-id},architectureRef,{path-to-adr-or-constraints}
-  {task-id},filePaths,{files-to-verify}
   {task-id},projectRoot,{absolute-project-path}
+  {task-id},architectureRef,{path-to-adr-or-constraints}
+  {task-id},contextFile,{path-to-context-md}
+  {task-id},filePaths,{files-to-verify}
 ```
 
 ### Builtin Agents
@@ -164,11 +168,13 @@ phase-1:
     task-1-1,analyzerClean,Boolean,Zero errors/warnings
 
   # Agent-specific required inputs (executor uses these to construct prompts)
+  # NOTE: Values with commas/colons MUST be quoted (see <toon_quoting>)
   agentInputs[{A},]{taskId,inputKey,inputValue}:
     task-1-1,projectRoot,{absolute-project-path}
     task-1-1,targetPaths,lib/domain/entities/
     task-1-1,architectureRef,docs/adr/
-    task-1-1,spec,Create User entity with id, email, name, createdAt
+    task-1-1,contextFile,./phase-1-task-1-context.md
+    task-1-1,spec,"Create User entity with id, email, name, createdAt"
 
   checkpoint:
     @type: Checkpoint
@@ -183,6 +189,36 @@ dependencies[{D},]{taskId,dependsOn,reason}:
 executionOrder[{N}]: task-1-1,task-1-2,task-2-1,...
 ```
 </toon_format>
+
+<toon_quoting>
+## TOON Value Quoting Rules
+
+Values containing these characters MUST be wrapped in double quotes:
+- **Commas:** `"Create entity with id, email, name"`
+- **Colons:** `"Description: multi-line spec"`
+- **Newlines:** Not supported in arrays — use single-line or reference a file
+
+**Examples:**
+```toon
+# WRONG (parses as 6 fields instead of 3)
+task-1-1,spec,Create User with id, email, name, createdAt
+
+# CORRECT (parses as 3 fields)
+task-1-1,spec,"Create User with id, email, name, createdAt"
+
+# WRONG (colon breaks parsing)
+task-1-1,spec,User entity: has id and email
+
+# CORRECT
+task-1-1,spec,"User entity: has id and email"
+```
+
+**For complex specs, reference the context file:**
+```toon
+task-1-1,contextFile,./phase-1-task-1-context.md
+task-1-1,spec,"See contextFile for full specification"
+```
+</toon_quoting>
 
 <task_returns_rules>
 ## Minimal taskReturns (Protect Orchestrator Context)
@@ -217,10 +253,10 @@ Plans may ONLY use these agents:
 
 | Agent | Fully-Qualified Name | Use For | Required Inputs |
 |-------|---------------------|---------|-----------------|
-| flutter-coder | `impl-flutter:flutter-coder` | Domain, application, simple widgets, unit/widget tests | projectRoot, targetPaths, architectureRef, spec |
-| flutter-ux-widget | `impl-flutter:flutter-ux-widget` | Visual widgets, animations, custom paint, accessibility | projectRoot, targetPaths, architectureRef, designSpec, spec |
-| flutter-e2e-tester | `impl-flutter:flutter-e2e-tester` | E2E tests, integration tests, user flow testing | projectRoot, userFlowSpec, targetPaths |
-| flutter-verifier | `impl-flutter:flutter-verifier` | Code review, architecture compliance verification | architectureRef, filePaths, projectRoot |
+| flutter-coder | `impl-flutter:flutter-coder` | Domain, application, simple widgets, unit/widget tests | projectRoot, targetPaths, architectureRef, contextFile, spec |
+| flutter-ux-widget | `impl-flutter:flutter-ux-widget` | Visual widgets, animations, custom paint, accessibility | projectRoot, targetPaths, architectureRef, contextFile, designSpec, spec |
+| flutter-e2e-tester | `impl-flutter:flutter-e2e-tester` | E2E tests, integration tests, user flow testing | projectRoot, contextFile, userFlowSpec, targetPaths |
+| flutter-verifier | `impl-flutter:flutter-verifier` | Code review, architecture compliance verification | projectRoot, architectureRef, contextFile, filePaths |
 | Explore | `Explore` | Codebase exploration, finding files/patterns | (none, via taskDetails) |
 | general-purpose | `general-purpose` | Multi-step research, complex searches | (none, via taskDetails) |
 
