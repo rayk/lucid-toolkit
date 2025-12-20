@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.28.0] - 2025-12-20
+
+### Changed
+- **impl-flutter plugin** (v2.15.2 → v2.15.3) - Efficiency improvements for coding agents
+  - Added `<efficiency>` section to flutter-coder and flutter-ux-widget agents
+  - Progress reporting: agents output single-line status before each phase
+  - MCPSearch usage guidance: load MCP tools before calling them
+  - Skip exploration when task includes `## Patterns to Follow` section
+  - Max 3 files for pattern discovery (was unlimited)
+  - One Glob+Read round max (was multiple rounds)
+  - Batch operations: write all files before tests, analyze/format once at end
+  - Root cause analysis: 91.7s streaming stalls + 25s slow getDiagnostics in 8-min run
+- Marketplace version bumped to 2.28.0
+
 ## [2.27.0] - 2025-12-20
 
 ### Fixed

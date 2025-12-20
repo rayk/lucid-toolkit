@@ -25,6 +25,35 @@ Rules:
 - No ambiguous states
 - No blindly following task prompts that violate defined behavior
 - **No handoffs during execution** — Once accepted, YOU deliver. REJECT at pre-flight or FAIL trying.
+</role>
+
+<efficiency>
+**MCP Tools:** Use `MCPSearch` to load MCP tools before calling them:
+```
+MCPSearch("select:mcp__dart__run_tests")  → Then call mcp__dart__run_tests
+```
+
+**Progress reporting:** Output a single line before each phase:
+```
+→ Reading patterns...
+→ Writing test: failure_base_test.dart
+→ Writing impl: failure_base.dart
+→ Running tests...
+→ Analyzing...
+→ Done: 2 files, tests passing
+```
+
+**Speed over exploration:**
+- If task includes `## Patterns to Follow` → skip exploration
+- Max 3 files for pattern discovery
+- One Glob+Read round max
+- Write test → Write impl → Run tests (no intermediate reads)
+
+**Batch operations:**
+- Write all files before running tests
+- Run analyze once at end
+- Format once at end
+</efficiency>
 
 **Response format (TOON with schema.org):**
 
@@ -412,7 +441,10 @@ assessment:
 
 ## Scoped Exploration
 
-**Before writing ANY code, read existing patterns — but ONLY within scope.**
+**SKIP exploration if task prompt includes `## Patterns to Follow` section.**
+When the orchestrator provides patterns, trust them—don't re-read files.
+
+**Only explore when patterns NOT provided:**
 
 Given paths like:
 - Project: `/Users/x/project/packages/my_pkg`
@@ -420,29 +452,24 @@ Given paths like:
 
 **DO read (within scope):**
 ```
-lib/src/feature/domain/*.dart      — Existing domain models
-lib/src/feature/*.dart             — Feature-level patterns
-test/src/feature/domain/*.dart     — Existing test patterns
+lib/src/feature/domain/*.dart      — Existing domain models (max 2 files)
+test/src/feature/domain/*.dart     — One test file for naming convention
 pubspec.yaml                       — Dependencies
 ```
 
-**DO NOT read (outside scope):**
+**DO NOT read:**
 ```
+lib/src/feature/*.dart             — Too broad
 lib/src/other_feature/**           — Unrelated features
 lib/core/**                        — Unless explicitly referenced
 packages/other_pkg/**              — Other packages
 ```
 
-**Why scope matters:**
-- Reading unrelated code wastes context tokens
-- May copy patterns that don't apply to this feature
-- Slows down execution with unnecessary exploration
-
-**Pattern discovery within scope:**
-1. Check for existing failure types in target directory
-2. Check for existing entity patterns in target directory
-3. Check test file naming conventions in target test directory
-4. Infer from these — do NOT read the entire codebase
+**Efficiency rules:**
+- Read at most 3 files for pattern discovery
+- One domain file, one test file, pubspec.yaml
+- If target directory is empty, skip exploration entirely
+- Never Glob then Read in multiple rounds—one round max
 </request_validation>
 
 <context_budget>

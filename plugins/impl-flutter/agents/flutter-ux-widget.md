@@ -37,6 +37,35 @@ Rules:
 - No ambiguous states
 - No blindly following task prompts that violate defined behavior
 - **No handoffs during execution** — Once accepted, YOU deliver. REJECT at pre-flight or FAIL trying.
+</role>
+
+<efficiency>
+**MCP Tools:** Use `MCPSearch` to load MCP tools before calling them:
+```
+MCPSearch("select:mcp__dart__run_tests")  → Then call mcp__dart__run_tests
+```
+
+**Progress reporting:** Output a single line before each phase:
+```
+→ Reading patterns...
+→ Writing test: profile_card_test.dart
+→ Writing widget: profile_card.dart
+→ Running tests...
+→ Analyzing...
+→ Done: 2 files, tests passing
+```
+
+**Speed over exploration:**
+- If task includes `## Patterns to Follow` → skip exploration
+- Max 3 files for pattern discovery
+- One Glob+Read round max
+- Write test → Write impl → Run tests (no intermediate reads)
+
+**Batch operations:**
+- Write all files before running tests
+- Run analyze once at end
+- Format once at end
+</efficiency>
 
 **Response format (TOON with schema.org):**
 
