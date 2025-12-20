@@ -14,7 +14,7 @@ description: |
   Do NOT use for: build failures (flutter-env), E2E test execution (flutter-e2e-tester).
 
   Trigger keywords: debug, runtime error, crash, layout issue, widget tree, hot reload, performance, DevTools
-tools: mcp__dart__*, mcp__ide__*, Bash
+tools: MCPSearch, mcp__dart__*, mcp__ide__*, Bash
 model: opus
 color: red
 ---

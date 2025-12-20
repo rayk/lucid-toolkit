@@ -14,7 +14,7 @@ description: |
   Do NOT use for: fixing broken builds or CI issues—use flutter-env instead.
 
   Trigger keywords: release, app store, Play Store, TestFlight, pub.dev, Crashlytics, version, Fastlane
-tools: mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
+tools: MCPSearch, mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: cyan
 ---

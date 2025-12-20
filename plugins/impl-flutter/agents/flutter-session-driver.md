@@ -11,7 +11,7 @@ description: |
   - Tracking session state across app restarts
 
   Trigger keywords: session, app lifecycle, start app, stop app, restart app, DTD connection, VM service
-tools: mcp__dart__*, Bash, Read, Write, KillShell, TaskOutput
+tools: MCPSearch, mcp__dart__*, Bash, Read, Write, KillShell, TaskOutput
 model: sonnet
 color: cyan
 ---

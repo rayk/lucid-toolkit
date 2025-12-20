@@ -11,7 +11,7 @@ description: |
   - "widget catalog", "JSON schema widgets", "outcome-oriented"
 
   Bleeding-edge domain. This agent researches, explores, and pairs collaboratively. Never guesses.
-tools: mcp__dart__*, mcp__ide__*, Read, Write, Edit, Grep, Glob, WebFetch, WebSearch
+tools: MCPSearch, mcp__dart__*, mcp__ide__*, Read, Write, Edit, Grep, Glob, WebFetch, WebSearch
 model: opus
 color: magenta
 ---

@@ -12,7 +12,7 @@ description: |
   - "conditional imports", "platform detection"
 
   Trigger keywords: platform channel, native, FFI, Pigeon, Kotlin, Swift, web, desktop, platform-specific
-tools: mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
+tools: MCPSearch, mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: orange
 ---

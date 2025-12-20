@@ -12,7 +12,7 @@ description: |
   - "cache", "data layer", "repository pattern"
 
   Trigger keywords: database, Isar, Firebase, Firestore, offline, sync, secure storage, cache
-tools: mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
+tools: MCPSearch, mcp__dart__*, mcp__ide__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: teal
 ---

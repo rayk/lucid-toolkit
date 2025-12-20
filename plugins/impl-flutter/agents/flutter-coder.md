@@ -6,7 +6,7 @@ description: |
   INVOKE: "implement feature", "write code", "create widget/screen/service/repository", "TDD"
 
   NOT for: integration tests, e2e, test infrastructure → flutter-tester
-tools: mcp__dart__*, mcp__jetbrains__*, Read, Write, Edit, Glob, Grep
+tools: MCPSearch, mcp__dart__*, mcp__jetbrains__*, Read, Write, Edit, Glob, Grep
 model: inherit
 color: blue
 ---

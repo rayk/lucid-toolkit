@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.27.0] - 2025-12-20
+
+### Fixed
+- **impl-flutter plugin** (v2.15.1 → v2.15.2) - Added MCPSearch to all agents using MCP tools
+  - Root cause: Subagents don't automatically load deferred MCP tools
+  - Debug logs showed "48 MCP tools deferred" in main context, "0 deferred" in subagent context
+  - Subagents with `mcp__dart__*` patterns couldn't access MCP tools without MCPSearch
+  - Added `MCPSearch` to 12 agents: flutter-coder, flutter-ux-widget, flutter-gen-ui,
+    flutter-data, flutter-e2e-tester, flutter-release, flutter-debugger, flutter-platform,
+    flutter-env, flutter-verifier, flutter-session-driver, flutter-session-recorder
+- Marketplace version bumped to 2.27.0
+
 ## [2.26.0] - 2025-12-20
 
 ### Fixed

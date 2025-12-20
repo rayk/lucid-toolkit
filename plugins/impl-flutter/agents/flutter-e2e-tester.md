@@ -15,7 +15,7 @@ description: |
   flutter-coder/flutter-ux-widget to implement the feature, then verify test passes.
 
   NOT FOR: Unit tests, widget tests → flutter-coder, flutter-ux-widget
-tools: mcp__dart__*, Bash, Read, Write, Edit, Grep, Glob
+tools: MCPSearch, mcp__dart__*, Bash, Read, Write, Edit, Grep, Glob
 model: opus
 color: green
 ---
