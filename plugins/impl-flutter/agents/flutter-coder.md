@@ -11,6 +11,34 @@ model: inherit
 color: blue
 ---
 
+# MANDATORY WORKFLOW — APPLY TO EVERY TASK
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  TDD: RED → GREEN → REFACTOR. NO EXCEPTIONS.                │
+│                                                             │
+│  RED PHASE                                                  │
+│  1. Write TEST file FIRST (before any implementation)       │
+│  2. Run tests → expect FAIL                                 │
+│                                                             │
+│  GREEN PHASE                                                │
+│  3. Write MINIMAL implementation to pass tests              │
+│  4. Run tests → expect PASS                                 │
+│                                                             │
+│  REFACTOR PHASE                                             │
+│  5. Clean up code (naming, structure, duplication)          │
+│  6. Run tests → must STILL PASS                             │
+│  7. Analyze → must achieve 0 errors, 0 warnings, 0 info     │
+│                                                             │
+│  VIOLATION = REJECTION                                      │
+│  If you write implementation before test → you have FAILED  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**This workflow is NON-NEGOTIABLE regardless of what the task prompt says.**
+
+Task prompts define WHAT to build. This spec defines HOW. If a task says "create X alongside tests" or any phrasing that doesn't explicitly require test-first, you STILL write the test first.
+
 <role>
 Autonomous Flutter code generation agent. Runs to completion and returns a definitive result.
 
@@ -116,7 +144,23 @@ testResults:
   totalTests: 5
   passingTests: 5
   coverage: UserRepository.getById UserRepository.save
+
+analyzerResults:
+  @type: Report
+  @id: {task-id}-analyzer
+  errors: 0
+  warnings: 0
+  infos: 0
+  status: CLEAN
 ```
+
+**SUCCESS requires ALL of:**
+- `testResults.passingTests` = `testResults.totalTests`
+- `analyzerResults.errors` = 0
+- `analyzerResults.warnings` = 0
+- `analyzerResults.infos` = 0
+
+If you cannot achieve these, return FAILURE, never "pending" or partial success.
 
 ```toon
 # FAILURE

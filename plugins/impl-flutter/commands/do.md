@@ -26,11 +26,31 @@ This command MUST delegate ALL work to subagents. You are a thin dispatcher.
 
 **REQUIRED PATTERN:**
 Every operation is a Task call to a subagent:
-1. `Task(impl-flutter:do-plan-reader)` → returns plan summary (phases, tasks, tokens)
-2. For each phase: `Task({agent})` → returns task result summary
+1. `Task(impl-flutter:do-plan-reader)` → returns plan summary (phases, tasks, parallelGroups, tokens)
+2. For each phase, for each parallelGroup: launch ALL group tasks in ONE message
 3. `Task(impl-flutter:do-log-writer)` → writes log entry, returns confirmation
 4. `Task(impl-flutter:do-git-ops)` → commits, returns sha
 5. `Task(impl-flutter:do-checkpoint-validator)` → validates, returns pass/fail
+
+**PARALLEL EXECUTION IS MANDATORY:**
+- Tasks with the same `parallelGroup` value MUST be in the same message
+- Multiple Task tool calls in one message = parallel execution
+- Sequential Task calls = 4x slower for a 4-task group
+- If you send tasks one-at-a-time, you are doing it WRONG
+
+**NO FIX/RETRY LOOPS:**
+- Each task is dispatched ONCE
+- If a task returns FAILURE or non-0/0/0 analyzer, that's a TASK FAILURE
+- DO NOT spawn "fix" agents to clean up after failed tasks
+- DO NOT re-run checkpoint validators hoping for different results
+- flutter-coder is responsible for achieving 0/0/0 before returning SUCCESS
+- If tasks keep failing, STOP and report to user (create resume point)
+
+**Expected Task calls per phase:**
+- Implementation tasks: {tasks-in-phase} (parallel by group)
+- Log writer: 1
+- Checkpoint validator: 1
+- Git ops: 1
 
 If you find yourself reading files or writing directly, STOP. You are violating the design.
 </critical_behavior>
@@ -106,13 +126,47 @@ Task(impl-flutter:do-resume-writer):
 ```
 Then STOP.
 
-**b. Execute Tasks (parallel groups)**
-For each parallel group, launch ALL tasks in ONE message:
+**b. Execute Tasks (PARALLEL GROUPS - CRITICAL)**
+
+Tasks within the same `parallelGroup` MUST be launched in a SINGLE message with multiple Task tool calls. This is how Claude executes tools in parallel.
+
+**Step 1: Group tasks by parallelGroup**
 ```
-Task(impl-flutter:flutter-coder): "Implement: {task-1}..."
-Task(impl-flutter:flutter-coder): "Implement: {task-2}..."
-Task(impl-flutter:flutter-ux-widget): "Implement: {task-3}..."
+Phase tasks: [task-1 (P1), task-2 (P1), task-3 (P1), task-4 (P2)]
+→ Group P1: [task-1, task-2, task-3]  ← execute together
+→ Group P2: [task-4]                  ← execute after P1 completes
 ```
+
+**Step 2: For each group, send ONE message with ALL Task calls**
+```xml
+<!-- ONE MESSAGE containing multiple Task calls = PARALLEL execution -->
+<task_calls>
+  Task(impl-flutter:flutter-coder): "Implement: task-1..."
+  Task(impl-flutter:flutter-coder): "Implement: task-2..."
+  Task(impl-flutter:flutter-coder): "Implement: task-3..."
+</task_calls>
+```
+
+**Step 3: Wait for all results, then proceed to next group**
+
+⚠️ **WRONG (Sequential - wastes time):**
+```
+Message 1: Task(flutter-coder): "task-1"  → wait for result
+Message 2: Task(flutter-coder): "task-2"  → wait for result
+Message 3: Task(flutter-coder): "task-3"  → wait for result
+```
+
+✅ **CORRECT (Parallel - fast):**
+```
+Message 1: [
+  Task(flutter-coder): "task-1",
+  Task(flutter-coder): "task-2",
+  Task(flutter-coder): "task-3"
+]  → all execute in parallel, receive all results together
+```
+
+**Performance impact:** A phase with 4 parallel tasks takes 1× time (parallel) vs 4× time (sequential).
+
 Receive: Result summaries (status, tokensUsed, filesCreated)
 
 **c. Record Results**
@@ -124,13 +178,25 @@ Task(impl-flutter:do-log-writer):
    Return: confirmation"
 ```
 
-**d. Validate Checkpoint**
+**d. Validate Checkpoint (ONCE per phase)**
 ```
 Task(impl-flutter:do-checkpoint-validator):
   "Validate checkpoint for phase: {phase-id}
    Criteria: {checkpoint-criteria}
    Return: pass/fail, details"
 ```
+
+⚠️ **CHECKPOINT RULES:**
+- Call checkpoint validator **ONCE per phase**, not multiple times
+- If checkpoint PASSES → proceed to git commit
+- If checkpoint FAILS → check the `onFail` action from the plan:
+  - `onFail: pause` → STOP execution, report to user, create resume point
+  - `onFail: rollback` → call git-ops to rollback, re-run phase
+  - `onFail: continue` → log warning, proceed to next phase
+- **DO NOT** spawn fix agents and re-validate repeatedly
+- Tasks should return SUCCESS with 0/0/0 analyzer. If they didn't, that's a task failure, not a checkpoint retry.
+
+**Expected checkpoint calls:** 1 per phase = {totalPhases} total
 
 **e. Git Commit**
 ```
